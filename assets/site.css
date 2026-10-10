@@ -1,0 +1,38 @@
+@font-face {
+  font-family: "Fredoka";
+  src: url("fredoka-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+:root {
+  --bg: #f7f3ea; --card: #fff6e3; --ink: #1d2a30; --muted: #4f5f66; --accent: #d9621f; --line: rgba(29, 42, 48, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #12262d; --card: #16323a; --ink: #eef3f2; --muted: #a9bcc0; --accent: #f28c38; --line: rgba(238, 243, 242, 0.14); }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 720px; margin: 0 auto; padding: 32px 16px 48px; }
+h1, h2, .brand-name { font-family: "Fredoka", system-ui, sans-serif; font-weight: 600; }
+h1 { font-size: 30px; margin: 0 0 4px; line-height: 1.2; }
+h2 { font-size: 20px; margin: 32px 0 8px; color: var(--accent); }
+a { color: var(--accent); }
+ul { padding-left: 22px; }
+.muted { color: var(--muted); }
+.top { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; text-decoration: none; color: var(--ink); }
+.top img { width: 40px; height: 40px; }
+.top .brand-name { font-size: 20px; }
+footer { max-width: 720px; margin: 0 auto; padding: 20px 16px 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer p { margin: 4px 0; }
+footer nav a { margin-right: 14px; }
+.love { margin-top: 12px; }
+.love span { color: var(--accent); }
+
+/* home */
+.hero { text-align: center; padding-top: 24px; }
+.hero img { width: 120px; height: 120px; }
+.hero h1 { font-size: 44px; margin-top: 8px; }
+.tagline { font-family: "Fredoka", system-ui, sans-serif; font-weight: 600; color: var(--accent); font-size: 20px; margin: 0 0 20px; }
+.card { background: var(--card); border-radius: 18px; padding: 20px 22px; margin: 24px 0; text-align: left; }
+.badge { display: inline-block; margin-top: 8px; padding: 10px 18px; border-radius: 999px; background: var(--accent); color: #fff; font-family: "Fredoka", system-ui, sans-serif; font-weight: 600; }
+.tm, h1 sup, .brand-name sup { font-size: 0.42em; vertical-align: super; line-height: 0; margin-left: 1px; }
