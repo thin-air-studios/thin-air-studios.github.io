@@ -23,11 +23,12 @@
 <p>None of this is sent to us. Uninstalling the game, or clearing its storage in Android's settings, deletes it.</p>
 
 <h2>What the game downloads</h2>
-<p>To draw an airport and fill its sky, the game asks three public services for data about the airport you pick. The requests contain that airport's code or coordinates, not your location or any information about you.</p>
+<p>To draw an airport and fill its sky, the game asks public services for data about the airport you pick. The requests contain that airport's code or coordinates, not your location or any information about you.</p>
 <ul>
   <li><strong>OpenStreetMap</strong> data for the airport's map and surroundings, from public Overpass API servers: overpass-api.de, with overpass.kumi.systems and maps.mail.ru as fallbacks. The 50 busiest airports ship inside the game and need no download. See the <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap privacy policy</a>.</li>
   <li><strong>The OpenSky Network</strong> for live flights near the airport. <a href="https://opensky-network.org">opensky-network.org</a>.</li>
   <li><strong>aviationweather.gov</strong> (the US National Weather Service) for the airport's weather report. <a href="https://www.weather.gov/privacy">Privacy policy</a>.</li>
+  <li><strong>Google Play</strong>: when you open Share, the game checks whether Short Final's store page is live, so your shares link to it only once it is. The check asks for that one page and sends nothing about you.</li>
 </ul>
 <p>As with any internet request, these services see your phone's IP address. The game doesn't send them anything else about you.</p>
 
