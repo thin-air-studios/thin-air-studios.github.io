@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.thinaircapital.holdingpattern",
+      "sha256_cert_fingerprints": [
+        "B3:10:AA:BC:9B:5F:80:0C:1C:03:63:A5:23:41:34:7C:6E:30:51:0E:F8:EE:F0:B1:6C:8D:8D:F3:C6:F4:74:6B"
+      ]
+    }
+  }
+]

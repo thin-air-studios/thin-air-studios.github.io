@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Short Final: land real flights</title>
+<meta name="description" content="Short Final is an air traffic game played with the real sky. Land the real flights arriving at any airport.">
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* the link page's own parts (the rest is the site's style): the call to action, a 44 px touch target */
+  .play-title { font-size: 34px; margin: 8px 0 4px; line-height: 1.2; }
+  .play-card p { margin: 0 0 12px; }
+  .play-card p:last-child { margin-bottom: 0; }
+  .play-go { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 22px; border-radius: 999px; background: var(--accent); color: #fff; text-decoration: none; font-family: "Fredoka", system-ui, sans-serif; font-weight: 600; font-size: 18px; }
+  .play-go:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .play-lead { font-size: 18px; }
+</style>
+</head>
+<body>
+<main>
+<a class="top" href="../"><img src="../assets/logo.svg" alt=""><span class="brand-name">Short Final<sup>™</sup></span></a>
+<section>
+  <h1 class="play-title" id="title">Short Final: land real flights at any airport</h1>
+  <p class="tagline">Real traffic. Any airport.</p>
+  <div class="card play-card">
+    <p class="play-lead" id="lede">Land the real flights arriving at any airport, in its real weather, and see if you can beat the score.</p>
+    <p id="daily" hidden></p>
+    <p><a class="play-go" id="go" href="../">About Short Final</a></p>
+    <p class="muted" id="soon">Coming soon to Google Play. The game is free.</p>
+  </div>
+  <p class="muted">If Short Final is on your phone, this link can open the game at this airport, ready to play. Otherwise it shows this page.</p>
+</section>
+</main>
+<footer>
+  <nav><a href="../privacy/">Privacy policy</a><a href="../terms/">Terms of Use</a><a href="mailto:thinaircapital@gmail.com">Contact</a></nav>
+  <p>© 2026 Thin Air Studios LLC. All rights reserved. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
+  <p class="love">Game designed with love in Colorado, USA <span>♥</span></p>
+</footer>
+<script>
+// "Beat my score" links (the game's links.js): ?a=<airport code>, &d=<daily number> and &utm_source=<where it was shared>.
+// The page names the airport and, once the game is on Google Play, sends the phone to the store with the source as the install
+// tag (the Play referrer). Nothing here is personal, and nothing is sent anywhere but the Play link.
+(function () {
+  'use strict';
+  // The store page is live: set true the day the listing is published. The page cannot ask Google (a cross-site check), so
+  // the game's own check (share.js, main.js checkStoreLive) is not available here.
+  var STORE_LIVE = false;
+  var PLAY = 'https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern';
+  // the busiest airports as the game names them (the city and the IATA code); any other code shows as its ICAO code
+  var PLACES = {
+    KATL: 'Atlanta (ATL)', OMDB: 'Dubai (DXB)', RJTT: 'Tokyo (HND)', KDFW: 'Dallas-Fort Worth (DFW)', ZSPD: 'Shanghai (PVG)',
+    KORD: 'Chicago (ORD)', EGLL: 'London (LHR)', LTFM: 'Istanbul (IST)', ZGGG: 'Guangzhou (CAN)', KDEN: 'Denver (DEN)',
+    VIDP: 'New Delhi (DEL)', RKSI: 'Seoul (ICN)', KLAX: 'Los Angeles (LAX)', LFPG: 'Paris (CDG)', ZBAA: 'Beijing (PEK)',
+    WSSS: 'Singapore (SIN)', EHAM: 'Amsterdam (AMS)', LEMD: 'Madrid (MAD)', ZGSZ: 'Shenzhen (SZX)', WMKK: 'Sepang (KUL)',
+    EDDF: 'Frankfurt am Main (FRA)', VTBS: 'Bangkok (BKK)', KJFK: 'New York (JFK)', VHHH: 'Hong Kong (HKG)', KMCO: 'Orlando (MCO)',
+    LEBL: 'Barcelona (BCN)', ZUTF: 'Chengdu (TFU)', VABB: 'Mumbai (BOM)', KMIA: 'Miami (MIA)', KLAS: 'Las Vegas (LAS)',
+    WIII: 'Jakarta (CGK)', KSFO: 'San Francisco (SFO)', OTHH: 'Doha (DOH)', ZBAD: 'Beijing (PKX)', KCLT: 'Charlotte (CLT)',
+    OEJN: 'Jeddah (JED)', KSEA: 'Seattle (SEA)', RPLL: 'Manila (MNL)', KPHX: 'Phoenix (PHX)', LIRF: 'Rome (FCO)',
+    ZSHC: 'Hangzhou (HGH)', ZSSS: 'Shanghai (SHA)', ZUCK: 'Chongqing (CKG)', ZPPP: 'Kunming (KMG)', ZLXY: "Xi'an (XIY)",
+    LTFJ: 'Pendik, Istanbul (SAW)', KIAH: 'Houston (IAH)', RCTP: 'Taoyuan (TPE)', CYYZ: 'Toronto (YYZ)', SBGR: 'São Paulo (GRU)'
+  };
+
+  function read() {
+    var q = new URLSearchParams(location.search);
+    var code = (q.get('a') || '').trim().toUpperCase();
+    var d = q.get('d') || '';
+    var source = (q.get('utm_source') || '').toLowerCase().replace(/[^a-z0-9-]/g, '') || 'share';
+    return {
+      code: /^[A-Z0-9][A-Z0-9-]{1,9}$/.test(code) ? code : '',
+      daily: /^\d{1,6}$/.test(d) && Number(d) > 0 ? d : '',
+      source: source
+    };
+  }
+
+  // the Play link with the source as its install referrer: utm_source, utm_medium=share and the airport as utm_campaign
+  function playLink(p) {
+    var ref = 'utm_source=' + p.source + '&utm_medium=share' + (p.code ? '&utm_campaign=' + p.code : '');
+    return PLAY + '&referrer=' + encodeURIComponent(ref);
+  }
+
+  var p = read();
+  var place = p.code ? (PLACES[p.code] || p.code) : '';
+  var title = place ? 'Short Final: land real flights at ' + place : 'Short Final: land real flights at any airport';
+  document.title = title;
+  document.getElementById('title').textContent = title;
+  if (place) {
+    document.getElementById('lede').textContent = 'Land the real flights arriving at ' + place + ', in its real weather, and see if you can beat the score.';
+  }
+  if (p.daily) {
+    var daily = document.getElementById('daily');
+    daily.textContent = 'Daily challenge #' + p.daily + ': the same planes for everyone that day.';
+    daily.hidden = false;
+  }
+  var go = document.getElementById('go');
+  if (STORE_LIVE) {
+    go.textContent = 'Get it free on Google Play';
+    go.href = playLink(p);
+    document.getElementById('soon').hidden = true;
+  }
+})();
+</script>
+</body>
+</html>

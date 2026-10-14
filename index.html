@@ -6,26 +6,73 @@
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU" />
 <title>Short Final: Live Air Traffic</title>
 <meta name="description" content="Short Final is an air traffic game played with the real sky. Pick any airport on Earth and land the real flights arriving there.">
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="icon" href="assets/app-icon.png" type="image/png">
 <link rel="stylesheet" href="assets/site.css">
+<style>
+  /* the home page's own parts (the rest is the site's style): the pictures from the game, two to a row on a phone */
+  .shots { display: grid; grid-template-columns: 1fr; gap: 22px; margin: 8px 0 0; }
+  @media (min-width: 560px) { .shots { grid-template-columns: 1fr 1fr; } }
+  .shots figure { margin: 0; }
+  .shots img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line); }
+  .shots figcaption { margin-top: 8px; font-size: 15px; line-height: 1.4; color: var(--muted); }
+  .hero .badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .hero .badge[hidden] { display: none; }
+</style>
 </head>
 <body>
 <main>
   <section class="hero">
-    <img src="assets/logo.svg" alt="">
+    <img src="assets/app-icon.png" alt="" width="120" height="120">
     <h1>Short Final<sup>™</sup></h1>
     <p class="tagline">Real traffic. Any airport.</p>
-    <span class="badge">Coming soon to Google Play</span>
+    <div class="badges">
+      <span class="badge" id="badge-soon">Coming soon to Google Play</span>
+      <span class="badge" id="badge-free" hidden>Free on Google Play</span>
+    </div>
   </section>
   <section class="card">
-    <p>Short Final is an air traffic game played with the real sky. Pick any airport on Earth, and the real flights landing there arrive at the edge of your screen on their real bearing, under their real callsigns.</p>
+    <p>Short Final is an air traffic game played with the real sky. Pick any airport on Earth, and the real flights landing there arrive at the edge of your screen on their real bearing, under their real flight numbers.</p>
     <p>Draw a path from each one to a runway, keep everyone apart, and land as many as you can, in that airport's real weather and time of day.</p>
+    <p>A real plane that lands says the city it flew in from, as it touches down: <em>Arrived from Atlanta</em>. And you can make a 20-second video of your best moment for TikTok, YouTube Shorts or Instagram Reels, with the game's music and the real flights by name. You choose where it goes.</p>
+  </section>
+  <section aria-labelledby="pictures">
+    <h2 id="pictures">In the game</h2>
+    <div class="shots">
+      <figure>
+        <img src="shots/arrived.jpg" alt="A real plane has just landed on a runway at Dallas Fort Worth, with the note Arrived from Atlanta beside it." width="1280" height="720" loading="lazy">
+        <figcaption>A real plane lands, and says where it flew in from.</figcaption>
+      </figure>
+      <figure>
+        <img src="shots/closed-night.jpg" alt="A runway at night, closed for an inspection: red hatched strip with X marks, and a label naming both ends." width="1280" height="720" loading="lazy">
+        <figcaption>A closed runway shows its red X marks, by day and at night.</figcaption>
+      </figure>
+      <figure>
+        <img src="shots/holding.jpg" alt="A real plane drawn towards a holding racetrack, with the track lit up under the finger." width="1280" height="720" loading="lazy">
+        <figcaption>Draw a plane to a hold: the whole racetrack lights up under your finger.</figcaption>
+      </figure>
+      <figure>
+        <img src="shots/video.jpg" alt="A vertical video frame of the game, with the real flight names and a closing line with the score, beside the words Share a video." width="1280" height="720" loading="lazy">
+        <figcaption>Share a 20-second video for TikTok, YouTube Shorts and Instagram Reels.</figcaption>
+      </figure>
+    </div>
   </section>
 </main>
 <footer>
-  <nav><a href="privacy/">Privacy policy</a><a href="terms/">Terms of Use</a><a href="mailto:thinaircapital@gmail.com">Contact</a></nav>
+  <nav><a href="play/">Get the game</a><a href="privacy/">Privacy policy</a><a href="terms/">Terms of Use</a><a href="mailto:thinaircapital@gmail.com">Contact</a></nav>
   <p>© 2026 Thin Air Studios LLC. All rights reserved. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
   <p class="love">Game designed with love in Colorado, USA <span>♥</span></p>
 </footer>
+<script>
+  // The Google Play listing is live: set true the day it is published (the same switch as play/index.html). Until then only
+  // "Coming soon" shows, and "Free on Google Play" is never said.
+  (function () {
+    'use strict';
+    var STORE_LIVE = false;
+    if (STORE_LIVE) {
+      document.getElementById('badge-soon').hidden = true;
+      document.getElementById('badge-free').hidden = false;
+    }
+  })();
+</script>
 </body>
 </html>
