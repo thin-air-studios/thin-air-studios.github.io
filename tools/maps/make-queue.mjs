@@ -49,7 +49,12 @@ for (const r of chosen) data[r[0]] = { a: r, rw: oa[r[0]] || [] };
 writeFileSync(join(here, 'airports.json'), JSON.stringify(data));
 
 mkdirSync(join(here, 'game'), { recursive: true });
-for (const m of GAME_MODULES) copyFileSync(join(game, 'js', m), join(here, 'game', m));
+// copies of the game's geometry modules; config.js without the online boards' address (the robot never needs it, and the site is public)
+for (const m of GAME_MODULES) {
+  let text = readFileSync(join(game, 'js', m), 'utf8');
+  if (m === 'config.js') text = text.replace(/\n\/\/ The online boards \(server\/\)\.[\s\S]*?export const BOARDS = [^\n]*\n/, '\n');
+  writeFileSync(join(here, 'game', m), text);
+}
 
 const hard = chosen.filter((r) => longestHard(r[0]) >= MIN_HARD_FT).length;
 console.log(`queue: ${chosen.length} airports (${hard} with a hard runway of 1,500 m or more, ${busiest.length} BUSIEST, ${chosen.filter((r) => group(r) === 1).length} with an IATA code)`);

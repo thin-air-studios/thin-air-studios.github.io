@@ -5,8 +5,10 @@
 //
 // Runs every 3 hours in .github/workflows/maps.yml, or by hand:  node tools/maps/fetch.mjs
 // Works through tools/maps/queue.txt in order, skipping airports whose osm/<ICAO>.json exists. An airport that fails
-// stays in the queue for a later run. The run ends when its time is up, when the site is near its size limit, or after
-// several airports in a row fail. Its log (failures and counts) is printed.
+// stays in the queue for a later run, but it is noted in tools/maps/failures.json and skipped for a while (12 hours, then a
+// week once it has failed 5 times), so an airport that keeps failing never blocks the airports behind it. The run ends when its
+// time is up, when the site is near its size limit, or after several airports in a row fail (the servers are down). Its log
+// (failures and counts) is printed.
 //
 // Politeness (the Overpass usage policy): one request at a time; the two servers take turns; after HTTP 429 or 406 the run
 // pauses 30 s; after any other failure it backs off 5 s before asking the other server; 1 s between airports.
@@ -34,6 +36,10 @@ const PAUSE_REFUSED_MS = 30000;
 const BACKOFF_MS = 5000;
 const PAUSE_AIRPORT_MS = 1000;
 const MAX_FAILS_IN_A_ROW = 8;
+const RETRY_AFTER_MS = 12 * 3600e3; // an airport that failed waits this long before it is asked again
+const RETRY_AFTER_MANY_MS = 7 * 24 * 3600e3; // and this long once it has failed MANY_FAILS times
+const MANY_FAILS = 5;
+const FAILURES = env.FAILURES || join(here, 'failures.json');
 const HARD_END_MS = BUDGET_MS + 5 * 60000; // no request starts after this, so the run ends before the workflow's limit
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -168,12 +174,20 @@ const siteOther = dirBytes(SITE, [join(SITE, '.git'), OSM_DIR]);
 let osmBytes = dirBytes(OSM_DIR);
 log(`queue ${queue.length} airports; osm/ ${(osmBytes / 1e6).toFixed(1)} MB; rest of the site ${(siteOther / 1e6).toFixed(1)} MB; budget ${BUDGET_MS / 60000} min`);
 
+// airports that failed before: { ICAO: { n: times failed, at: when last (ms) } }; one that succeeds is removed
+const failures = existsSync(FAILURES) ? JSON.parse(readFileSync(FAILURES, 'utf8')) : {};
+const resting = (icao, now) => {
+  const f = failures[icao];
+  return !!f && now - f.at < (f.n >= MANY_FAILS ? RETRY_AFTER_MANY_MS : RETRY_AFTER_MS);
+};
+
 const started = Date.now();
-let fetched = 0, failed = 0, already = 0, fails = 0, stop = '';
+let fetched = 0, failed = 0, already = 0, waiting = 0, fails = 0, stop = '';
 const failedNow = [];
 for (const icao of queue) {
   const file = join(OSM_DIR, `${icao}.json`);
   if (existsSync(file)) { already++; continue; }
+  if (resting(icao, Date.now())) { waiting++; continue; }
   if (Date.now() - started > BUDGET_MS) { stop = 'the time budget is used up'; break; }
   if (siteOther + osmBytes > SITE_LIMIT) { stop = 'the site is at its size limit'; break; }
   const entry = airports[icao];
@@ -184,18 +198,21 @@ for (const icao of queue) {
     osmBytes += Buffer.byteLength(res.text);
     fetched++;
     fails = 0;
+    delete failures[icao];
     log(`+ ${icao} ${(res.text.length / 1024).toFixed(0)} KB, ${secs(Date.now() - t)} s`);
   } else {
     failed++;
     fails++;
     failedNow.push(icao);
+    failures[icao] = { n: (failures[icao] ? failures[icao].n : 0) + 1, at: Date.now() };
     log(`- ${icao}: ${res.why}, ${secs(Date.now() - t)} s`);
     if (fails >= MAX_FAILS_IN_A_ROW) { stop = `${MAX_FAILS_IN_A_ROW} airports in a row failed; the servers are unhappy`; break; }
   }
   await sleep(PAUSE_AIRPORT_MS);
 }
-const left = queue.length - already - fetched - failed;
-log(`done: ${fetched} fetched, ${failed} failed (they stay in the queue), ${already} already there, ${left} not reached`);
+writeFileSync(FAILURES, JSON.stringify(failures, null, 0) + '\n');
+const left = queue.length - already - fetched - failed - waiting;
+log(`done: ${fetched} fetched, ${failed} failed (they stay in the queue), ${already} already there, ${waiting} resting after a failure, ${left} not reached`);
 log(`osm/ ${((osmBytes) / 1e6).toFixed(1)} MB; site ${((siteOther + osmBytes) / 1e6).toFixed(1)} MB of ${SITE_LIMIT / 1e6} MB; ${stop ? `stopped: ${stop}` : 'every airport in the queue was tried'}`);
 if (failedNow.length) log(`failed this run: ${failedNow.slice(0, 40).join(' ')}${failedNow.length > 40 ? ` and ${failedNow.length - 40} more` : ''}`);
 log(`run took ${secs(Date.now() - started)} s`);
