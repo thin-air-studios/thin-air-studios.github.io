@@ -5,6 +5,9 @@
       "namespace": "android_app",
       "package_name": "com.thinaircapital.holdingpattern",
       "sha256_cert_fingerprints": [
+        "02:2D:E7:B4:01:06:8B:4F:7C:91:14:84:0E:B7:D3:73:2A:12:D9:86:72:12:D4:64:8F:3E:6F:49:5F:1C:3B:C8",
+        "2E:F9:BB:B0:82:33:64:4A:3C:7E:F1:DD:ED:AF:8D:34:35:BF:23:3E:D9:C1:B4:31:FA:A0:B9:FA:E4:C5:94:E5",
+        "97:A5:9C:4C:F0:97:63:5A:8C:1A:8E:52:AB:91:A1:A6:17:6D:A4:D6:DD:61:34:B4:5E:E0:FF:B3:95:65:6E:E1",
         "B3:10:AA:BC:9B:5F:80:0C:1C:03:63:A5:23:41:34:7C:6E:30:51:0E:F8:EE:F0:B1:6C:8D:8D:F3:C6:F4:74:6B"
       ]
     }
