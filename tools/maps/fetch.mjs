@@ -10,7 +10,7 @@
 // time is up, when the site is near its size limit, or after several airports in a row fail (the servers are down). Its log
 // (failures and counts) is printed.
 //
-// Politeness (the Overpass usage policy): one request at a time; the two servers take turns; after HTTP 429 or 406 the run
+// Politeness (the Overpass usage policy): one request at a time; the servers take turns; after HTTP 429 or 406 the run
 // pauses 30 s; after any other failure it backs off 5 s before asking the other server; 1 s between airports.
 //
 // Environment (all optional, for tests): BUDGET_MIN (minutes this run may spend, default 100), SITE_LIMIT_MB (the site's
@@ -27,11 +27,16 @@ const env = process.env;
 const OSM_DIR = resolve(env.OSM_DIR || join(SITE, 'osm'));
 const QUEUE = env.QUEUE || join(here, 'queue.txt');
 const AIRPORTS = env.AIRPORTS || join(here, 'airports.json');
-const MIRRORS = env.MIRRORS ? env.MIRRORS.split(',') : ['https://overpass.kumi.systems/api/interpreter', 'https://overpass-api.de/api/interpreter'];
+// Three public servers: from GitHub's shared computers the main one often answers 502 and the others are often busy, so a
+// third gives each airport a better chance. Still one request at a time.
+const MIRRORS = env.MIRRORS ? env.MIRRORS.split(',') : ['https://overpass.kumi.systems/api/interpreter', 'https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
 const UA = 'ShortFinal (Android game by Thin Air Studios; maps for thin-air-studios.github.io)';
 const BUDGET_MS = (+env.BUDGET_MIN || 100) * 60000;
 const SITE_LIMIT = (+env.SITE_LIMIT_MB || 900) * 1e6;
-const REQUEST_MS = 150000; // a client-side limit: the queries themselves time out at 40 s (layout) and 90 s (surroundings)
+// Client-side limits: the queries themselves time out at 40 s (layout) and 90 s (surroundings), so a server that has not
+// answered 30 s after that is queueing us behind others; the next server gets the turn instead.
+const LAYOUT_MS = 70000;
+const SURROUND_MS = 120000;
 const PAUSE_REFUSED_MS = 30000;
 const BACKOFF_MS = 5000;
 const PAUSE_AIRPORT_MS = 1000;
@@ -84,9 +89,9 @@ function expandCompact(c) {
 // ---- the servers
 let turn = 0; // the servers take turns
 
-async function post(url, query) {
+async function post(url, query, limitMs) {
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), REQUEST_MS);
+  const timer = setTimeout(() => ctl.abort(), limitMs);
   try {
     const r = await fetch(url, {
       method: 'POST',
@@ -104,16 +109,16 @@ async function post(url, query) {
 
 /**
  * One Overpass request: the servers take turns, one request at a time. check(json) returns why a 200 answer is no good,
- * or '' for a good one. Returns the JSON, or null when neither server gave a good answer.
+ * or '' for a good one. Returns the JSON, or null when no server gave a good answer within limitMs.
  */
-async function ask(label, query, check) {
+async function ask(label, query, check, limitMs) {
   const first = turn++ % MIRRORS.length;
   for (let i = 0; i < MIRRORS.length; i++) {
     if (Date.now() - t0run > HARD_END_MS) return null;
     const url = MIRRORS[(first + i) % MIRRORS.length];
     const host = new URL(url).host;
     const t = Date.now();
-    const r = await post(url, query);
+    const r = await post(url, query, limitMs);
     const ms = Date.now() - t;
     let why;
     if (r.status === 200) {
@@ -129,7 +134,7 @@ async function ask(label, query, check) {
       why = `HTTP ${r.status}`;
     }
     log(`  ${label}: ${host} ${why}, ${ms} ms`);
-    // the usage policy: a refusal (429, 406) is a long pause; any other failure a short back-off before the other server
+    // the usage policy: a refusal (429, 406) is a long pause; any other failure a short back-off before the next server
     if (r.status === 429 || r.status === 406) await sleep(PAUSE_REFUSED_MS);
     else if (i + 1 < MIRRORS.length) await sleep(BACKOFF_MS);
   }
@@ -142,14 +147,14 @@ async function fetchAirport(icao, entry) {
   const info = { icao: code, iata, name, city, country, lat, lon, elev: elevFt, kind };
   const oa = entry.rw;
   const layout = await ask(`${icao} layout`, overpassQuery(lat, lon, fetchRadius(info, oa)), (j) =>
-    Array.isArray(j.elements) && j.elements.some((e) => e.tags && e.tags.aeroway === 'runway') ? '' : 'no runways in the answer');
-  if (!layout) return { why: 'no layout from either server' };
+    Array.isArray(j.elements) && j.elements.some((e) => e.tags && e.tags.aeroway === 'runway') ? '' : 'no runways in the answer', LAYOUT_MS);
+  if (!layout) return { why: 'no layout from any server' };
   const out = compactOsm(layout);
   // the surroundings cover the whole map the game draws for this layout (as in tools/fetch-layouts.mjs)
   const L = buildLayout(info, oa, expandCompact(out));
   const sur = await ask(`${icao} surroundings`, surroundQuery(lat, lon, surroundHalfSize(L), (elevFt || 0) * 0.3048), (j) =>
-    Array.isArray(j.elements) ? '' : 'no elements in the answer');
-  if (!sur) return { why: 'no surroundings from either server' };
+    Array.isArray(j.elements) ? '' : 'no elements in the answer', SURROUND_MS);
+  if (!sur) return { why: 'no surroundings from any server' };
   out.s = compactSurroundings(sur, lat, lon);
   return { text: JSON.stringify(out) };
 }

@@ -2,7 +2,8 @@ name: Airport maps
 
 # The map robot (tools/maps/fetch.mjs): fetches airport maps from OpenStreetMap's public Overpass servers into osm/, in
 # the queue's order (tools/maps/queue.txt), and commits what it got to main. Every 3 hours, and by hand. The queue of about
-# 6,500 airports takes about three days at this pace. One run at a time: a run never overlaps the next.
+# 6,500 airports takes days to weeks, depending on how busy the public servers are. One run at a time: a run never overlaps
+# the next.
 
 on:
   schedule:
