@@ -1,0 +1,42 @@
+name: Airport maps
+
+# The map robot (tools/maps/fetch.mjs): fetches airport maps from OpenStreetMap's public Overpass servers into osm/, in
+# the queue's order (tools/maps/queue.txt), and commits what it got to main. Every 3 hours, and by hand. The queue of about
+# 6,500 airports takes about three days at this pace. One run at a time: a run never overlaps the next.
+
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: airport-maps
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch maps (about 100 minutes, then the run ends)
+        run: node tools/maps/fetch.mjs
+        env:
+          BUDGET_MIN: 100
+      - name: Commit the maps
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add osm
+          if git diff --cached --quiet; then echo "no new maps this run"; exit 0; fi
+          git commit -m "Airport maps: $(git diff --cached --name-only | wc -l) new from OpenStreetMap"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && break
+            sleep $((i * 10))
+          done
