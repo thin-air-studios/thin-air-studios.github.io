@@ -2,28 +2,28 @@ name: Airport maps (bulk)
 
 # The bulk builder (tools/maps/bulk/): makes airport maps from whole OpenStreetMap extracts (one .osm.pbf file each, from
 # Geofabrik, or the openstreetmap.fr mirror if Geofabrik does not answer), instead of asking the public Overpass servers one
-# airport at a time. Run it by hand with the regions to cover: extract ids as Geofabrik names them (north-america/us/colorado,
-# europe/germany), comma separated, or all.
+# airport at a time. Run it by hand with the regions to cover: extract ids as Geofabrik's index names them (us/colorado,
+# germany), comma separated, or all.
 #   plan:   reads Geofabrik's index, the mirror's listings and the queue, and writes which extract each queued airport's map
 #           comes from, with the extract's checksum files (plan.mjs). It runs the scripts of the ref it is dispatched on, and
 #           skips the airports that main already has a map for.
-#   build:  one job per extract, one at a time (max-parallel: the download servers are shared services). The job frees the
+#   build:  one job per extract, three at a time (max-parallel: the download servers are shared services). The job frees the
 #           runner's disk, downloads the extract once (Geofabrik, the mirror if that fails), checks it against its .md5,
 #           builds the maps of its airports (extract.mjs) and uploads them as an artifact.
 #   commit: adds the new maps to main (publish.mjs): a file main already has is kept as main has it, the .json.gz form is
 #           made where it is missing, and one commit is pushed. A clash with the map robot (maps.yml) or another commit is
 #           retried from the newer main, so neither side loses a map.
 # A run takes at most 250 extracts (GitHub's matrix limit); a regions=all run starts the next run for the rest after it commits.
-# A one-region test, without a commit:  gh workflow run maps-bulk.yml --ref v34/bulk -f regions=north-america/us/colorado -f push=false
+# A one-region test, without a commit:  gh workflow run maps-bulk.yml --ref main -f regions=us/colorado -f push=false
 # The commit job pushes to main from the ref it is dispatched on, with that ref's publish.mjs: dispatch with push=true on main.
 
 on:
   workflow_dispatch:
     inputs:
       regions:
-        description: 'Extract ids, comma separated (north-america/us/colorado,europe/germany), or all'
+        description: 'Extract ids as in Geofabrik index-v1.json, comma separated (us/colorado,germany), or all'
         required: true
-        default: 'north-america/us/colorado'
+        default: 'us/colorado'
         type: string
       push:
         description: 'Commit the new maps to main (false: build and keep the artifacts only)'
@@ -78,7 +78,7 @@ jobs:
       fail-fast: false
       # one download at a time: Geofabrik's fair-use text could not be read when this was written (its download server was
       # unreachable from the build sandbox), so the download servers get one request stream until that text is checked
-      max-parallel: 1
+      max-parallel: 3
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     env:
       NODE_OPTIONS: --max-old-space-size=12288

@@ -17,7 +17,7 @@
 //
 // usage: node tools/maps/bulk/plan.mjs [--index=<index-v1.json file>] [--regions=<id,id>|all] [--out=<plan.json>]
 //          [--no-mirror] [--osm=<dir of the maps already made>]
-// --regions limits the plan to some extracts (their ids, as the index names them: "north-america/us/colorado", "europe/germany").
+// --regions limits the plan to some extracts (their ids, as the index names them: "us/colorado", "germany").
 // An id the index does not name is an error. Writes the plan and prints the totals. With GITHUB_OUTPUT set, writes the job matrix
 // as "matrix=..." (the first MAX_JOBS extracts, since a run takes at most that many jobs), and the rest as "rest=<ids>": the
 // workflow starts a run for those (maps-bulk.yml).
@@ -98,7 +98,7 @@ const requested = opt.regions && opt.regions !== 'all' ? opt.regions.split(',').
 if (requested) {
   const known = new Set(extracts.map((e) => e.id));
   const unknown = requested.filter((id) => !known.has(id));
-  if (unknown.length) { console.error(`no extract named ${unknown.join(', ')} in the index (ids as Geofabrik names them: north-america/us/colorado)`); process.exit(2); }
+  if (unknown.length) { console.error(`no extract named ${unknown.join(', ')} in the index (ids as Geofabrik's index names them: us/colorado, germany)`); process.exit(2); }
 }
 
 // ---- the mirror's copies and sizes: "north-america/us-west/colorado-latest.osm.pbf" is "north-america/us/colorado"
