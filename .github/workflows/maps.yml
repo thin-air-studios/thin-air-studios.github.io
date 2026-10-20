@@ -22,7 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 110
     steps:
+      # main as it is when the run starts: a run that waited behind another would otherwise check out the commit it was queued
+      # at, fetch the maps that run already committed, and clash with it on failures.json
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -38,6 +42,11 @@ jobs:
           if git diff --cached --quiet; then echo "no new maps this run"; exit 0; fi
           git commit -m "Airport maps: $(git diff --cached --name-only | wc -l) new from OpenStreetMap"
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && break
+            if ! git pull --rebase origin main; then
+              # a clash on the failures list keeps this run's list (the newer one); any other clash stops the rebase
+              git checkout --theirs tools/maps/failures.json && git add tools/maps/failures.json \
+                && GIT_EDITOR=true git rebase --continue || git rebase --abort
+            fi
+            git push origin HEAD:main && break
             sleep $((i * 10))
           done
