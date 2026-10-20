@@ -3,7 +3,8 @@
 // (coast, water, peaks: game/js/scenery.js) under `s`. The query and the form are the game's own (tools/fetch-layouts.mjs
 // in the game repo), so the game reads these files as it reads its bundled ones.
 //
-// Runs every 3 hours in .github/workflows/maps.yml, or by hand:  node tools/maps/fetch.mjs
+// Runs back to back in .github/workflows/maps.yml (a run that used its time with the servers answering starts the next; the
+// 3-hourly schedule restarts the chain after a pause), or by hand:  node tools/maps/fetch.mjs
 // Works through tools/maps/queue.txt in order, skipping airports whose osm/<ICAO>.json exists. An airport that fails
 // stays in the queue for a later run, but it is noted in tools/maps/failures.json and skipped for a while (12 hours, then a
 // week once it has failed 5 times), so an airport that keeps failing never blocks the airports behind it. The run ends when its
@@ -15,7 +16,7 @@
 //
 // Environment (all optional, for tests): BUDGET_MIN (minutes this run may spend, default 100), SITE_LIMIT_MB (the site's
 // size cap, default 900: GitHub Pages allows 1 GB), OSM_DIR, QUEUE, AIRPORTS, MIRRORS (comma separated URLs).
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { overpassQuery, fetchRadius, buildLayout } from './game/airport.js';
@@ -221,3 +222,8 @@ log(`done: ${fetched} fetched, ${failed} failed (they stay in the queue), ${alre
 log(`osm/ ${((osmBytes) / 1e6).toFixed(1)} MB; site ${((siteOther + osmBytes) / 1e6).toFixed(1)} MB of ${SITE_LIMIT / 1e6} MB; ${stop ? `stopped: ${stop}` : 'every airport in the queue was tried'}`);
 if (failedNow.length) log(`failed this run: ${failedNow.slice(0, 40).join(' ')}${failedNow.length > 40 ? ` and ${failedNow.length - 40} more` : ''}`);
 log(`run took ${secs(Date.now() - started)} s`);
+// the workflow starts the next run at once only when this one ran out of time while the servers were answering; a run that
+// stopped for failures, the size limit or an empty queue leaves the next start to the schedule
+const next = stop === 'the time budget is used up' && fetched > 0;
+if (env.GITHUB_OUTPUT) appendFileSync(env.GITHUB_OUTPUT, `next=${next ? 'yes' : 'no'}\n`);
+log(next ? 'the next run starts now' : 'the next run waits for the schedule');

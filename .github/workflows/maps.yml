@@ -1,9 +1,10 @@
 name: Airport maps
 
 # The map robot (tools/maps/fetch.mjs): fetches airport maps from OpenStreetMap's public Overpass servers into osm/, in
-# the queue's order (tools/maps/queue.txt), and commits what it got to main. Every 3 hours, and by hand. The queue of about
-# 6,500 airports takes days to weeks, depending on how busy the public servers are. One run at a time: a run never overlaps
-# the next.
+# the queue's order (tools/maps/queue.txt), and commits what it got to main. Back to back: a run that used its time while
+# the servers were answering starts the next one as it ends, at the same polite pace (fetch.mjs). After failures, the size
+# limit or an empty queue the chain stops, and the 3-hourly schedule starts it again. The queue of about 6,500 airports takes
+# weeks. One run at a time: a run never overlaps the next.
 
 on:
   schedule:
@@ -12,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # to start the next run
 
 concurrency:
   group: airport-maps
@@ -31,6 +33,7 @@ jobs:
         with:
           node-version: 22
       - name: Fetch maps (about 100 minutes, then the run ends)
+        id: fetch
         run: node tools/maps/fetch.mjs
         env:
           BUDGET_MIN: 100
@@ -50,3 +53,8 @@ jobs:
             git push origin HEAD:main && break
             sleep $((i * 10))
           done
+      - name: Start the next run
+        if: steps.fetch.outputs.next == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run maps.yml --ref main
