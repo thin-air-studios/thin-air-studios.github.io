@@ -1,0 +1,173 @@
+name: Airport maps (bulk)
+
+# The bulk builder (tools/maps/bulk/): makes airport maps from whole OpenStreetMap extracts (one .osm.pbf file each, from
+# Geofabrik, or the openstreetmap.fr mirror if Geofabrik does not answer), instead of asking the public Overpass servers one
+# airport at a time. Run it by hand with the regions to cover: extract ids as Geofabrik names them (north-america/us/colorado,
+# europe/germany), comma separated, or all.
+#   plan:   reads Geofabrik's index, the mirror's listings and the queue, and writes which extract each queued airport's map
+#           comes from, with the extract's checksum files (plan.mjs). It runs the scripts of the ref it is dispatched on, and
+#           skips the airports that main already has a map for.
+#   build:  one job per extract, one at a time (max-parallel: the download servers are shared services). The job frees the
+#           runner's disk, downloads the extract once (Geofabrik, the mirror if that fails), checks it against its .md5,
+#           builds the maps of its airports (extract.mjs) and uploads them as an artifact.
+#   commit: adds the new maps to main (publish.mjs): a file main already has is kept as main has it, the .json.gz form is
+#           made where it is missing, and one commit is pushed. A clash with the map robot (maps.yml) or another commit is
+#           retried from the newer main, so neither side loses a map.
+# A run takes at most 250 extracts (GitHub's matrix limit); a regions=all run starts the next run for the rest after it commits.
+# A one-region test, without a commit:  gh workflow run maps-bulk.yml --ref v34/bulk -f regions=north-america/us/colorado -f push=false
+# The commit job pushes to main from the ref it is dispatched on, with that ref's publish.mjs: dispatch with push=true on main.
+
+on:
+  workflow_dispatch:
+    inputs:
+      regions:
+        description: 'Extract ids, comma separated (north-america/us/colorado,europe/germany), or all'
+        required: true
+        default: 'north-america/us/colorado'
+        type: string
+      push:
+        description: 'Commit the new maps to main (false: build and keep the artifacts only)'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  actions: write # to start the next run for the extracts a run cannot take
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      extracts: ${{ steps.plan.outputs.extracts }}
+      rest: ${{ steps.plan.outputs.rest }}
+    steps:
+      # the scripts of the ref this run was dispatched on (a branch's scripts when it is a one-region test)
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: tools/maps
+      # main's maps: an airport that already has one is not planned (the commit job checks again before it adds a file)
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          sparse-checkout: osm
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Plan the regions (reads Geofabrik's index; the mirror's listings for sizes)
+        id: plan
+        env:
+          REGIONS: ${{ inputs.regions }}
+        run: node tools/maps/bulk/plan.mjs --regions="$REGIONS" --osm="$GITHUB_WORKSPACE/main/osm" --out="$RUNNER_TEMP/plan.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan
+          path: ${{ runner.temp }}/plan.json
+          retention-days: 2
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.extracts != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      # one download at a time: Geofabrik's fair-use text could not be read when this was written (its download server was
+      # unreachable from the build sandbox), so the download servers get one request stream until that text is checked
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    env:
+      NODE_OPTIONS: --max-old-space-size=12288
+    steps:
+      - name: Free disk space (the runner has about 14 GB; the largest extracts are several GB)
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: tools/maps
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install osmium-tool
+        run: sudo apt-get update && sudo apt-get install -y osmium-tool
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+          path: ${{ runner.temp }}
+      - name: Download the extract (Geofabrik; the mirror if that fails), checked against its .md5
+        id: download
+        env:
+          ID: ${{ matrix.id }}
+        run: |
+          read URL MD5 MIRROR MIRROR_MD5 <<< "$(node -e "const p=require(process.env.RUNNER_TEMP+'/plan.json'); const e=p.extracts.find((x)=>x.id===process.env.ID); console.log([e.url, e.md5, e.mirror||'-', e.mirrorMd5||'-'].join(' '))")"
+          UA="ShortFinal (Android game by Thin Air Studios; maps for thin-air-studios.github.io)"
+          PBF="$RUNNER_TEMP/extract.osm.pbf"
+          get() { # the file, then its checksum file: the download is kept only if the md5 matches
+            curl -fL --retry 2 --retry-delay 20 -A "$UA" -o "$PBF" "$1" \
+              && curl -fsSL --retry 2 -A "$UA" -o "$PBF.md5" "$2" \
+              && echo "$(cut -d' ' -f1 "$PBF.md5")  $PBF" | md5sum -c --status
+          }
+          if ! get "$URL" "$MD5"; then
+            [ "$MIRROR" != "-" ] && get "$MIRROR" "$MIRROR_MD5" || { echo "no good copy of $ID from Geofabrik or the mirror"; exit 1; }
+          fi
+          ls -la "$PBF"
+      - name: Build the maps (osmium filters the extract; the game's builders write the compact form)
+        env:
+          ID: ${{ matrix.id }}
+        run: |
+          SAFE="${ID//\//_}"
+          mkdir -p "$RUNNER_TEMP/out"
+          node tools/maps/bulk/extract.mjs --pbf="$RUNNER_TEMP/extract.osm.pbf" --plan="$RUNNER_TEMP/plan.json" --id="$ID" \
+            --out="$RUNNER_TEMP/out/osm" --work="$RUNNER_TEMP/work" --report="$RUNNER_TEMP/out/report-$SAFE.json"
+      - name: Free the extract before the upload
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/extract.osm.pbf" "$RUNNER_TEMP/work"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: maps-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/out
+          retention-days: 2
+          if-no-files-found: ignore
+
+  commit:
+    needs: [plan, build]
+    if: always() && inputs.push && needs.plan.result == 'success' && needs.plan.outputs.extracts != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: run
+          sparse-checkout: tools/maps
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: maps-*
+          path: ${{ runner.temp }}/got
+          merge-multiple: true
+      - name: Commit the new maps to main, with publish.mjs (a map main already has is kept; a clash is retried from the newer main)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          node run/tools/maps/publish.mjs --stage="$RUNNER_TEMP/got" --message="Airport maps: {n} files new from OpenStreetMap (bulk)"
+      # a run takes at most 250 extracts (GitHub's matrix limit): the plan's rest start the next run, as the robot's chain does
+      - name: Start the next run for the rest of the plan
+        if: always() && needs.plan.outputs.rest != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REST: ${{ needs.plan.outputs.rest }}
+        run: gh workflow run maps-bulk.yml --ref "$GITHUB_REF_NAME" -f regions="$REST" -f push=true

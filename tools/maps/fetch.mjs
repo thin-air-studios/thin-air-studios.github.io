@@ -1,11 +1,13 @@
-// The map robot. Fetches each queued airport's map from OpenStreetMap's public Overpass servers and writes osm/<ICAO>.json
-// for this site, in the compact form the game reads (game/js/airportdata.js compactOsm): the layout, and the surroundings
-// (coast, water, peaks: game/js/scenery.js) under `s`. The query and the form are the game's own (tools/fetch-layouts.mjs
-// in the game repo), so the game reads these files as it reads its bundled ones.
+// The map robot. Fetches each queued airport's map from OpenStreetMap's public Overpass servers and writes it for this site
+// as osm/<ICAO>.json.gz (and osm/<ICAO>.json for the busiest airports: store.mjs), in the compact form the game reads
+// (game/js/airportdata.js compactOsm): the layout, and the surroundings (coast, water, peaks: game/js/scenery.js) under `s`.
+// The query and the form are the game's own (tools/fetch-layouts.mjs in the game repo), so the game reads these files as it
+// reads its bundled ones. The bulk builder (bulk/) makes the same maps from OpenStreetMap's extracts.
 //
 // Runs back to back in .github/workflows/maps.yml (a run that used its time with the servers answering starts the next; the
 // 3-hourly schedule restarts the chain after a pause), or by hand:  node tools/maps/fetch.mjs
-// Works through tools/maps/queue.txt in order, skipping airports whose osm/<ICAO>.json exists. An airport that fails
+// Works through tools/maps/queue.txt in order, skipping airports that have a map (store.mjs: osm/<ICAO>.json.gz, and the plain
+// osm/<ICAO>.json for the busiest). Every map is written in both forms the site keeps (store.mjs writeMap). An airport that fails
 // stays in the queue for a later run, but it is noted in tools/maps/failures.json and skipped for a while (12 hours, then a
 // week once it has failed 5 times), so an airport that keeps failing never blocks the airports behind it. The run ends when its
 // time is up, when the site is near its size limit, or after several airports in a row fail (the servers are down). Its log
@@ -21,6 +23,7 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { overpassQuery, fetchRadius, buildLayout } from './game/airport.js';
 import { surroundQuery, surroundHalfSize, compactSurroundings } from './game/scenery.js';
+import { loadQueue, expandCompact, compactOsm, mapExists, writeMap } from './store.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SITE = resolve(here, '..', '..');
@@ -52,40 +55,6 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const t0run = Date.now();
 const secs = (ms) => (ms / 1000).toFixed(0);
 const log = (s) => console.log(`[${secs(Date.now() - t0run)} s] ${s}`);
-
-// ---- the compact form (the game's compactOsm and expandCompact, game/js/airportdata.js)
-const KEEP_TAGS = ['aeroway', 'ref', 'surface', 'width', 'runway', 'building', 'area'];
-const r6 = (n) => Math.round(n * 1e6) / 1e6;
-const flat = (geom) => geom.filter(Boolean).flatMap((g) => [r6(g.lat), r6(g.lon)]);
-
-function compactOsm(osm) {
-  const e = [];
-  for (const el of osm.elements) {
-    const tags = {};
-    for (const k of KEEP_TAGS) if (el.tags && el.tags[k] != null) tags[k] = el.tags[k];
-    // terminal names are labelled when zoomed in; nothing else needs its name
-    if (el.tags && el.tags.name && (el.tags.aeroway === 'terminal' || el.tags.building === 'terminal')) tags.name = el.tags.name;
-    if (el.type === 'node') e.push(['n', el.id, tags, [r6(el.lat), r6(el.lon)]]);
-    else if (el.type === 'way') e.push(['w', el.id, tags, flat(el.geometry || [])]);
-    else if (el.type === 'relation') e.push(['r', el.id, tags, (el.members || []).filter((m) => m.geometry).map((m) => [m.role || '', flat(m.geometry)])]);
-  }
-  return { v: 1, at: new Date().toISOString().slice(0, 10), e };
-}
-
-function expandCompact(c) {
-  const pts = (f) => {
-    const g = [];
-    for (let i = 0; i < f.length; i += 2) g.push({ lat: f[i], lon: f[i + 1] });
-    return g;
-  };
-  return {
-    elements: c.e.map(([t, id, tags, d]) => {
-      if (t === 'n') return { type: 'node', id, tags, lat: d[0], lon: d[1] };
-      if (t === 'w') return { type: 'way', id, tags, geometry: pts(d) };
-      return { type: 'relation', id, tags, members: d.map(([role, f]) => ({ type: 'way', role, geometry: pts(f) })) };
-    }),
-  };
-}
 
 // ---- the servers
 let turn = 0; // the servers take turns
@@ -173,7 +142,7 @@ function dirBytes(dir, skip = []) {
 }
 
 // ---- the run
-const queue = readFileSync(QUEUE, 'utf8').split('\n').map((s) => s.trim()).filter((s) => /^[A-Z0-9]{4}$/.test(s));
+const queue = loadQueue(QUEUE);
 const airports = JSON.parse(readFileSync(AIRPORTS, 'utf8'));
 mkdirSync(OSM_DIR, { recursive: true });
 const siteOther = dirBytes(SITE, [join(SITE, '.git'), OSM_DIR]);
@@ -190,9 +159,9 @@ const resting = (icao, now) => {
 const started = Date.now();
 let fetched = 0, failed = 0, already = 0, waiting = 0, fails = 0, stop = '';
 const failedNow = [];
-for (const icao of queue) {
-  const file = join(OSM_DIR, `${icao}.json`);
-  if (existsSync(file)) { already++; continue; }
+for (let rank = 0; rank < queue.length; rank++) {
+  const icao = queue[rank];
+  if (mapExists(OSM_DIR, icao)) { already++; continue; }
   if (resting(icao, Date.now())) { waiting++; continue; }
   if (Date.now() - started > BUDGET_MS) { stop = 'the time budget is used up'; break; }
   if (siteOther + osmBytes > SITE_LIMIT) { stop = 'the site is at its size limit'; break; }
@@ -200,8 +169,7 @@ for (const icao of queue) {
   const t = Date.now();
   const res = entry ? await fetchAirport(icao, entry) : { why: 'not in airports.json' };
   if (res.text) {
-    writeFileSync(file, res.text);
-    osmBytes += Buffer.byteLength(res.text);
+    osmBytes += writeMap(OSM_DIR, icao, res.text, rank);
     fetched++;
     fails = 0;
     delete failures[icao];

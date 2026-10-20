@@ -4,7 +4,8 @@ name: Airport maps
 # the queue's order (tools/maps/queue.txt), and commits what it got to main. Back to back: a run that used its time while
 # the servers were answering starts the next one as it ends, at the same polite pace (fetch.mjs). After failures, the size
 # limit or an empty queue the chain stops, and the 3-hourly schedule starts it again. The queue of about 6,500 airports takes
-# weeks. One run at a time: a run never overlaps the next.
+# weeks. One run at a time: a run never overlaps the next. The bulk builder (maps-bulk.yml) adds maps to main too: publish.mjs
+# keeps a map that main already has, so a clash between the two loses nothing, and a failed commit still starts the next run.
 
 on:
   schedule:
@@ -41,20 +42,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add osm tools/maps/failures.json
-          if git diff --cached --quiet; then echo "no new maps this run"; exit 0; fi
-          git commit -m "Airport maps: $(git diff --cached --name-only | wc -l) new from OpenStreetMap"
-          for i in 1 2 3 4 5; do
-            if ! git pull --rebase origin main; then
-              # a clash on the failures list keeps this run's list (the newer one); any other clash stops the rebase
-              git checkout --theirs tools/maps/failures.json && git add tools/maps/failures.json \
-                && GIT_EDITOR=true git rebase --continue || git rebase --abort
-            fi
-            git push origin HEAD:main && break
-            sleep $((i * 10))
-          done
+          # this run's new maps and its failures list go to a stage; publish.mjs puts them on main from the newest main
+          STAGE="$RUNNER_TEMP/stage"
+          mkdir -p "$STAGE/osm" "$STAGE/tools/maps"
+          git ls-files --others --exclude-standard osm | while read -r f; do mv "$f" "$STAGE/osm/"; done
+          cp tools/maps/failures.json "$STAGE/tools/maps/failures.json"
+          node tools/maps/publish.mjs --stage="$STAGE" --message="Airport maps: {n} new from OpenStreetMap"
+      # also after a failed commit: the next run fetches what is on main, so the chain need not wait for the schedule
       - name: Start the next run
-        if: steps.fetch.outputs.next == 'yes'
+        if: always() && steps.fetch.outputs.next == 'yes'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run maps.yml --ref main
