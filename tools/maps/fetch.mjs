@@ -28,9 +28,9 @@ const env = process.env;
 const OSM_DIR = resolve(env.OSM_DIR || join(SITE, 'osm'));
 const QUEUE = env.QUEUE || join(here, 'queue.txt');
 const AIRPORTS = env.AIRPORTS || join(here, 'airports.json');
-// Three public servers: from GitHub's shared computers the main one often answers 502 and the others are often busy, so a
-// third gives each airport a better chance. Still one request at a time.
-const MIRRORS = env.MIRRORS ? env.MIRRORS.split(',') : ['https://overpass.kumi.systems/api/interpreter', 'https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+// Two public servers, one request at a time. overpass.private.coffee is the same machine as overpass.kumi.systems (one
+// address, 193.219.97.30), so asking it after kumi failed only waited again in the same queue: it is not a third server.
+const MIRRORS = env.MIRRORS ? env.MIRRORS.split(',') : ['https://overpass.kumi.systems/api/interpreter', 'https://overpass-api.de/api/interpreter'];
 const UA = 'ShortFinal (Android game by Thin Air Studios; maps for thin-air-studios.github.io)';
 const BUDGET_MS = (+env.BUDGET_MIN || 100) * 60000;
 const SITE_LIMIT = (+env.SITE_LIMIT_MB || 900) * 1e6;
