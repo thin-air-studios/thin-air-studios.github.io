@@ -26,8 +26,9 @@
   <div class="card play-card">
     <p class="play-lead" id="lede">Land the real flights arriving at any airport, in its real weather, and see if you can beat the score.</p>
     <p id="daily" hidden></p>
+    <p id="real" hidden></p>
     <p><a class="play-go" id="go" href="../">About Short Final</a></p>
-    <p class="muted" id="soon">Coming soon to Google Play. The game is free.</p>
+    <p class="muted" id="soon" hidden>Coming soon to Google Play. The game is free.</p>
   </div>
   <p class="muted">If Short Final is on your phone, this link can open the game at this airport, ready to play. Otherwise it shows this page.</p>
 </section>
@@ -38,16 +39,17 @@
   <p class="love">Game designed with love in Colorado, USA <span>♥</span></p>
 </footer>
 <script>
-// "Beat my score" links (the game's links.js): ?a=<airport code>, &d=<daily number> and &utm_source=<where it was shared>.
-// The page names the airport and, once the game is on Google Play, sends the phone to the store with the source as the install
-// tag (the Play referrer). Nothing here is personal, and nothing is sent anywhere but the Play link.
+// Links from the game (links.js): "Beat my score" links (?a=<airport code>, &d=<daily number>, &utm_source=<where it was shared>), and
+// friends' challenges (3.2): &c=<seed>, &l=<level letter>, &s=<the challenger's score>, &k=<rules>, &x=1 (the challenger had real planes)
+// and &n=<name, when one was typed>. The page names the airport, and once the game is on Google Play it sends the phone to the store
+// with the source as the install tag (the Play referrer). Nothing here is personal, and nothing is sent anywhere but the Play link.
 (function () {
   'use strict';
-  // The store page is live: set true the day the listing is published. The page cannot ask Google (a cross-site check), so
-  // the game's own check (share.js, main.js checkStoreLive) is not available here.
-  var STORE_LIVE = false;
+  // The store page is live (the 3.1 listing, 22 Oct 2026): the button goes to Google Play. Set false only if the listing comes down.
+  var STORE_LIVE = true;
   var PLAY = 'https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern';
-  // the busiest airports as the game names them (the city and the IATA code); any other code shows as its ICAO code
+  // the level letters a challenge link uses, and the words the game shows for them
+  var LEVELS = { b: 'Beginner', e: 'Easy', n: 'Normal', h: 'Hard', c: 'Chaos' };
   var PLACES = {
     KATL: 'Atlanta (ATL)', OMDB: 'Dubai (DXB)', RJTT: 'Tokyo (HND)', KDFW: 'Dallas-Fort Worth (DFW)', ZSPD: 'Shanghai (PVG)',
     KORD: 'Chicago (ORD)', EGLL: 'London (LHR)', LTFM: 'Istanbul (IST)', ZGGG: 'Guangzhou (CAN)', KDEN: 'Denver (DEN)',
@@ -61,15 +63,40 @@
     LTFJ: 'Pendik, Istanbul (SAW)', KIAH: 'Houston (IAH)', RCTP: 'Taoyuan (TPE)', CYYZ: 'Toronto (YYZ)', SBGR: 'São Paulo (GRU)'
   };
 
+  // a name as the game keeps it (links.js cleanName): letters, digits, spaces, apostrophes and dashes; at most 12 characters
+  function cleanName(raw) {
+    var s = String(raw || '').replace(/[^\p{L}\p{N} '\-]/gu, '').replace(/\s+/g, ' ').trim();
+    return Array.from(s).slice(0, 12).join('').trim(); // by letter, as the game cuts it, so a letter outside the BMP stays whole
+  }
+
+  // the weather part (w=), as the game reads it (links.js WEATHER_RE): "1" for the generated weather, or "1.<dir>.<kt>.<gust>.<fog>.<storms>"
+  var WEATHER = /^1(?:\.(x|\d{1,3})\.(\d{1,3})\.(\d{1,3})\.([012])\.([01]))?$/;
+  function weatherOk(w) {
+    var m = WEATHER.exec(w);
+    if (!m) return false;
+    if (m[1] === undefined) return true; // "1": the generated weather
+    return (m[1] === 'x' || Number(m[1]) <= 360) && Number(m[2]) <= 200 && Number(m[3]) <= 200;
+  }
+
   function read() {
     var q = new URLSearchParams(location.search);
     var code = (q.get('a') || '').trim().toUpperCase();
     var d = q.get('d') || '';
-    var source = (q.get('utm_source') || '').toLowerCase().replace(/[^a-z0-9-]/g, '') || 'share';
+    var c = q.get('c') || '', l = q.get('l') || '', s = q.get('s') || '';
+    var w = q.get('w');
+    var known = Object.prototype.hasOwnProperty.call(LEVELS, l);
+    // a challenge is shown only when all its parts are there and well formed; a bad part shows the airport, as an old link does.
+    // A link with no weather part is an old one. Every challenge's planes are similar, not the same: the friend's screen and the
+    // challenger's live feed still move them (DECISIONS 421)
+    var challenge = /^[0-9a-z]{1,7}$/i.test(c) && known && /^\d{1,7}$/.test(s) && (w == null || weatherOk(w)) ? {
+      level: LEVELS[l], score: Number(s), real: q.get('x') === '1', name: cleanName(q.get('n'))
+    } : null;
+    var source = (q.get('utm_source') || '').toLowerCase().replace(/[^a-z0-9-]/g, '') || (challenge ? 'challenge' : 'share');
     return {
       code: /^[A-Z0-9][A-Z0-9-]{1,9}$/.test(code) ? code : '',
       daily: /^\d{1,6}$/.test(d) && Number(d) > 0 ? d : '',
-      source: source
+      source: source,
+      challenge: challenge
     };
   }
 
@@ -81,10 +108,16 @@
 
   var p = read();
   var place = p.code ? (PLACES[p.code] || p.code) : '';
-  var title = place ? 'Short Final: land real flights at ' + place : 'Short Final: land real flights at any airport';
-  document.title = title;
+  var ch = p.challenge;
+  var who = ch ? (ch.name ? ch.name + (/s$/i.test(ch.name) ? '’' : '’s') + ' challenge' : 'A friend’s challenge') : '';
+  var title;
+  if (ch) title = who + ': ' + ch.score + (ch.score === 1 ? ' point' : ' points') + (place ? ' at ' + place : '');
+  else title = place ? 'Short Final: land real flights at ' + place : 'Short Final: land real flights at any airport';
+  document.title = 'Short Final: ' + title.replace(/^Short Final: /, '');
   document.getElementById('title').textContent = title;
-  if (place) {
+  if (ch) {
+    document.getElementById('lede').textContent = 'Land similar planes' + (place ? ' at ' + place : '') + ', on ' + ch.level + ', and see if you can beat ' + ch.score + '.';
+  } else if (place) {
     document.getElementById('lede').textContent = 'Land the real flights arriving at ' + place + ', in its real weather, and see if you can beat the score.';
   }
   if (p.daily) {
@@ -92,11 +125,17 @@
     daily.textContent = 'Daily challenge #' + p.daily + ': the same planes for everyone that day.';
     daily.hidden = false;
   }
+  if (ch && ch.real) {
+    var real = document.getElementById('real');
+    real.textContent = 'Real planes can’t repeat, so the planes in the game are simulated.';
+    real.hidden = false;
+  }
   var go = document.getElementById('go');
   if (STORE_LIVE) {
-    go.textContent = 'Get it free on Google Play';
+    go.textContent = ch ? 'Get Short Final free on Google Play' : 'Get it free on Google Play';
     go.href = playLink(p);
-    document.getElementById('soon').hidden = true;
+  } else {
+    document.getElementById('soon').hidden = false;
   }
 })();
 </script>
