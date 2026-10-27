@@ -1,0 +1,1404 @@
+@font-face { font-family: 'Fredoka'; font-weight: 500; font-display: block; src: url('fonts/fredoka-latin-500-normal.woff2?v=7227d0de') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-weight: 600; font-display: block; src: url('fonts/fredoka-latin-600-normal.woff2?v=7227d0de') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-weight: 700; font-display: block; src: url('fonts/fredoka-latin-700-normal.woff2?v=7227d0de') format('woff2'); }
+
+:root {
+  --cream: #fff6e3;
+  --cream-2: #f3e6c8;
+  --ink: #26363d;
+  --ink-soft: #5b6b70;
+  --teal: #1f6f78;
+  --teal-dark: #16323a;
+  --gold: #f2c14e;
+  --gold-dark: #c9922a;
+  --red: #e5533d;
+  --red-dark: #a8321f;
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  /* the UI scales (uiscale.js), set by main.js on every layout: --hud for the in-play chrome, --ui for menus */
+  --hud: 1;
+  --ui: 1;
+  --tick: 1; /* the radio ticker's: --hud, held a little under it where the room beside the wind compass is narrow */
+  /* the cards' unit: the screen height on phones (1vh is under 4.2px there), held to the menu scale on tablets */
+  --u: min(1vh, 1.8vw, calc(4.2px * var(--ui)));
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* hidden means hidden: a class that sets display (.icon-btn's grid, .voice-status's flex) can't bring it back */
+[hidden] { display: none !important; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: var(--teal-dark);
+  font-family: 'Fredoka', system-ui, sans-serif;
+  color: var(--ink);
+  user-select: none; -webkit-user-select: none;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+canvas#game { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+#safe-probe {
+  position: fixed; visibility: hidden; pointer-events: none;
+  padding: var(--safe-t) var(--safe-r) var(--safe-b) var(--safe-l);
+}
+
+.screen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .16s ease;
+  padding: calc(10px * var(--ui) + var(--safe-t)) calc(14px * var(--ui) + var(--safe-r)) calc(10px * var(--ui) + var(--safe-b)) calc(14px * var(--ui) + var(--safe-l));
+}
+.screen.show { opacity: 1; pointer-events: auto; }
+/* a hidden screen takes no touch, and nothing in it does, whatever a child sets: a child's own pointer-events: auto (the home
+   stats line, 2.5) was not hidden with its screen, and sat over the play view. tests/pointer-events.test.mjs checks this rule */
+.screen:not(.show), .screen:not(.show) * { pointer-events: none !important; }
+.screen.dim { background: rgba(14, 26, 30, .55); }
+.screen .card { transform: scale(.92) translateY(8px); transition: transform .34s cubic-bezier(.2, 1.5, .4, 1); }
+.screen.show .card { transform: none; }
+
+/* ------------------------------------------------------------ buttons */
+.btn {
+  font: inherit; font-weight: 600; border: none; cursor: pointer;
+  font-size: calc(var(--u) * 4.6);
+  padding: calc(var(--u) * 1.8) calc(var(--u) * 5);
+  border-radius: 999px;
+  background: var(--cream); color: var(--ink);
+  box-shadow: 0 calc(var(--u) * .9) 0 var(--cream-2), 0 calc(var(--u) * 1.2) calc(var(--u) * 1.6) rgba(0,0,0,.25);
+  transition: transform .26s cubic-bezier(.2, 1.5, .4, 1), box-shadow .08s ease;
+  min-height: 44px;
+}
+.btn:active { transform: scale(.94, .9); box-shadow: 0 calc(var(--u) * .2) 0 var(--cream-2), 0 calc(var(--u) * .4) calc(var(--u) * .8) rgba(0,0,0,.25); }
+.btn.primary { background: var(--gold); box-shadow: 0 calc(var(--u) * .9) 0 var(--gold-dark), 0 calc(var(--u) * 1.2) calc(var(--u) * 1.6) rgba(0,0,0,.25); }
+.btn.primary:active { box-shadow: 0 calc(var(--u) * .2) 0 var(--gold-dark); }
+.btn.big { font-size: calc(var(--u) * 6.4); font-weight: 700; padding: calc(var(--u) * 2) calc(var(--u) * 9); }
+.btn.small { font-size: calc(var(--u) * 3.4); padding: calc(var(--u) * 1.2) calc(var(--u) * 3.4); min-height: 44px; }
+.btn.ghost { background: transparent; box-shadow: none; color: var(--ink-soft); text-decoration: underline; }
+
+
+/* ------------------------------------------------------------ cards */
+.card {
+  position: relative; /* the shared close button (.close-x) pins to its corner */
+  background: var(--cream); border-radius: calc(var(--u) * 4);
+  padding: calc(var(--u) * 4) calc(var(--u) * 7);
+  display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2.6);
+  box-shadow: 0 calc(var(--u) * 1.2) 0 var(--cream-2), 0 calc(var(--u) * 3) calc(var(--u) * 6) rgba(0,0,0,.35);
+  max-height: 100%; overflow-y: auto;
+  min-width: min(70vw, calc(var(--u) * 90));
+}
+/* the card scrolls instead: a squeezed button spills its label out of the pill (a button's min-height
+   replaces its automatic minimum size) */
+.card > * { flex-shrink: 0; }
+.card h2 { margin: 0; font-weight: 700; font-size: calc(var(--u) * 7.5); }
+.row { display: flex; gap: calc(var(--u) * 2.4); justify-content: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; gap: calc(var(--u) * 1.8); width: 100%; align-items: stretch; }
+
+.over-card h2 { color: var(--red-dark); }
+.over-score { display: flex; align-items: baseline; gap: calc(var(--u) * 1.6); }
+.over-score span { font-weight: 700; font-size: calc(var(--u) * 18); line-height: 1; }
+.over-score small { font-size: calc(var(--u) * 4.6); font-weight: 600; color: var(--ink-soft); }
+.over-best { font-weight: 600; font-size: calc(var(--u) * 4.2); color: var(--ink-soft); min-height: 1em; }
+.over-best.new { color: var(--red); animation: pulse 0.9s ease-in-out infinite alternate; }
+.over-unlock:empty { display: none; }
+.over-unlock { background: var(--teal); color: var(--cream); font-weight: 600; font-size: calc(var(--u) * 3.8); padding: calc(var(--u) * 1.4) calc(var(--u) * 4); border-radius: 999px; }
+@keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+
+.about-card { max-width: min(92vw, calc(var(--u) * 178)); gap: calc(var(--u) * 1.3); padding-top: calc(var(--u) * 3); padding-bottom: calc(var(--u) * 2); }
+.about-card .version { margin: 0; font-weight: 600; color: var(--ink-soft); font-size: calc(var(--u) * 3.8); }
+.credits { margin: 0; font-size: max(12px, calc(var(--u) * 3)); color: var(--ink-soft); text-align: center; line-height: 1.35; }
+
+.toast {
+  /* under the HUD's title, mix line and banner (--notice-top), between the score and the buttons (--hud-side) */
+  position: fixed; left: 50%; top: var(--notice-top, calc(14px + var(--safe-t))); transform: translate(-50%, -140%);
+  background: var(--cream); color: var(--ink); font-weight: 600; font-size: calc(15px * var(--hud));
+  padding: calc(6px * var(--hud)) calc(18px * var(--hud)); border-radius: calc(18px * var(--hud));
+  box-shadow: 0 3px 0 var(--cream-2), 0 6px 14px rgba(0,0,0,.3);
+  transition: transform .35s cubic-bezier(.2, 1.4, .4, 1), opacity .25s ease; pointer-events: none;
+  width: max-content; max-width: min(calc(100vw - 2 * var(--hud-side, 180px)), calc(560px * var(--hud))); text-align: center; line-height: 1.25;
+  text-wrap: balance; /* two even lines, not a lone 'stack.' under a full one */
+  opacity: 0;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+.over-stats:empty, .over-next:empty { display: none; }
+.over-stats { display: flex; gap: calc(var(--u) * 3); justify-content: center; flex-wrap: wrap; }
+.over-stats .stat { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: calc(var(--u) * 4.4); }
+.over-stats canvas { width: calc(var(--u) * 8); height: calc(var(--u) * 8); min-width: 26px; min-height: 26px; }
+.over-next { width: min(100%, calc(var(--u) * 80)); font-weight: 600; font-size: max(12.5px, calc(var(--u) * 3.4)); color: var(--ink-soft); text-align: center; }
+.over-next .bar { margin-top: 4px; height: calc(var(--u) * 2.2); min-height: 8px; border-radius: 999px; background: #e7dcc2; overflow: hidden; }
+.over-next .bar i { display: block; height: 100%; background: var(--teal); border-radius: 999px; transition: width .8s cubic-bezier(.2, .9, .3, 1) .25s; }
+.over-card { width: min(94vw, calc(var(--u) * 150)); gap: calc(var(--u) * 2); padding-top: calc(var(--u) * 3); padding-bottom: calc(var(--u) * 3); }
+
+/* ------------------------------------------------------------ v2: real airports */
+.settings-card input {
+  width: 100%; font: inherit; font-weight: 600; font-size: max(16px, calc(var(--u) * 4.2));
+  padding: calc(var(--u) * 2) calc(var(--u) * 4); border: none; color: var(--ink);
+  outline: none; user-select: text; -webkit-user-select: text;
+  border-radius: 14px; box-shadow: inset 0 1px 3px rgba(0,0,0,.2); background: #fff; margin-top: 6px;
+}
+.muted { color: var(--ink-soft); margin: 0; font-weight: 500; text-align: center; }
+.loading-card { min-width: min(70vw, calc(var(--u) * 80)); }
+.spinner { width: calc(36px * var(--ui)); height: calc(36px * var(--ui)); border-radius: 50%; border: calc(4px * var(--ui)) solid #e7dcc2; border-top-color: var(--teal); animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading-status { font-size: calc(16px * var(--ui)); }
+/* Reset progress over Done; on tablets side by side, so the card keeps its room for the voices' status line */
+.settings-foot { display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2); }
+.settings-foot .close-btn { min-width: min(100%, calc(var(--u) * 60)); }
+/* the Live feed card (main.js openFeed): one column that scrolls inside the screen, its footer always in reach */
+.feed-card { position: relative; width: min(94vw, calc(var(--u) * 150)); max-height: 92vh; max-height: 92dvh; overflow: hidden; align-items: stretch; gap: calc(var(--u) * 1.8); padding-top: calc(var(--u) * 3); padding-bottom: 0; }
+/* the body scrolls between the title and the footer, so Done and Copy feed report stay on screen with Details open */
+/* the padding under the last item (Details, closed) keeps the buttons' shadow inside the scrolling body: the body clips at its edge */
+.feed-card > .feed-body { flex: 1 1 auto; flex-shrink: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--u) * 1.8); padding-bottom: calc(var(--u) * 3); }
+/* the title's row is 48 px tall, the close button's row (.close-x): the switch and the status below start under the button */
+.feed-card h2 { text-align: center; font-size: calc(var(--u) * 6); min-height: 48px; display: flex; align-items: center; justify-content: center; }
+.feed-card h3 { margin: 0; font-weight: 700; font-size: calc(var(--u) * 4.2); }
+.feed-status { margin: 0; font-weight: 600; font-size: max(12px, calc(var(--u) * 3.3)); color: var(--ink-soft); line-height: 1.35; text-align: center; }
+.feed-rows { margin: 0; padding-left: 1.3em; font-size: max(12px, calc(var(--u) * 3.3)); line-height: 1.45; display: grid; gap: 2px; }
+.feed-card .hint { margin: 0; text-align: center; }
+.feed-card #feed-caption { text-align: left; } /* under the breakdown it reads with the list, not as a centred hint */
+/* a game tip or pop-up never sits on top of the Live feed card (the card pauses the game; they wait until it closes) */
+body:has(#feed.show) .toast, body:has(#feed.show) .ach-pop { visibility: hidden; }
+/* Details (requirements item 5): a small button, closed by default; the groups, the clock and the report sit under it */
+.feed-details-btn { align-self: center; }
+.feed-details { display: flex; flex-direction: column; gap: calc(var(--u) * 1.4); }
+.feed-details[hidden] { display: none; }
+.feed-report { width: 100%; box-sizing: border-box; min-height: calc(var(--u) * 28); font: 12px/1.35 ui-monospace, Menlo, Consolas, monospace; padding: 8px; border: 1px solid var(--cream-2); border-radius: 8px; color: var(--ink); background: #fffdf6; }
+.feed-foot { display: flex; justify-content: center; flex-wrap: wrap; gap: calc(var(--u) * 2.4); padding: calc(var(--u) * 1.6) 0 calc(var(--u) * 3); background: var(--cream); }
+/* the pause card's live feed block */
+.pause-feed { display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 1.4); width: 100%; }
+/* a long status ("No internet: these planes were recorded earlier") wraps into two even lines, not one word on the second */
+.pause-feed-line { margin: 0; font-weight: 600; font-size: max(12px, calc(var(--u) * 3.3)); color: var(--ink-soft); text-align: center; line-height: 1.35; text-wrap: balance; }
+.pause-feed .row { gap: calc(var(--u) * 2); }
+@media (min-height: 600px) and (min-width: 600px) {
+  /* Done in the middle, Reset at the left edge with its label in line with the text above. Tablets only: a phone is under 600 px
+     wide in portrait and under 600 px tall in landscape, and there the two buttons overlapped (Reset under Done at 412 px) */
+  .settings-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
+  .settings-foot .close-btn { grid-column: 2; min-width: calc(var(--u) * 60); }
+  .settings-foot #btn-reset { grid-column: 1; grid-row: 1; justify-self: start; padding-left: 0; }
+}
+/* squarer tablets (4:3) are the shortest for their width: a little less air, so Beginner's note and the voices'
+   status fit together without scrolling */
+@media (min-height: 600px) and (max-aspect-ratio: 3/2) {
+  .settings-card { gap: calc(var(--u) * 1.6); }
+}
+.set-group label { display: block; font-weight: 700; font-size: calc(var(--u) * 3.8); margin-bottom: calc(6px * var(--ui)); }
+.seg, .pick { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 1.6); }
+.seg button, .pick button { font: inherit; font-weight: 600; font-size: calc(var(--u) * 3.4); border: none; border-radius: 999px; padding: calc(var(--u) * 1.4) calc(var(--u) * 3.6); min-height: 44px; background: #e7dcc2; color: var(--ink-soft); cursor: pointer; }
+.seg button.on, .pick button.on { background: var(--teal); color: var(--cream); }
+.hint { margin: calc(6px * var(--ui)) 0 0; font-size: max(12px, calc(var(--u) * 3)); color: var(--ink-soft); line-height: 1.3; }
+/* the home screen's feed line is a button (a tap checks again): its box is the 44 px touch height, and its text keeps the
+   .hint size (no font or colour here: font: inherit would drop the size and line height) */
+#menu .home-feed { text-wrap: balance; display: flex; align-items: center; box-sizing: border-box; min-height: 44px; margin: calc(6px * var(--ui)) -8px 0; padding: 0 8px; background: none; border: 0; text-align: left; font-family: inherit; }
+/* World stats (3.1, DECISIONS 384; moved in 3.2 to the foot of the airport column, DECISIONS 392): one line under the list. Its box is
+   18 phone px tall (the menu scale), and its one line never wraps. Its font steps down to fit the column (the column is the size
+   container: its units are .menu-right's), so a cutout on either side makes the words smaller, never longer, and nothing is cut.
+   The place of the rotating ticker (DECISIONS 392): the one line with its own fixed box. */
+#menu .home-world {
+  flex: none; box-sizing: border-box; height: calc(18px * var(--ui)); margin: calc(4px * var(--ui)) 0 0; padding: 0 calc(4px * var(--ui));
+  overflow: hidden; white-space: nowrap; text-align: left; line-height: calc(18px * var(--ui));
+  font-size: min(max(12px, calc(var(--u) * 3)), 4.4cqi);
+  /* cream, as the tagline and the stats are, with a shade: the line sits over the map, and the feed's grey is too faint there */
+  color: var(--cream); font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+.over-live { font-weight: 600; font-size: calc(var(--u) * 3.8); color: var(--teal); text-align: center; }
+.over-live:empty { display: none; }
+.over-live .short { display: none; }
+@media (max-width: 700px) and (max-height: 430px) { .over-live .long { display: none; } .over-live .short { display: inline; } }
+.c-red { color: #e5533d; font-weight: 700; } .c-orange { color: #d9761f; font-weight: 700; } .c-yellow { color: #b8862a; font-weight: 700; } .c-green { color: #3a7a2c; font-weight: 700; }
+
+/* ------------------------------------------------------------ home (v1.18) */
+:root { --kb: 0px; --row-h: max(46px, calc(var(--u) * 13)); }
+#menu {
+  display: grid; grid-template-columns: minmax(0, 40fr) minmax(0, 60fr); grid-template-rows: minmax(0, 1fr); column-gap: max(18px, 3vw);
+  align-items: center; justify-items: stretch;
+  background:
+    linear-gradient(90deg, rgba(10,24,28,.86) 0%, rgba(10,24,28,.62) 36%, rgba(10,24,28,.3) 62%, rgba(10,24,28,.18) 100%);
+  transition: opacity .22s ease, background-color .25s ease;
+}
+/* held back for a reminder's tap (main.js boot, takeDaily): hidden, and no touch, until the daily starts or the home comes up */
+#menu.quiet { opacity: 0 !important; }
+#menu.quiet, #menu.quiet * { pointer-events: none !important; }
+.menu-left { display: flex; flex-direction: column; gap: max(12px, calc(var(--u) * 3.6)); min-width: 0; padding-left: max(4px, 1vw); }
+/* the column starts at the top when it is taller than the screen, and scrolls, rather than being centred and clipped at
+   both ends (640 x 360 with the low-credit note: the title and the feed line were cut off) */
+#menu { align-items: safe center; overflow-y: auto; }
+.brand { display: flex; align-items: center; gap: max(10px, calc(var(--u) * 2.4)); }
+.logo-mark { width: max(64px, calc(var(--u) * 21)); height: auto; flex: none; margin: calc(var(--u) * -2) calc(var(--u) * -1.5); }
+.brand h1 {
+  /* 6vw: never wider than its column, whatever the font or the name */
+  margin: 0; font-weight: 700; line-height: .9; font-size: min(max(30px, calc(var(--u) * 10)), 6vw);
+  color: var(--cream); letter-spacing: .005em; text-shadow: 0 3px 0 rgba(0,0,0,.28);
+}
+/* a window 500 to 640 px wide and taller than wide (3.3, DECISIONS 444): the Play pill's own spacing is a little tighter, so its
+   unranked line fits on one line at 10 px, and the corner's five buttons sit a little closer, so they start clear of the title */
+@media (min-width: 500px) and (max-width: 640px) and (max-aspect-ratio: 1/1) {
+  #btn-demo { gap: calc(6px * var(--ui)); padding-left: calc(10px * var(--ui)); padding-right: calc(8px * var(--ui)); }
+  #btn-demo > svg { width: calc(14px * var(--ui)); height: calc(14px * var(--ui)); }
+  #menu .corner { gap: calc(4px * var(--ui)); }
+}
+.tagline { margin: max(4px, calc(var(--u) * 1.2)) 0 0; color: var(--gold); font-weight: 600; font-size: max(13px, calc(var(--u) * 3.8)); letter-spacing: .02em; text-shadow: 0 2px 0 rgba(0,0,0,.3); text-wrap: balance; }
+
+/* Home and search: fixed sizes are phone px times the menu scale (--ui), so a tablet keeps the phone's proportions */
+.search {
+  position: relative; display: flex; align-items: center; width: 100%; max-width: calc(440px * var(--ui));
+  background: var(--cream); border-radius: 999px; height: max(46px, calc(var(--u) * 12.5));
+  box-shadow: 0 3px 0 rgba(0,0,0,.22), 0 8px 22px rgba(0,0,0,.18);
+  transition: box-shadow .2s ease;
+}
+.search:focus-within { box-shadow: 0 0 0 3px var(--gold), 0 8px 22px rgba(0,0,0,.25); }
+.search-icon { width: calc(22px * var(--ui)); height: calc(22px * var(--ui)); margin-left: calc(16px * var(--ui)); flex: none; fill: none; stroke: var(--ink-soft); stroke-width: 2.4; stroke-linecap: round; }
+#search {
+  flex: 1; min-width: 0; height: 100%; border: none; background: none; outline: none;
+  font: inherit; font-weight: 600; font-size: calc(17px * var(--ui)); color: var(--ink); padding: 0 calc(8px * var(--ui)) 0 calc(10px * var(--ui));
+  user-select: text; -webkit-user-select: text;
+}
+#search::placeholder { color: #8f9a9c; font-weight: 500; }
+.search-clear { display: none; width: calc(44px * var(--ui)); height: calc(44px * var(--ui)); margin-right: calc(4px * var(--ui)); border: none; background: none; border-radius: 50%; cursor: pointer; padding: calc(10px * var(--ui)); }
+.search-clear svg { width: 100%; height: 100%; fill: none; stroke: var(--ink-soft); stroke-width: 2.6; stroke-linecap: round; }
+.search.has-text .search-clear { display: block; }
+
+/* Play now has a row of its own: its second line names the airport and the one reason a game is unranked (2.3 item 9), and that
+   takes the width. Difficulty and the Tour share the row under it: Difficulty takes what its words need, the Tour the rest */
+.menu-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: calc(10px * var(--ui)); }
+/* a portrait phone's column is too narrow for Difficulty and the Tour side by side: the three pills stack, one a line (the Tour
+   ran under the airport list there) */
+@media (max-width: 500px) and (max-aspect-ratio: 1/1) { .menu-actions { grid-template-columns: minmax(0, 1fr); } }
+.pill {
+  /* side by side they fill the search field's width; when the column is too narrow they stack, each as wide as it */
+  display: inline-flex; flex: 1 1 auto; align-items: center; gap: calc(10px * var(--ui)); min-height: calc(48px * var(--ui));
+  font: inherit; text-align: left; cursor: pointer; border: none; border-radius: calc(16px * var(--ui));
+  padding: calc(7px * var(--ui)) calc(16px * var(--ui)) calc(7px * var(--ui)) calc(12px * var(--ui)); background: var(--gold); color: var(--ink);
+  box-shadow: 0 3px 0 var(--gold-dark), 0 6px 14px rgba(0,0,0,.2);
+  transition: transform .26s cubic-bezier(.2, 1.5, .4, 1), box-shadow .08s ease;
+}
+.pill:active { transform: scale(.94, .9); box-shadow: 0 1px 0 var(--gold-dark); }
+/* the pills take equal shares of their grid cells (Difficulty and the Tour, under Play now); the min-content keeps a word whole */
+.menu-actions .pill { flex: 1 1 0; min-width: min-content; }
+/* the Play pill spans the row. contain: its words do not widen the grid's Difficulty column (the words wrap instead) */
+#btn-demo { grid-column: 1 / -1; min-width: 0; contain: inline-size; }
+/* the text's wrapper may shrink to the pill, so its lines wrap inside it and nothing runs past its edge */
+#btn-demo > span { min-width: 0; flex: 1 1 auto; container-type: inline-size; }
+/* 2.4 item 3: the place is never cut (no ellipsis): it wraps only when the pill cannot hold it on one line. The rank word follows it
+   on the same line, or drops to the next one when the pill is too narrow (flex-wrap). The unranked reason is a line of its own; it
+   takes the text's width, so at the short screens (and a cutout) its font steps down to fit one line, never under 10 px */
+#btn-demo small { display: flex; flex-wrap: wrap; column-gap: .35em; min-width: 0; }
+#btn-demo .pb-place, #btn-demo .pb-rank { display: block; font-size: inherit; font-weight: inherit; }
+#btn-demo .pb-place { flex: 0 1 auto; }
+#btn-demo .pb-rank { flex: 0 0 auto; white-space: nowrap; }
+#btn-demo .pb-unranked { display: block; font-size: max(10px, min(calc(12.5px * var(--ui)), 5.8cqi)); }
+/* the title steps down the same way where the column is narrower than "Play today’s challenge" (a narrow portrait column with a cutout) */
+#btn-demo .pb-title { font-size: max(12px, min(calc(16px * var(--ui)), 9cqi)); }
+/* the pill waits for the saved pick before it shows its words (main.js restoreLastPick): no "Random airport" flashes first */
+#btn-demo.pending { visibility: hidden; }
+/* the daily challenge is always Normal: its Difficulty pill is greyed while the daily is picked (main.js syncPlayButton) */
+#diff-chip.locked { opacity: .5; }
+/* the phones (under 880 px wide): the Tour's second line goes, so its pill fits the row beside Difficulty */
+@media (max-width: 879px) {
+  .tour-row .tour-pill small { display: none; }
+  .tour-row .tour-pill { padding-left: calc(12px * var(--ui)); gap: calc(6px * var(--ui)); }
+}
+.pill span { display: flex; flex-direction: column; font-weight: 700; font-size: calc(16px * var(--ui)); line-height: 1.1; }
+.pill small { font-weight: 500; font-size: calc(12.5px * var(--ui)); opacity: .8; }
+.pill svg { width: calc(22px * var(--ui)); height: calc(22px * var(--ui)); flex: none; fill: var(--ink); }
+.pill.subtle {
+  justify-content: space-between; /* the chevron stays at the right end */
+  background: rgba(255,246,227,.12); color: var(--cream); box-shadow: inset 0 0 0 1.5px rgba(255,246,227,.35);
+  padding: calc(7px * var(--ui)) calc(10px * var(--ui)) calc(7px * var(--ui)) calc(16px * var(--ui));
+}
+.pill.subtle:active { box-shadow: inset 0 0 0 1.5px rgba(255,246,227,.6); }
+.pill.subtle small { color: var(--gold); opacity: 1; font-weight: 600; font-size: calc(13.5px * var(--ui)); }
+.pill.subtle svg { fill: none; stroke: var(--cream); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; opacity: .8; }
+/* the Difficulty pill's level name is read over the map: the subtle pill is see-through (12 per cent cream), and a helipad or a
+   runway behind "Easy" read as part of the word. A darker scrim behind the pill keeps the name clear; the touch box is the same. */
+#diff-chip.pill.subtle { background: linear-gradient(rgba(255,246,227,.12), rgba(255,246,227,.12)), rgba(38,54,61,.82); }
+
+/* the column is a size container (3.2: the World line's font is in its units). The list gives up height to the World line under it */
+.menu-right { min-width: 0; min-height: 0; align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding-top: calc(var(--corner-h) + 8px); container-type: inline-size; }
+.airport-list {
+  flex: 0 1 auto; min-height: 0;
+  max-height: 100%; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain;
+  padding: 0 calc(4px * var(--ui)) calc(12px * var(--ui)); scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent 100%);
+}
+.airport-list::-webkit-scrollbar { display: none; }
+.list-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: calc(10px * var(--ui));
+  margin: calc(14px * var(--ui)) calc(4px * var(--ui)) calc(7px * var(--ui)); color: var(--cream); text-shadow: 0 2px 0 rgba(0,0,0,.35);
+}
+.list-head:first-child { margin-top: calc(8px * var(--ui)); }
+.list-head b { font-weight: 700; font-size: calc(13px * var(--ui)); letter-spacing: .09em; text-transform: uppercase; }
+.list-head span { font-weight: 500; font-size: calc(12.5px * var(--ui)); opacity: .75; }
+.ap-row {
+  /* the row's font size sets the code column (3.4em) too */
+  position: relative; /* the picked row's check is laid over the rank (below) */
+  display: grid; grid-template-columns: calc(26px * var(--ui)) 3.4em minmax(0, 1fr) auto; align-items: center; column-gap: calc(10px * var(--ui));
+  width: 100%; min-height: var(--row-h); margin: 0 0 calc(6px * var(--ui));
+  padding: calc(7px * var(--ui)) calc(14px * var(--ui)) calc(7px * var(--ui)) calc(8px * var(--ui));
+  border: none; border-radius: calc(14px * var(--ui)); text-align: left; font: inherit; font-size: calc(16px * var(--ui)); color: var(--ink); cursor: pointer;
+  background: rgba(255,246,227,.96); box-shadow: 0 2px 0 rgba(0,0,0,.2);
+  transition: transform .08s ease, background-color .12s ease;
+}
+.ap-row:active { transform: translateY(2px) scale(.995); background: #fff; }
+.ap-rank { font-weight: 700; font-size: calc(13px * var(--ui)); color: #a3abac; text-align: center; font-variant-numeric: tabular-nums; }
+.ap-code { font-weight: 700; font-size: calc(21px * var(--ui)); letter-spacing: .01em; }
+.ap-name { min-width: 0; font-weight: 600; font-size: calc(14.5px * var(--ui)); line-height: 1.2; }
+.ap-name > div { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-name small { display: block; font-weight: 500; font-size: calc(12.5px * var(--ui)); color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-meta { text-align: right; font-weight: 600; font-size: calc(13px * var(--ui)); color: var(--ink-soft); white-space: nowrap; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.ap-meta b { display: block; color: var(--teal); font-size: calc(13.5px * var(--ui)); }
+.ap-empty { color: var(--cream); font-weight: 600; font-size: calc(15px * var(--ui)); text-align: center; padding: calc(18px * var(--ui)) calc(8px * var(--ui)); opacity: .85; }
+/* the picked airport (main.js markPicked): teal, its words cream, and a check where its rank sits (the daily keeps its gold until
+   picked). The check is laid over the rank's cell, out of the grid, so no column moves when a row is picked (a column of its own
+   cost the names room, and a grid cell of its own pushed the other cells along) */
+.ap-check { position: absolute; left: calc(11px * var(--ui)); top: 50%; transform: translateY(-50%); width: calc(20px * var(--ui)); height: calc(20px * var(--ui)); fill: none; stroke: var(--cream); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .12s ease; }
+.ap-row.selected .ap-rank { visibility: hidden; }
+.ap-row.selected, .daily-row.selected, .weekend-row.selected { background: var(--teal); color: var(--cream); box-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.ap-row.selected .ap-rank, .ap-row.selected .ap-code, .ap-row.selected .ap-name small, .ap-row.selected .ap-meta, .ap-row.selected .ap-meta b,
+.daily-row.selected .ap-code, .daily-row.selected .ap-name small, .daily-row.selected .ap-meta, .weekend-row.selected .ap-code, .weekend-row.selected .ap-name small, .weekend-row.selected .ap-meta { color: var(--cream); }
+.ap-row.selected .ap-name small, .daily-row.selected .ap-name small, .weekend-row.selected .ap-name small { opacity: .85; }
+.ap-row.selected .ap-stars { color: #ffe39a; }
+.ap-row.selected .ap-check { opacity: 1; }
+/* the home backdrop glides to the airport picked on the list (main.js glideBackdrop): the sky slides out, the new one slides in */
+canvas#game.glide-out { opacity: 0; transform: translateX(-6vw); transition: opacity .2s ease, transform .2s ease; }
+canvas#game.glide-from { opacity: 0; transform: translateX(6vw); transition: none; }
+canvas#game.glide-in { transition: opacity .34s ease, transform .34s ease; }
+@media (max-height: 400px) {
+  /* a short screen: the home column is tighter (a smaller title, slimmer search and pills, less space round it), so the
+     title, the notes and the feed line all fit without scrolling: 640 x 360 with the low-credit note is 348 px of 352 */
+  /* the search and each pill keep their 44 px touch height (the pills stack in the narrow column) */
+  #menu { padding-top: calc(4px * var(--ui) + var(--safe-t)); padding-bottom: calc(4px * var(--ui) + var(--safe-b)); }
+  .menu-left { gap: max(5px, calc(var(--u) * 1.5)); }
+  .brand h1 { font-size: min(max(28px, calc(var(--u) * 8)), 6vw); }
+  .search { height: max(44px, calc(var(--u) * 12)); }
+  .menu-actions { gap: calc(4px * var(--ui)); }
+  .menu-actions .pill { min-height: calc(46px * var(--ui)); padding-top: calc(4px * var(--ui)); padding-bottom: calc(4px * var(--ui)); }
+  /* the two pills share a column about 230 px wide: a tighter inset and icon keep "Unranked" on one line (44 to 48 px tall) */
+  .menu-actions .pill { padding-left: calc(8px * var(--ui)); padding-right: calc(8px * var(--ui)); gap: calc(5px * var(--ui)); }
+  .menu-actions .pill svg { width: calc(14px * var(--ui)); height: calc(14px * var(--ui)); }
+  /* 6 px, not 3: the line's box starts 11 px under the Tour pill (the box, not the text, is the touch target) */
+  #menu .home-feed { margin-top: calc(6px * var(--ui)); }
+}
+/* the Pixel 9 and 960 x 412 home column sits at the bottom edge: the 10 px gap is what makes room for the 44 px feed line */
+@media (min-height: 401px) and (max-height: 412px) {
+  .menu-left { gap: 10px; }
+}
+/* tablets: rows as tall as their text (13u would leave a blank band in each one), and the list starting right
+   under the corner buttons, so a 4:3 tablet shows seven airports and a big one eight */
+@media (min-height: 600px) {
+  :root { --row-h: calc(46px * var(--ui)); }
+  .list-head { margin-top: calc(10px * var(--ui)); }
+}
+
+/* searching: the field moves to the top and results fill the space above the keyboard */
+#menu.searching { background-color: rgba(10,24,28,.62); }
+#menu .brand, #menu .menu-actions, #menu .home-feed, #menu .home-world, #menu .corner { transition: opacity .18s ease; }
+/* the home screen's feed line leaves with the menu while the airport search is open */
+#menu.searching .brand, #menu.searching .menu-actions, #menu.searching .home-feed, #menu.searching .home-world, #menu.searching .corner { opacity: 0; pointer-events: none; }
+/* the World line takes no room while the search is open (its column is the search's list then) */
+#menu.searching .home-world { display: none; }
+#menu.searching .search {
+  position: fixed; z-index: 2; max-width: none; height: calc(44px * var(--ui));
+  top: calc(10px * var(--ui) + var(--safe-t)); left: calc(14px * var(--ui) + var(--safe-l)); right: calc(14px * var(--ui) + var(--safe-r)); width: auto;
+}
+#menu.searching .menu-right {
+  position: fixed; padding: 0; justify-content: flex-start;
+  top: calc(10px * var(--ui) + var(--safe-t) + 44px * var(--ui) + 8px);
+  left: calc(14px * var(--ui) + var(--safe-l)); right: calc(14px * var(--ui) + var(--safe-r));
+  bottom: calc(var(--kb) + 6px);
+}
+#menu.searching .airport-list {
+  height: 100%; /* and lighter fades: on a short phone with the keyboard up the list is only a few rows tall */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 4px, #000 calc(100% - 10px), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 4px, #000 calc(100% - 10px), transparent 100%);
+}
+#menu.searching .ap-row {
+  --row-h: calc(40px * var(--ui)); grid-template-columns: 3.4em minmax(0, 1fr) auto calc(20px * var(--ui));
+  padding: calc(3px * var(--ui)) calc(14px * var(--ui)); margin-bottom: calc(5px * var(--ui)); border-radius: calc(12px * var(--ui));
+}
+#menu.searching .ap-rank { display: none; }
+/* searching has no rank cell: the check takes a column of its own at the row's end (the 4th column above), in the flow */
+#menu.searching .ap-check { position: static; transform: none; grid-column: 4; grid-row: 1; justify-self: center; }
+#menu.searching .ap-code { font-size: calc(18px * var(--ui)); }
+#menu.searching .ap-name small { display: inline; margin-left: calc(8px * var(--ui)); }
+#menu.searching .ap-name > div { display: inline; }
+#menu.searching .ap-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* little room above the keyboard (main.js applyKeyboard): a slimmer field and rows, so two or three results show */
+#menu.searching.kb-tight .search { top: calc(6px + var(--safe-t)); height: 40px; }
+#menu.searching.kb-tight .menu-right { top: calc(6px + var(--safe-t) + 44px); bottom: calc(var(--kb) + 4px); }
+#menu.searching.kb-tight .ap-row { --row-h: 38px; margin-bottom: 4px; padding-top: 2px; padding-bottom: 2px; }
+/* big screens: two columns of two-line results, read left to right in order of relevance */
+@media (min-width: 960px) and (min-height: 600px) {
+  #menu.searching .airport-list {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(320px * var(--ui))), 1fr));
+    column-gap: calc(10px * var(--ui)); align-content: start;
+  }
+  #menu.searching .list-head, #menu.searching .ap-empty, #menu.searching .shortcut-row { grid-column: 1 / -1; }
+  #menu.searching .ap-row { --row-h: calc(46px * var(--ui)); }
+  #menu.searching .ap-name > div, #menu.searching .ap-name small { display: block; margin-left: 0; }
+}
+
+/* 2.8 (DECISIONS 330): the search's chips. Results and the two shortcuts (Near you, Popular) are big chips: the code, the name over the
+   city, and the local time. 48 px tall, so a finger lands on one (the touch rule is 44 px) */
+#menu.searching .ap-chip {
+  --row-h: calc(48px * var(--ui)); grid-template-columns: 4.6em minmax(0, 1fr) auto calc(20px * var(--ui));
+  padding: calc(5px * var(--ui)) calc(14px * var(--ui)) calc(5px * var(--ui)) calc(12px * var(--ui));
+  margin-bottom: calc(6px * var(--ui)); border-radius: calc(16px * var(--ui));
+}
+#menu.searching .ap-chip .ap-code { font-size: calc(22px * var(--ui)); }
+#menu.searching .ap-chip .ap-name > div { display: block; font-size: calc(15px * var(--ui)); }
+#menu.searching .ap-chip .ap-name small { display: block; margin-left: 0; }
+#menu.searching .ap-chip .ap-meta { font-size: calc(12px * var(--ui)); }
+/* the two shortcuts before typing (main.js shortcutRow): gold buttons in one row, so a short screen keeps room for them above the keys */
+#menu.searching .shortcut-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: calc(10px * var(--ui)); margin: calc(8px * var(--ui)) calc(4px * var(--ui)) calc(10px * var(--ui)); }
+#menu.searching .shortcut-row .shortcut:only-child { grid-column: 1 / -1; }
+#menu.searching .shortcut {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: calc(1px * var(--ui));
+  min-height: calc(50px * var(--ui)); padding: calc(6px * var(--ui)) calc(14px * var(--ui)); border: none; border-radius: calc(16px * var(--ui));
+  background: var(--gold); color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+  box-shadow: 0 3px 0 var(--gold-dark), 0 6px 14px rgba(0,0,0,.2); transition: transform .08s ease, box-shadow .08s ease;
+}
+#menu.searching .shortcut:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--gold-dark); }
+#menu.searching .shortcut span { font-weight: 700; font-size: calc(17px * var(--ui)); line-height: 1.1; }
+#menu.searching .shortcut small { font-weight: 500; font-size: calc(12.5px * var(--ui)); opacity: .8; }
+
+/* 2.8 (DECISIONS 330): the game's keys for the search. Hidden unless the search is open with the keys up. Four rows of 44 px keys (the
+   touch rule), the row gaps 4 px, a 6 px frame. While the keys are up, --kb is their height, so the results fill the room above them
+   (main.js setKeys; the results' bottom edge is --kb plus 6 px from the bottom of the screen). Tucked away, --kb is the system
+   keyboard's (none: the field is readonly) and the results have the whole column. */
+.search-kb { display: none; }
+#menu.searching.keys-open .search-kb {
+  display: flex; flex-direction: column; align-items: center; gap: calc(4px * var(--ui));
+  position: fixed; z-index: 3; left: calc(14px * var(--ui) + var(--safe-l)); right: calc(14px * var(--ui) + var(--safe-r));
+  bottom: calc(6px * var(--ui) + var(--safe-b)); padding: calc(6px * var(--ui)); border-radius: calc(18px * var(--ui));
+  background: rgba(22,50,58,.96); box-shadow: 0 -4px 18px rgba(0,0,0,.28);
+}
+#menu.searching.keys-open { --kb: calc(200px * var(--ui) + var(--safe-b)); }
+.skey-row { display: flex; justify-content: center; gap: calc(4px * var(--ui)); }
+.skey {
+  flex: 0 0 calc(44px * var(--ui)); height: calc(44px * var(--ui)); margin: 0; padding: 0; box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: calc(10px * var(--ui));
+  background: var(--cream); color: var(--ink); font: inherit; font-weight: 700; font-size: calc(18px * var(--ui)); cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0,0,0,.25); -webkit-user-select: none; user-select: none; touch-action: manipulation;
+  transition: transform .08s ease, background-color .12s ease;
+}
+.skey:active { transform: translateY(1px) scale(.98); background: #fff; }
+.skey-wide { flex-basis: calc(140px * var(--ui)); font-size: calc(14px * var(--ui)); font-weight: 600; letter-spacing: .06em; color: var(--ink-soft); }
+/* the two keys that are not characters are gold, as the pills are */
+.skey[data-key="close"], .skey[data-key="back"] { background: var(--gold); box-shadow: 0 2px 0 var(--gold-dark); }
+.skey svg { width: calc(22px * var(--ui)); height: calc(22px * var(--ui)); fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+#menu.show .logo-mark { animation: bank 5s ease-in-out infinite; transform-origin: 50% 55%; }
+@keyframes bank { 0%, 100% { transform: rotate(-4deg) translateY(0); } 50% { transform: rotate(4deg) translateY(-3px); } }
+.screen.show .brand h1 { animation: rise .6s cubic-bezier(.2, 1.3, .4, 1) both; }
+@keyframes rise { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #menu.show .logo-mark, .screen.show .brand h1 { animation: none; } }
+
+/* ------------------------------------------------------------ radio chatter */
+.radio {
+  /* centred and as wide as the call needs, up to --ticker-side (main.js) from either edge: clear of the wind
+     compass and its mirror image, and of the departure gates and names down at the bottom edge */
+  position: fixed; left: 50%; bottom: calc(10px * var(--hud) + var(--safe-b)); transform: translate(-50%, 8px);
+  width: max-content; max-width: min(calc(100vw - 2 * var(--ticker-side, 140px)), 40em);
+  display: flex; align-items: baseline; gap: calc(8px * var(--tick));
+  padding: calc(6px * var(--tick)) calc(14px * var(--tick)) calc(7px * var(--tick)) calc(7px * var(--tick)); border-radius: calc(12px * var(--tick));
+  background: rgba(14, 26, 30, .72); color: var(--cream);
+  font-weight: 600; font-size: calc(13px * var(--tick)); line-height: 1.25;
+  opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease; z-index: 5;
+}
+.radio.show { opacity: 1; transform: translate(-50%, 0); }
+.radio-text { text-wrap: pretty; } /* a call over two or three lines doesn't end on a word of its own */
+.radio.show.see-through { opacity: .3; } /* traffic underneath (main.js) */
+.radio.hold, .radio.hold.see-through { opacity: 0; }
+.radio .rest { visibility: hidden; } /* the rest of the call: laid out from the start so the box holds still */
+.radio .rest:empty { display: none; } /* once it's all typed: an empty span after the text undoes text-wrap: pretty */
+.radio-who {
+  flex: none; font-weight: 700; font-size: .78em; letter-spacing: .06em; text-transform: uppercase;
+  padding: calc(2px * var(--tick)) calc(6px * var(--tick)); border-radius: calc(6px * var(--tick)); background: var(--gold); color: var(--ink);
+  max-width: 11em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.radio.pilot .radio-who { background: var(--cream); }
+.radio.urgent .radio-who { background: var(--red); color: #fff; }
+.radio.urgent { background: rgba(70, 18, 12, .78); }
+
+/* ------------------------------------------------------------ stars */
+.ap-code { display: flex; flex-direction: column; line-height: 1; }
+.ap-stars { font-size: calc(11px * var(--ui)); letter-spacing: 1px; color: var(--gold-dark); margin-top: 3px; font-weight: 700; }
+.over-stars { font-weight: 700; font-size: calc(var(--u) * 4); color: var(--ink); letter-spacing: .02em; }
+.over-stars .stars { color: var(--gold-dark); letter-spacing: 2px; margin-right: 6px; }
+
+.pause-wx { max-width: min(80vw, calc(560px * var(--ui))); text-align: center; font-size: max(11.5px, calc(var(--u) * 3)); color: var(--ink-soft); line-height: 1.35; text-wrap: balance; } /* no lone '53018' on the last line */
+.pause-wx:empty { display: none; }
+/* a window change in play (3.3, DECISIONS 442): the note is the card's first line, in the card's own ink, a little heavier */
+.pause-wx .pause-note { font-weight: 700; color: var(--ink); margin-bottom: calc(var(--u) * 1); }
+
+.home-stats { margin: 4px 0 0; color: var(--cream); opacity: .75; font-weight: 500; font-size: max(12px, calc(var(--u) * 3.2)); text-shadow: 0 1px 0 rgba(0,0,0,.3); text-wrap: pretty; } /* no lone word on the last line when a side cutout narrows it (3.3, 600 by 1000) */
+.home-stats:empty { display: none; }
+/* a window 500 to 640 px wide and taller than wide: the passengers' phrase stays on one line when a cutout narrows the column (3.3) */
+@media (min-width: 500px) and (max-width: 640px) and (max-aspect-ratio: 1/1) { .home-pax { white-space: nowrap; } }
+
+.next-airport { background: var(--teal); color: var(--cream); box-shadow: 0 calc(var(--u) * .7) 0 #10474e; }
+.next-airport:active { box-shadow: 0 1px 0 #10474e; }
+/* toasts and achievement pop-ups wait behind the pause and end cards instead of covering them */
+#pause.show ~ #toast, #pause.show ~ #ach-pop, #over.show ~ #toast, #over.show ~ #ach-pop { opacity: 0; }
+/* except the share panel's own notices (main.js toast(…, above)): the panel opens over the end card */
+#over.show ~ #toast.above { opacity: 1; }
+@media (max-height: 430px) {
+  .over-stats { display: none; } /* the per-class icons: the line above says the same in words */
+}
+/* the end card's buttons stay in reach however long the card gets, with a shadow only while there's more of the
+   card underneath them (main.js syncOverShadow) */
+.over-card > .row:last-child { position: sticky; bottom: 0; background: var(--cream); padding: 4px 0 2px; width: 100%; }
+.over-card.more-below > .row:last-child { box-shadow: 0 -10px 12px -8px rgba(0,0,0,.12); }
+@media (max-height: 430px) {
+  /* as wide as its lines need (the 150u cap is for tablets), so the named real flights take fewer of them. Tight enough
+     that a ranked card with its rank line and Next airport fits the Pixel 9's 412 px without scrolling */
+  .over-card { width: auto; max-width: 94vw; gap: calc(var(--u) * 1); padding-top: calc(var(--u) * 2); padding-bottom: calc(var(--u) * 2); }
+  .over-card h2 { font-size: calc(var(--u) * 6); }
+  .over-score span { font-size: calc(var(--u) * 11.5); }
+  .over-card .btn.big { padding-top: calc(var(--u) * 1.4); padding-bottom: calc(var(--u) * 1.4); }
+}
+/* the 360 and 390 high phones: the card is at its height with the Next airport pill, so the lines sit closer and the
+   buttons row takes no more than its 44 px targets. It then fits without scrolling, and the row never covers the pill */
+@media (max-height: 400px) {
+  .over-card { gap: calc(var(--u) * 0.6); padding-bottom: calc(var(--u) * 1.5); }
+  .over-card > .row:last-child { padding-top: 2px; }
+  /* the Live feed's breakdown fits 360 high too, so its list is not cut off above the buttons */
+  .feed-card { gap: calc(var(--u) * 1); padding-top: calc(var(--u) * 2.4); }
+  .feed-rows { line-height: 1.3; }
+}
+
+
+/* the logbook is the Achievements screen's totals (U6). It takes touches as the home screen does (.screen.show): none while
+   the home screen is hidden, so the play view under it is never blocked */
+.home-stats { cursor: pointer; }
+
+/* ------------------------------------------------------------ achievements */
+.ach-pop {
+  /* where the toast goes, or just under it while one is up (--below-toast, main.js placeNotices) */
+  position: fixed; left: 50%; top: calc(var(--notice-top, calc(14px + var(--safe-t))) + var(--below-toast, 0px)); transform: translate(-50%, -16px) scale(.92);
+  display: flex; align-items: center; gap: calc(10px * var(--hud)); padding: calc(7px * var(--hud)) calc(16px * var(--hud)) calc(7px * var(--hud)) calc(8px * var(--hud)); border-radius: calc(16px * var(--hud));
+  background: linear-gradient(135deg, #fff6dc, #ffe6a8); color: var(--ink);
+  box-shadow: 0 3px 0 #e0bf6a, 0 8px 22px rgba(0,0,0,.35); z-index: 6;
+  opacity: 0; pointer-events: none; transition: transform .45s cubic-bezier(.2, 1.5, .4, 1), opacity .25s ease, top .3s ease;
+}
+.ach-pop.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.ach-icon { font-size: calc(24px * var(--hud)); line-height: 1; width: 1.3em; height: 1.3em; display: grid; place-items: center; background: #fff; border-radius: 50%; box-shadow: inset 0 0 0 2px #f0cf7a; }
+.ach-words { display: flex; flex-direction: column; line-height: 1.15; }
+.ach-words small { font-size: max(11.5px, calc(11.5px * var(--hud))); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-dark); }
+.ach-words b { font-size: calc(15px * var(--hud)); }
+.over-ach { font-weight: 700; font-size: calc(var(--u) * 3.6); color: var(--gold-dark); text-align: center; }
+.over-ach:empty { display: none; }
+.over-streak { margin: 0; font-weight: 600; color: var(--ink); }
+.over-milestone { font-weight: 700; color: var(--red-dark); }
+.home-stats b { color: var(--cream); font-weight: 700; }
+/* the one close button on every full screen (the Tour, Settings, Leaderboards, Achievements, Streak, About, Legal, Share and
+   the Live feed card): a 48 px circle in the logo's orange with a white X, pinned to the card's top-right corner. It is absolute,
+   so it stays in the corner at rest and scrolls with a long card. Each card's head keeps clear of it (the layout check measures
+   the overlap on every format). Back closes each card too (screenstack.js). */
+.close-x {
+  position: absolute; top: 8px; right: 8px; z-index: 3;
+  width: 48px; height: 48px; padding: 0; border: none; border-radius: 50%;
+  background: #ef8a2f; box-shadow: 0 3px 8px rgba(0, 0, 0, .35);
+  cursor: pointer; display: grid; place-items: center;
+  transition: transform .26s cubic-bezier(.2, 1.5, .4, 1);
+}
+.close-x:active { transform: scale(.92); }
+.close-x svg { width: 46%; height: 46%; stroke: #fff; stroke-width: 3; fill: none; stroke-linecap: round; }
+@media (max-height: 380px) {
+  /* short phones: a slimmer, see-through ticker so traffic underneath stays visible */
+  .radio { padding: calc(4px * var(--tick)) calc(10px * var(--tick)) calc(5px * var(--tick)) calc(5px * var(--tick)); background: rgba(14, 26, 30, .55); }
+}
+/* the daily challenge row: warmer than the airport rows around it */
+.daily-row { background: linear-gradient(135deg, #fff3cf, #ffe2a0); }
+.daily-row .ap-code { font-size: calc(26px * var(--ui)); color: var(--gold-dark); justify-content: center; }
+/* its line says what the challenge is, in fewer words where the row is narrower than the long ones (640 px phones) */
+.daily-row .ap-name { container-type: inline-size; }
+.daily-row .short { display: none; }
+@container (max-width: 12.5em) { .daily-row .long { display: none; } .daily-row .short { display: inline; } }
+/* in the same narrow box the short form ("GRU · same planes") is still about 7 px too wide at 640 by 360 with a 52 px side inset: the line steps down to 11 px there */
+@container (max-width: 12.5em) { .daily-row small { font-size: calc(11px * var(--ui)); } }
+/* the weekend event's row (3.3): the daily's shape in a sky blue, so the two rows read apart on a weekend */
+.weekend-row { background: linear-gradient(135deg, #dcf0f6, #b7e0ee); }
+.weekend-row .ap-code { font-size: calc(24px * var(--ui)); color: var(--ink); justify-content: center; }
+.weekend-row .ap-name { container-type: inline-size; }
+.weekend-row .short { display: none; }
+/* the long line is about 16 ems (its longest twist); a column under 17 ems takes the short line, so the long one is never cut */
+@container (max-width: 17em) { .weekend-row .long { display: none; } .weekend-row .short { display: inline; } }
+@container (max-width: 12.5em) { .weekend-row small { font-size: calc(11px * var(--ui)); } }
+/* the title is the theme's name: a narrow column sets it a little smaller, so "Rush hour weekend" is whole at 640 by 360 */
+@container (max-width: 17em) { .weekend-row .ap-name div { font-size: .86em; white-space: normal; line-height: 1.12; } }
+.daily-views { margin-bottom: calc(var(--u) * 1.2); }
+
+/* the Voices toggle while the radio chatter is off, and why the radio might be silent: the sentence, then its
+   button on the same line where there's room (under it on small phones) */
+.toggle.dim { opacity: 0.5; }
+.voice-status { display: flex; flex-wrap: wrap; align-items: center; column-gap: calc(var(--u) * 3); row-gap: calc(var(--u) * 1); }
+.voice-status .hint { margin: 0; }
+/* a link, not a pill: its label starts where the sentence does when it wraps (the 44 px height stays) */
+.voice-status .btn { padding-left: 0; padding-right: 0; }
+
+/* share panel: the card image on the left at the card's full height, and on the right the title, the format, Share… with
+   Copy text and Save image beside it, the one-tap apps in even columns and the privacy line, every row starting at the
+   same left edge and ending at the same right edge */
+.share-card {
+  --gap: calc(var(--u) * 2);
+  --ph: min(calc(100vh - var(--u) * 14 - 20px * var(--ui) - var(--safe-t) - var(--safe-b)), calc(var(--u) * 76));
+  flex-direction: row; align-items: center; gap: calc(var(--u) * 5);
+  width: min(94vw, calc(var(--u) * 196)); max-width: none; padding: calc(var(--u) * 4) calc(var(--u) * 5);
+}
+/* one size for Card, Story and Text, so the controls beside it hold still when the format changes: as tall as the
+   card can be and as wide as the 4:5 card image at that height */
+.share-preview { flex: 0 0 auto; height: var(--ph); width: calc(var(--ph) * .8); display: flex; align-items: center; justify-content: center; }
+.share-preview img { display: block; max-height: 100%; max-width: 100%; border-radius: calc(var(--u) * 2); box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.share-text { margin: 0; width: 100%; height: 100%; max-height: 100%; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: 600 calc(var(--u) * 3.3)/1.35 "Fredoka", system-ui, sans-serif; color: var(--ink); background: #f3e6c8; border-radius: calc(var(--u) * 2); padding: calc(var(--u) * 3); }
+/* auto margins: centred while it fits, and if it ever doesn't, it overflows downwards where the card scrolls, never above its top */
+.share-side { flex: 1 1 auto; min-width: 0; margin-block: auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--gap); align-content: center; }
+.share-side > * { grid-column: 1 / -1; }
+.share-head { display: flex; align-items: center; justify-content: space-between; gap: var(--gap); }
+.share-head h2 { font-size: calc(var(--u) * 7); line-height: 1.1; }
+/* a card taller than wide (3.3, DECISIONS 444): the title keeps the close button's width clear (.close-x: 8 px in, 48 px wide) */
+@media (max-aspect-ratio: 1/1) { .share-head { padding-right: 56px; } }
+/* a window 500 to 640 px wide and taller than wide (3.3, DECISIONS 444): the preview stands over the buttons. Beside it the side is
+   246 px at 600 by 1000, and a challenge's five format chips wrapped (layout check, the Challenge chip on a second row) */
+@media (min-width: 500px) and (max-width: 640px) and (max-aspect-ratio: 1/1) {
+  .share-card { flex-direction: column; align-items: stretch; gap: calc(var(--u) * 3); }
+  .share-preview { height: calc(var(--u) * 60); width: calc(var(--u) * 48); align-self: center; }
+}
+/* Share… takes the room Copy text and Save image leave; Save image keeps its place in Text (hidden, not gone), so
+   Share… and Copy text hold still when the format changes (main.js drawShareCard) */
+.share-go { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--gap); align-items: center; }
+.share-go #btn-share-sheet { width: 100%; }
+.share-alt { background: #e7dcc2; box-shadow: none; color: var(--ink); }
+.share-alt:active { box-shadow: none; }
+#btn-share-save.off { visibility: hidden; }
+.share-go.no-save { grid-template-columns: minmax(0, 1fr) auto; } /* a phone that can never save (Android 8 and 9) */
+/* Share… and Save video while the clip is made (main.js drawVideoPanel disables them): they look it, and do not press in */
+.share-go .btn:disabled, .share-go .btn:disabled:active { opacity: .45; cursor: default; box-shadow: none; transform: none; }
+/* the one-tap apps (only those on the phone) in columns of one width, every row as wide as Share… above: as many columns
+   as the widest label allows, evened out so no row is left short (main.js shareAppColumns: 9 apps as 3 × 3, not 4 + 4 + 1) */
+.share-apps { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: calc(var(--gap) * .8) var(--gap); }
+.share-apps.measure button { width: max-content; }
+.share-apps:empty { display: none; }
+.share-apps button { font: inherit; font-weight: 600; font-size: calc(var(--u) * 3.3); border: none; border-radius: 999px; min-height: 44px; min-width: 0; padding: calc(6px * var(--ui)) calc(12px * var(--ui)) calc(6px * var(--ui)) calc(10px * var(--ui)); background: #e7dcc2; color: var(--ink); display: flex; align-items: center; gap: calc(8px * var(--ui)); cursor: pointer; white-space: nowrap; }
+.share-apps span { overflow: hidden; text-overflow: ellipsis; }
+.share-apps i { flex: none; width: calc(14px * var(--ui)); height: calc(14px * var(--ui)); border-radius: 50%; display: inline-block; }
+.share-side .hint { margin: 0; text-wrap: balance; } /* two even lines, not one long and a stub */
+/* the Video format (video.js): the clip's preview on the card's place, a progress veil while it is made, and the clip choices
+   in a row under the formats (they wrap like the formats do) */
+.share-preview { position: relative; }
+.share-vid { display: block; height: 100%; max-width: 100%; border-radius: calc(var(--u) * 2); box-shadow: 0 6px 18px rgba(0,0,0,.25); background: #0e2328; }
+.share-busy { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--u) * 2.4); padding: calc(var(--u) * 3); border-radius: calc(var(--u) * 2); background: rgba(14,35,40,0.9); color: var(--cream); text-align: center; }
+.share-busy p { margin: 0; font-size: calc(var(--u) * 4.2); font-weight: 600; }
+.share-bar { width: min(70%, calc(var(--u) * 40)); height: calc(var(--u) * 1.2); border-radius: 999px; background: rgba(255,246,227,0.22); overflow: hidden; }
+.share-bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: #f28c38; transition: width .25s linear; }
+.share-clips { margin-top: calc(var(--u) * -0.6); }
+@media (max-height: 430px) {
+  .share-card { --gap: calc(var(--u) * 1.6); padding: calc(var(--u) * 3) calc(var(--u) * 4); gap: calc(var(--u) * 4); }
+  .share-head h2 { font-size: calc(var(--u) * 6.4); }
+  .share-side .hint { font-size: calc(var(--u) * 3.2); }
+}
+/* the shortest phones: Card / Story / Text take the title's row (the title stays for screen readers), so nine apps and the
+   privacy line fit without scrolling; the row stops short of the corner's close button */
+@media (max-height: 380px) {
+  .share-head { display: contents; }
+  .share-head h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .share-side > #share-format { grid-column: 1; grid-row: 1; align-self: center; }
+}
+/* sharing: the end card waits out of sight under the share card, and the screen is dimmed once, not twice */
+#over:has(~ #share.show) { background: transparent; }
+#over:has(~ #share.show) .over-card { visibility: hidden; }
+
+/* Beginner: the Departures toggle rests greyed out, and a tap explains why in place of the difficulty's hint. Only the
+   label and the track fade: the line under the label says why, and it stays readable */
+.toggle.locked { filter: grayscale(0.6); }
+.toggle.locked > span:not(.tg-text), .toggle.locked .tg-text > span:first-child, .toggle.locked::after, .toggle.locked::before { opacity: 0.45; }
+.friendly-note { background: #fde9c3; color: var(--ink); border-radius: calc(var(--u) * 2.4); padding: calc(var(--u) * 1.2) calc(var(--u) * 2.6); font-weight: 600; }
+
+/* U1 save core: no styles */
+
+/* U2 gameplay and replay: no styles */
+
+/* U3 settings, pause and HUD */
+
+/* the home corner (ui 7): five discs, each with its label under it, in from the edge (render.js HUD_EDGE, 23 units) */
+:root { --corner-h: calc(10px * var(--ui) + max(40px, calc(var(--u) * 10)) + 2px + max(11.5px, calc(var(--u) * 2.9))); } /* the corner's bottom edge (its disc, gap and label, as .corner-btn sizes them): the home list starts under it */
+.corner { position: fixed; top: calc(10px * var(--ui) + var(--safe-t)); right: calc(23px * var(--ui) + var(--safe-r)); display: flex; gap: calc(8px * var(--ui)); }
+.corner-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 44px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--cream); font: inherit; cursor: pointer;
+}
+.corner-btn .disc {
+  width: max(40px, calc(var(--u) * 10)); height: max(40px, calc(var(--u) * 10));
+  border-radius: 50%; display: grid; place-items: center;
+  background: rgba(255, 246, 227, .92); box-shadow: 0 3px 0 rgba(0, 0, 0, .25);
+}
+.corner-btn svg { width: 56%; height: 56%; min-width: 22px; min-height: 22px; fill: var(--ink); stroke: var(--ink); }
+.corner-btn svg path { stroke: none; }
+.corner-btn .lbl { font-weight: 600; font-size: max(11.5px, calc(var(--u) * 2.9)); line-height: 1; white-space: nowrap; color: var(--cream); text-shadow: 0 1px 0 rgba(0, 0, 0, .4); }
+.corner-btn:active .disc { transform: scale(.94, .9); box-shadow: 0 1px 0 rgba(0, 0, 0, .25); }
+/* the play streak's button (streak.js): the flame sizes in percent of the disc and drops the svg's 22 px minimum (which
+   would otherwise reach the chip); screens.js sets the state classes, which colour the flame and the chip. The button
+   keeps its width when its label changes, so the disc stays put. */
+#btn-streak { min-width: 64px; }
+/* the flame sits at the top of the disc, with the count's chip under it (the two stack and do not overlap) */
+.corner-btn .streak-flame { width: 46%; height: 46%; min-width: 0; min-height: 0; align-self: start; margin-top: calc(var(--u) * .5); fill: var(--ink-soft); opacity: .35; }
+.corner-btn .streak-chip {
+  position: absolute; left: 50%; bottom: 2px; transform: translateX(-50%); box-sizing: border-box;
+  height: max(16px, calc(var(--u) * 4)); min-width: 16px; padding: 0 4px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; white-space: nowrap;
+  background: var(--teal); color: var(--cream); font-weight: 700; font-size: max(12px, calc(var(--u) * 3.3)); line-height: 1;
+}
+.corner-btn.is-missed .streak-chip { background: var(--ink-soft); }
+.is-played .streak-flame { fill: var(--red); opacity: 1; }
+.is-risk .streak-flame { fill: var(--red); opacity: .45; }
+.is-none .streak-flame { fill: var(--ink-soft); opacity: .35; } /* no streak, or one that ended: nothing is being kept */
+
+/* the switch (ui 2.4): a row with its label on the left and a sliding track on the right; no pill. The track is ::after
+   (11 by 6.4 units), the knob ::before, 3 px in from the track's end, and it overshoots a little as it slides */
+.toggle {
+  position: relative; width: 100%; min-height: 44px; margin: 0; padding: calc(var(--u) * .6) 0;
+  display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 2.4);
+  border: 0; border-bottom: 1px solid #e7dcc2; border-radius: 0; background: transparent;
+  font: inherit; font-weight: 600; font-size: calc(var(--u) * 3.8); color: var(--ink); text-align: left; cursor: pointer;
+}
+.toggle > span { min-width: 0; }
+.toggle::after {
+  content: ''; flex: none; order: 2;
+  width: calc(var(--u) * 11); height: calc(var(--u) * 6.4); border-radius: 999px;
+  background: #b9ad92; transition: background-color .2s ease;
+}
+.toggle::before {
+  content: ''; position: absolute; top: 50%; right: calc(var(--u) * 6 - 3px);
+  width: calc(var(--u) * 5); height: calc(var(--u) * 5); margin-top: calc(var(--u) * -2.5); border-radius: 50%;
+  background: #fff6e3; box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  transition: right .26s cubic-bezier(.3, 1.5, .5, 1), background-color .2s ease;
+}
+.toggle.on::after { background: var(--teal); }
+.toggle.on::before { right: 3px; background: var(--gold); }
+@media (prefers-reduced-motion: reduce) { .toggle::before, .toggle::after { transition: none; } }
+
+/* Settings (ui 2.2): the level across the card, then the switches in two columns that share their rows (so a row lines up
+   across the card), each switch with its one line under its label; one column when narrow */
+.settings-card { width: min(94vw, calc(var(--u) * 190)); align-items: stretch; gap: calc(var(--u) * 1.8); }
+.settings-card h2 { text-align: center; }
+.set-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: calc(var(--u) * 3); row-gap: calc(var(--u) * 1.4); align-items: stretch; }
+.set-cols > .set-group { min-width: 0; }
+/* a bare switch sits at the top of its row, level with its neighbour: a row a neighbour makes taller (Real planes only with
+   its simulated-planes button) does not drop the switch beside it into the middle of the band */
+.set-cols > .toggle { align-self: start; }
+/* a cell that holds a switch and what goes with it (its action buttons, the voice status): one column of its own */
+.set-item { display: flex; flex-direction: column; gap: calc(var(--u) * 1.4); min-width: 0; }
+.set-item .btn.small { align-self: flex-start; padding-left: 0; padding-right: 0; }
+.set-note { margin: 0; font-size: max(12px, calc(var(--u) * 3)); color: var(--ink-soft); line-height: 1.3; text-align: left; text-wrap: balance; }
+/* a switch's label and its one line are one column, so the line sits right under the label, inside the row */
+.toggle .tg-text { min-width: 0; display: flex; flex-direction: column; }
+.toggle .set-note { font-weight: 500; }
+.set-level { width: 100%; }
+@media (max-width: 639px) { .set-cols { grid-template-columns: minmax(0, 1fr); } }
+/* the Music track list (2.3): one radio row per track, under the switches, full width so each one-line blurb fits. A row is a
+   44 px touch target at least; the chosen row is teal with a tick, the others show an open ring. The card scrolls to it. */
+.track-list { display: flex; flex-direction: column; gap: calc(var(--u) * 1.2); }
+.track-row {
+  display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto; align-items: center; column-gap: calc(var(--u) * 2.4);
+  width: 100%; min-height: 44px; margin: 0; padding: calc(var(--u) * 1.2) calc(var(--u) * 3); box-sizing: border-box;
+  border: none; border-radius: calc(var(--u) * 2.4); background: #e7dcc2; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+}
+.track-name { font-weight: 700; font-size: calc(var(--u) * 3.6); line-height: 1.2; white-space: nowrap; }
+.track-blurb { min-width: 0; font-weight: 500; font-size: max(12px, calc(var(--u) * 3)); line-height: 1.3; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* a card taller than wide and 640 px wide or less (3.3, DECISIONS 444): the longest blurbs keep their one line (the name is a little
+   smaller and the blurb sits at its 12 px floor) */
+@media (max-aspect-ratio: 1/1) and (max-width: 640px) {
+  .track-name { font-size: calc(var(--u) * 3.2); }
+  .track-blurb { font-size: 12px; }
+}
+.track-mark { width: calc(var(--u) * 4.4); height: calc(var(--u) * 4.4); min-width: 16px; min-height: 16px; fill: none; stroke: var(--ink-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.track-mark path { display: none; }
+.track-row[aria-checked="true"] { background: var(--teal); color: var(--cream); }
+.track-row[aria-checked="true"] .track-blurb { color: var(--cream); opacity: .9; }
+.track-row[aria-checked="true"] .track-mark { stroke: var(--cream); }
+.track-row[aria-checked="true"] .track-mark circle { fill: var(--cream); }
+.track-row[aria-checked="true"] .track-mark path { display: block; stroke: var(--teal); stroke-width: 2.6; }
+.track-row:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.track-group { width: 100%; }
+
+/* the pause card (ui 4.5): the controls and the live feed on the left, Level, Departures and the sound switches on the right */
+.pause-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; column-gap: calc(var(--u) * 5); width: min(94vw, calc(var(--u) * 150)); }
+.pause-main, .pause-set { display: flex; flex-direction: column; gap: calc(var(--u) * 2); min-width: 0; }
+.pause-main { align-items: center; }
+.pause-set { align-items: stretch; }
+.pause-set .set-note { text-align: left; }
+.pause-toggles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: calc(var(--u) * 3); }
+.pause-rank { margin: 0; font-weight: 700; font-size: max(12px, calc(var(--u) * 3.2)); color: var(--gold-dark); text-align: center; }
+@media (max-width: 639px) { .pause-card { grid-template-columns: minmax(0, 1fr); } }
+/* on the 360 px tall phones (and shorter) the columns sit closer, so the card with its save note (.save-note) fits without a scroll */
+@media (max-height: 380px) { .pause-main, .pause-set { gap: calc(var(--u) * 1.2); } }
+
+/* the level change's confirm sheet: over the pause card, so a lighter dim (the Things too slow? sheet too) */
+#confirm.dim, #slow.dim, #pro-sheet.dim { background: rgba(14, 26, 30, .35); }
+.confirm-card { width: min(90vw, calc(var(--u) * 100)); align-items: center; text-align: center; }
+.confirm-card .set-note { text-align: center; }
+/* the one-time reminder card (DECISIONS 392): its question is a sentence, so its heading is the feed card's size, two lines at most */
+.offer-card h2 { font-size: calc(var(--u) * 6); line-height: 1.1; }
+/* Things too slow?: the tower's kicker over the title, the body, the grey line, then Add and Keep (two rows on a phone) */
+.slow-kicker { margin: 0; font-size: max(11px, calc(var(--u) * 2.6)); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+.slow-body { margin: 0; font-size: max(13px, calc(var(--u) * 3.4)); color: var(--ink); line-height: 1.4; }
+.slow-row { flex-wrap: wrap; justify-content: center; gap: calc(var(--u) * 2); }
+
+/* the Leaderboards placeholder, until its screen is built */
+.placeholder-card { width: min(94vw, calc(var(--u) * 110)); }
+
+/* the background area map (ui 8.2): a small pill under the title block and under a toast; never over another screen */
+.area-note {
+  position: fixed; left: 50%; z-index: 4; pointer-events: none;
+  top: calc(var(--notice-top, calc(14px + var(--safe-t))) + var(--below-toast, 0px));
+  transform: translate(-50%, -6px); opacity: 0;
+  display: flex; align-items: center; gap: calc(6px * var(--hud)); white-space: nowrap;
+  padding: calc(5px * var(--hud)) calc(12px * var(--hud)); border-radius: 999px;
+  background: rgba(14, 26, 30, .72); color: var(--cream);
+  font-weight: 600; font-size: max(12px, calc(12.5px * var(--hud)));
+  transition: opacity .2s ease, transform .2s ease;
+}
+.area-note.show { opacity: 1; transform: translate(-50%, 0); }
+body:has(.screen.show) .area-note { opacity: 0; }
+.area-note .spinner { width: calc(12px * var(--hud)); height: calc(12px * var(--hud)); border-width: 2px; flex: none; }
+.area-note .tick { display: none; color: var(--gold); font-weight: 700; }
+.area-note[data-state="ready"] .spinner { display: none; }
+.area-note[data-state="ready"] .tick { display: inline; }
+
+/* U4 motion and effects: the press (squash, bounce and an orange ripple on the buttons), the ripple's rules, the reduced-motion
+   block last. The canvas effects (pause morph, fast-forward, rewind, trails, banner) are in render.js, under motion.js. */
+.btn, .pill, .icon-btn, .corner-btn .disc { position: relative; overflow: hidden; transition: transform .26s cubic-bezier(.2, 1.5, .4, 1), box-shadow .08s ease; }
+.icon-btn:active { transform: scale(.94, .9); }
+.btn::after, .pill::after, .icon-btn::after, .corner-btn .disc::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, rgba(255, 138, 42, .6) 0, rgba(255, 138, 42, .25) 45%, rgba(255, 138, 42, 0) 70%);
+}
+.btn:active::after, .pill:active::after, .icon-btn:active::after, .corner-btn:active .disc::after { animation: ripple .4s ease-out; }
+/* a press also sets .rip (motion.js bindRipples), so the ripple runs out after a quick tap too */
+.btn.rip::after, .pill.rip::after, .icon-btn.rip::after, .corner-btn.rip .disc::after { animation: ripple .4s ease-out; }
+@keyframes ripple { 0% { opacity: .9; transform: scale(.3); } 100% { opacity: 0; transform: scale(2.2); } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* simple fades: no springs, no sweeps; the switch's knob, the ripple and the squash go too */
+  .screen, .screen .card { transition: opacity .16s linear; }
+  .screen .card { transform: none; }
+  .toggle::before, .toggle::after { transition: none; }
+  .btn::after, .pill::after, .icon-btn::after, .corner-btn .disc::after { display: none; animation: none; }
+  .btn:active, .pill:active, .icon-btn:active, .corner-btn:active .disc { transform: none; opacity: .75; }
+  .over-best.new { animation: none; }
+}
+
+/* U5 tour: the Tour pill on its own row under the home's two pills, its one-time nudge on the pill's top edge, and the
+   Tour card: the categories as tabs, one card at a time (shot, bold title, one or two lines, Try it, dots). The picture is
+   as big as the card allows. On a short landscape phone the categories run down a rail at the left and the picture takes
+   about 60 percent of the screen's height; on a tablet the tabs sit above and the picture fills the room they leave; on a
+   portrait phone the picture takes the width it has. It is never bigger than its pixels allow (tour.js sizeShot: --cap is the
+   picture's pixels over the device density). Sizes in --u, as the other cards are. The shot is still (no zoom), and the card
+   change cross-fades. */
+.tour-row { flex: 1 1 100%; position: relative; container-type: inline-size; }
+/* the Tour pill's second line ("See what you can do", 3.2: DECISIONS 392) is one line, never a word alone on the next. Its font steps
+   down to fit the pill: the row is the container, and the words get its width less the pill's padding, icon and gap (58 phone px
+   at the menu scale; 9.8 is the words' width in ems). When even a small size would not fit, the line is not shown */
+.tour-row .tour-pill { width: 100%; min-width: 0; }
+.tour-row .tour-pill small { white-space: nowrap; font-size: min(calc(13.5px * var(--ui)), calc((100cqi - 58px * var(--ui)) / 9.8)); }
+@container (max-width: 170px) { .tour-row .tour-pill small { display: none; } }
+/* the nudge is two words at the pill's right end: where the Tour pill is half a row wide (beside Difficulty, with its second line),
+   a longer nudge covered the word Tour */
+.tour-tag {
+  position: absolute; top: calc(-9px * var(--ui)); right: calc(12px * var(--ui)); z-index: 1; pointer-events: none;
+  padding: calc(2px * var(--ui)) calc(9px * var(--ui)); border-radius: 999px;
+  background: var(--red); color: var(--cream); font-weight: 700; font-size: max(11.5px, calc(var(--u) * 2.9)); line-height: 1.3; white-space: nowrap;
+  box-shadow: 0 2px 0 var(--red-dark);
+}
+.tour-card {
+  width: min(94vw, calc(var(--u) * 190)); max-height: 92vh; max-height: 92dvh;
+  padding: calc(var(--u) * 2) calc(var(--u) * 4); gap: calc(var(--u) * 1); align-items: stretch;
+  container: tour / inline-size;
+}
+/* the card's two groups (the categories and the picture's column) are not boxes in the portrait and tablet layouts: their
+   children flow in the card's one column. The short landscape phones make them two boxes (below). */
+.tour-side, .tour-main { display: contents; }
+.tour-head { display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 2); }
+/* the title and its line on one row, so the header takes one line's height on a phone */
+.tour-heading { min-width: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 calc(var(--u) * 2.4); }
+.tour-heading h2 { font-size: calc(var(--u) * 6.2); line-height: 1.05; }
+.tour-heading .hint { margin: 0; }
+/* the six categories are all on show, never scrolled: one row of six where the card is wide enough (the tall formats,
+   the Pixel 9 included), else two rows of three. Each pill is at least 44 px tall, and a long name wraps inside it. */
+.tour-cats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: calc(var(--u) * 1); min-width: 0; }
+/* one row where the card's width is the phone's (about 750 px of content: the Pixel 9 and the other wide phones); a wider
+   tablet card keeps the two rows of three, so each pill keeps its size and the text does not wrap unevenly */
+@container tour (min-width: 720px) and (max-width: 800px) { .tour-cats { grid-template-columns: repeat(6, auto); justify-content: center; } }
+.tour-cat {
+  min-width: 0; min-height: 44px; padding: calc(var(--u) * 1) calc(var(--u) * 2.4); border: 0; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance;
+  background: #e7dcc2; color: var(--ink-soft); font: inherit; font-weight: 600; font-size: max(12px, calc(var(--u) * 3.1)); line-height: 1.15; cursor: pointer;
+}
+.tour-cat[aria-selected="true"] { background: var(--teal); color: var(--cream); }
+/* the stage holds the picture, centred, and the two arrows on its edges. --ar (the picture's shape) and --cap (its pixels over
+   the device density: the most it may be drawn, so it is never bigger than its pixels) are set by tour.js sizeShot; --fw is the
+   frame's width, which a landscape card reads from the stage's own size (a size container). The arrows sit over the picture's
+   edges when there is no room beside it, so the picture takes the whole stage. Its height is the picture's on a portrait card
+   and what the card has left on a landscape one. */
+.tour-stage {
+  --ar: 1.7778; --cap: 2048px; --arrow-w: max(44px, calc(var(--u) * 8.5));
+  --fw: min(calc(100cqw - 2 * (var(--arrow-w) + 6px)), calc(100cqh * var(--ar)), var(--cap));
+  position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0;
+  /* a portrait card's stage is a box three quarters as tall as the card's width: the same box for every card, so the foot
+     (the dots and Try) does not move from one card to the next; a landscape card's stage takes what it has (below) */
+  height: calc(100cqw * 0.75); container-type: size;
+  touch-action: pan-y; user-select: none; -webkit-user-select: none;
+}
+.tour-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 1;
+  width: var(--arrow-w); height: var(--arrow-w); padding: 0; border: 0; border-radius: 50%;
+  background: #e7dcc2; box-shadow: 0 2px 6px rgba(0,0,0,.28); cursor: pointer; display: grid; place-items: center;
+}
+/* the picture leaves room for the arrows beside it (a 6 px gap), so an arrow never covers the picture's content */
+#btn-tour-prev { left: max(0px, calc(50% - var(--fw) / 2 - var(--arrow-w) - 6px)); }
+#btn-tour-next { left: min(calc(100% - var(--arrow-w)), calc(50% + var(--fw) / 2 + 6px)); }
+.tour-arrow svg { width: 46%; height: 46%; fill: none; stroke: var(--ink); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.tour-arrow:disabled { opacity: .35; cursor: default; }
+/* the frame has the picture's own shape (--ar) and the stage's width (--fw), so the picture is never drawn bigger than its
+   pixels allow (up to any density). The picture fills the frame, with the frame's corners (tour.js sizeShot sets --ar and --cap). */
+.tour-frame {
+  position: relative; flex: 0 0 auto; border-radius: calc(var(--u) * 2); aspect-ratio: var(--ar);
+  width: var(--fw);
+  background: var(--teal-dark); box-shadow: 0 calc(var(--u) * 1.5) calc(var(--u) * 4) rgba(0,0,0,.25);
+}
+.tour-shot { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+.tour-shot.swap { animation: tour-fade .22s ease both; }
+@keyframes tour-fade { from { opacity: 0; } to { opacity: 1; } }
+.tour-name { margin: 0; text-align: center; font-weight: 700; font-size: calc(var(--u) * 5.2); line-height: 1.1; color: var(--ink); }
+.tour-body { margin: 0; min-height: 2.7em; text-align: center; font-size: max(12.5px, calc(var(--u) * 3.4)); line-height: 1.35; color: var(--ink-soft); text-wrap: balance; }
+.tour-body p { margin: 0; }
+/* every card's lines share one cell (tour.js drawLines): the hidden ones keep the box at the category's tallest */
+.tour-body { display: grid; }
+.tour-lines { grid-area: 1 / 1; }
+.tour-lines.off { visibility: hidden; }
+/* the dots and the Try it button together, centred under the lines */
+.tour-foot { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: calc(var(--u) * 1.2) calc(var(--u) * 2.4); min-width: 0; }
+.tour-dots { display: flex; flex: none; align-items: center; }
+.tour-dot { width: 44px; height: 44px; flex: none; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.tour-dot::before { content: ''; width: calc(9px * var(--ui)); height: calc(9px * var(--ui)); border-radius: 50%; background: #b9ad92; transition: background-color .2s ease, transform .2s ease; }
+.tour-dot[aria-current="true"]::before { background: var(--teal); transform: scale(1.3); }
+.tour-try { flex: none; white-space: nowrap; }
+.tour-try:disabled { background: #e7dcc2; color: var(--ink); opacity: 1; box-shadow: none; cursor: default; }
+/* a card with no action keeps the Try button's place (tour.js sets .none, not hidden): the button is invisible and cannot be
+   pressed, and the dots do not move from one card to the next */
+.tour-try.none { visibility: hidden; pointer-events: none; }
+/* portrait cards (and the squarer ones): the dots are centred on one row and Try has the row under them, kept whether or not
+   the card has an action */
+.tour-foot { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; row-gap: calc(var(--u) * 1.2); column-gap: 0; }
+.tour-dots { grid-column: 1; grid-row: 1; }
+.tour-try { grid-column: 1; grid-row: 2; justify-self: center; }
+/* a wide card (tablets and the big screens): the dots stay at the foot's centre and Try sits in its own column to the right,
+   so the dots do not move from one card to the next when a card has no Try button */
+@media (min-width: 900px) {
+  .tour-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; column-gap: calc(var(--u) * 2.4); }
+  .tour-dots { grid-column: 2; grid-row: 1; }
+  .tour-try { grid-column: 3; grid-row: 1; justify-self: start; }
+}
+/* the card's own height on a portrait phone is its content; a landscape card fills the screen, and its picture fills what the
+   tabs, the title, the lines and the dots leave (the stage is a size container: the frame reads its height and width) */
+.tour-card { height: auto; }
+/* a card taller than wide (3.3, DECISIONS 444): the Tour head keeps the close button's row and corner clear, so the categories start
+   under the button's bottom edge (the close check at 768 by 1024 found the top-right category under it) */
+@media (max-aspect-ratio: 1/1) {
+  .tour-head { min-height: 56px; padding-right: 56px; }
+}
+@media (min-aspect-ratio: 1/1) and (min-height: 501px) {
+  .tour-card { height: 100%; max-height: 100%; }
+  .tour-stage { flex: 1 1 0; height: auto; container-type: size; --fw: min(calc(100cqw - 2 * (var(--arrow-w) + 6px)), calc(100cqh * var(--ar)), var(--cap)); }
+}
+/* the short landscape phones (360 to 430 high): the categories run down a rail at the card's left, one a line, with the title
+   at its top, and the picture, its two lines and the dots fill the column beside it. The picture is about 60 percent of the
+   screen's height on the Pixel 9 (923 by 412). Only these rules and the landscape ones above change the layout: the markup
+   is the same. */
+@media (max-height: 500px) {
+  .tour-card {
+    display: grid; grid-template-columns: calc(var(--u) * 40) minmax(0, 1fr); column-gap: calc(var(--u) * 3); row-gap: 0;
+    height: 100%; max-height: 100%; align-content: stretch; align-items: stretch;
+    padding: calc(var(--u) * 1.2) calc(var(--u) * 3.5);
+  }
+  .tour-side { display: flex; flex-direction: column; gap: calc(var(--u) * 0.6); min-width: 0; min-height: 0; }
+  .tour-main { display: flex; flex-direction: column; gap: calc(var(--u) * 1); min-width: 0; min-height: 0; }
+  .tour-head .hint { display: none; }
+  .tour-card .tour-cats { grid-template-columns: minmax(0, 1fr); flex: 1 1 auto; align-content: space-between; gap: calc(var(--u) * 0.6); }
+  .tour-stage { flex: 1 1 0; height: auto; container-type: size; --fw: min(calc(100cqw - 2 * (var(--arrow-w) + 6px)), calc(100cqh * var(--ar)), var(--cap)); }
+  .tour-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) calc(var(--u) * 44); align-items: center; column-gap: calc(var(--u) * 2.4); }
+  .tour-dots { grid-column: 2; grid-row: 1; }
+  .tour-try { grid-column: 4; grid-row: 1; justify-self: start; }
+}
+/* the nudge hangs from the Tour pill's bottom edge at 400 px high or less: the 4 px row gap above the pill cannot hold it
+   without covering the Play now and Difficulty pills. This rule comes after .tour-tag's own, so it wins. */
+@media (max-height: 400px) {
+  .tour-tag { top: auto; bottom: calc(-9px * var(--ui)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* the card change is the cross-fade alone */
+  .tour-shot.swap { animation: tour-fade .22s ease both; }
+  .tour-dot::before { transition: none; }
+}
+
+/* U6 stats, leaderboards and achievements: the Leaderboards card (its list is the only scroller), the Achievements card, the
+   end card's two lines and the loading card's rank line. Sizes in --u, as the other cards are. */
+.loading-rank { margin: 0; font-weight: 700; font-size: max(12px, calc(var(--u) * 3.4)); color: var(--teal); text-align: center; }
+.loading-rank:empty { display: none; }
+.over-cell { margin: 0; font-weight: 600; font-size: max(12px, calc(var(--u) * 3.6)); color: var(--ink-soft); text-align: center; line-height: 1.25; }
+.over-rank { margin: 0; font-weight: 700; font-size: max(12px, calc(var(--u) * 3.4)); color: var(--teal); text-align: center; line-height: 1.25; text-wrap: balance; }
+.over-cell:empty, .over-rank:empty { display: none; }
+/* the boards open over the end card: the card goes behind them (one dim, not two), and Back brings it back */
+#over:has(~ #boards.show) { background: transparent; }
+#over:has(~ #boards.show) .over-card { visibility: hidden; }
+#boards-sheet.dim { background: rgba(14, 26, 30, .35); }
+
+/* Leaderboards (2.2): a phone in landscape fits the card. The head, the tabs and the filters are one row each; the body is
+   the summary (your best or rank, the day's challenge, the account) beside the list. The list is the only part that scrolls
+   (.boards-main) and shows five full rows at 923 by 412; tablets get two columns of rows. Sizes in --u, as the other cards are. */
+.boards-card, .ach-card {
+  width: min(94vw, calc(var(--u) * 170)); height: 92dvh; max-height: 92dvh; max-height: 92vh;
+  padding: calc(var(--u) * 1.8) calc(var(--u) * 3.4); gap: calc(var(--u) * 1);
+  align-items: stretch; overflow: hidden;
+}
+.boards-card { height: 94dvh; max-height: 94dvh; max-height: 94vh; }
+/* the head is one row at least 48 px tall: the close button's row (.close-x), so the tabs below start under its bottom edge */
+/* the right padding keeps the Play Games button clear of the close button (.close-x: 8 px in, 48 px wide, plus a gap) */
+.boards-head { flex: none; display: flex; align-items: center; gap: calc(var(--u) * 2); min-width: 0; min-height: 48px; padding-right: 64px; }
+.boards-head h2 { flex: 1 1 auto; min-width: 0; font-size: calc(var(--u) * 6); }
+.boards-head #btn-boards-pgs {
+  flex: 0 1 auto; min-width: 0; max-width: 52%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding-left: calc(var(--u) * 2.4); padding-right: calc(var(--u) * 2.4); font-size: max(12px, calc(var(--u) * 3.1));
+}
+.boards-tabs { flex: none; flex-wrap: nowrap; gap: calc(var(--u) * 1.2); }
+.boards-tabs button { flex: 1 1 0; min-width: 0; padding-left: 0; padding-right: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.boards-body { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * 1); }
+.boards-pane { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * 1.2); }
+/* the World filters: the airport, the level and the period, one row */
+.boards-filters { flex: none; display: flex; align-items: center; gap: calc(var(--u) * 1.2); min-width: 0; }
+.boards-airport {
+  flex: 0 1 auto; display: flex; align-items: center; gap: calc(var(--u) * 1.2); min-width: 0; max-width: 34%;
+  min-height: 44px; padding: 0 calc(var(--u) * 2.4); border: none; border-radius: 999px; background: #e7dcc2; color: var(--ink);
+  font: inherit; cursor: pointer;
+}
+.boards-airport b { flex: none; font-weight: 700; font-size: calc(var(--u) * 4.2); }
+.boards-airport i { flex: none; font-style: normal; font-size: calc(var(--u) * 3.4); color: var(--ink-soft); }
+.boards-levels { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; gap: 3px; }
+.boards-levels button { flex: 1 1 0; min-width: 0; padding-left: 2px; padding-right: 2px; font-size: max(12px, calc(var(--u) * 3)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.boards-period { flex: none; flex-wrap: nowrap; gap: 3px; }
+.boards-period button { min-height: 44px; padding-left: calc(var(--u) * 1.8); padding-right: calc(var(--u) * 1.8); font-size: max(12px, calc(var(--u) * 3)); white-space: nowrap; }
+/* the split: the summary, then the list (the scroller) */
+.boards-split { flex: 1 1 auto; min-height: 0; display: flex; gap: calc(var(--u) * 1.6); }
+/* the daily's today view is a box of its own (3.3, DECISIONS 430): it fills the pane, so the split and its list shrink to the card
+   and the list scrolls. Without it the card scrolled on every format (its wrapper was a plain block around the split) */
+#boards-daily-today { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+/* a card wider than tall (3.3, DECISIONS 444): the Today / Weekend switch sits over the summary column, so the list takes the
+   card's full height (at 640 by 360 it shows five full rows, the layout check's floor) */
+@media (min-aspect-ratio: 1/1) {
+  #boards-daily { display: grid; grid-template-columns: calc(var(--u) * 46) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); column-gap: calc(var(--u) * 1.6); row-gap: calc(var(--u) * 1.2); }
+  #boards-daily > .daily-views { grid-column: 1; grid-row: 1; margin: 0; }
+  #boards-daily > #boards-daily-today:not([hidden]), #boards-daily > #boards-daily-weekend:not([hidden]) { display: contents; }
+  #boards-daily > #boards-daily-today:not([hidden]) > .boards-split, #boards-daily > #boards-daily-weekend:not([hidden]) > .boards-split { display: contents; }
+  #boards-daily .boards-side { grid-column: 1; grid-row: 2; min-height: 0; }
+  #boards-daily .boards-main { grid-column: 2; grid-row: 1 / span 2; min-height: 0; }
+}
+.boards-side { flex: 0 0 calc(var(--u) * 46); min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * 1.2); }
+.boards-main {
+  flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * .8);
+  padding: 0 calc(var(--u) * .6) calc(var(--u) * 1); overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent 100%);
+}
+.boards-main > * { flex-shrink: 0; }
+.boards-list, .boards-airports { display: flex; flex-direction: column; gap: calc(var(--u) * .8); }
+.boards-you {
+  flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: calc(var(--u) * .6);
+  padding: calc(var(--u) * 2) calc(var(--u) * 2.6); border-radius: 14px; background: var(--teal-dark); color: var(--cream);
+  font-weight: 600;
+}
+.board-you-label { font-size: max(11px, calc(var(--u) * 2.8)); color: var(--gold); letter-spacing: .04em; text-transform: uppercase; }
+.board-you-rank { font-weight: 700; font-size: calc(var(--u) * 8); line-height: 1; font-variant-numeric: tabular-nums; }
+.board-you-name { font-size: max(12px, calc(var(--u) * 3.4)); line-height: 1.25; text-wrap: balance; }
+.board-you-where { font-size: max(11.5px, calc(var(--u) * 3)); color: var(--cream); opacity: .8; line-height: 1.25; }
+.boards-search { display: flex; flex-direction: column; gap: calc(var(--u) * 1); }
+.boards-search input {
+  width: 100%; min-height: 44px; box-sizing: border-box; font: inherit; font-weight: 600; font-size: max(16px, calc(var(--u) * 3.8));
+  padding: calc(var(--u) * 1.4) calc(var(--u) * 3); border: none; border-radius: 12px; background: #fff; color: var(--ink);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2); outline: none; user-select: text; -webkit-user-select: text;
+}
+.boards-results { list-style: none; margin: 0; padding: 0; max-height: calc(var(--u) * 30); overflow-y: auto; display: flex; flex-direction: column; gap: 4px; touch-action: pan-y; }
+.boards-hit {
+  width: 100%; min-height: 44px; display: flex; align-items: center; gap: calc(var(--u) * 2); padding: 4px calc(var(--u) * 3);
+  border: none; border-radius: 12px; background: #f1e7cf; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+}
+.boards-hit b { flex: none; min-width: 3.2em; font-weight: 700; font-size: calc(var(--u) * 3.8); }
+.boards-hit span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: max(12px, calc(var(--u) * 3)); color: var(--ink-soft); }
+.boards-explainer { margin: 0; font-size: max(11.5px, calc(var(--u) * 2.9)); color: var(--ink-soft); line-height: 1.3; text-align: left; text-wrap: balance; }
+.boards-empty { margin: calc(var(--u) * 2) 0; text-align: center; font-weight: 600; color: var(--ink-soft); font-size: max(13px, calc(var(--u) * 3.5)); line-height: 1.3; }
+.boards-loading { color: var(--teal); }
+.boards-retry { align-self: center; }
+/* a board row: the rank, the name and the score; about 38 px at 923 by 412 (five full rows), 33 px at 640 by 360 */
+.board-row {
+  flex: none; display: grid; grid-template-columns: max(30px, calc(var(--u) * 6.6)) minmax(0, 1fr) auto; align-items: center; gap: calc(var(--u) * 1.6);
+  min-height: max(32px, calc(var(--u) * 9.2)); padding: 3px calc(var(--u) * 2.6); border-radius: 12px; background: #f1e7cf;
+  font-size: max(13px, calc(var(--u) * 3.6));
+}
+.board-row.mine { background: #ffe2a0; }
+.board-rank { font-weight: 700; color: #8f9a9c; font-variant-numeric: tabular-nums; }
+.board-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.board-score { font-weight: 700; color: var(--teal); font-variant-numeric: tabular-nums; }
+.boards-note { flex: none; margin: 0; text-align: left; text-wrap: balance; }
+/* World stats (3.1; DECISIONS 384): the three periods as a small table (the side), today's best game as the teal panel, and the
+   busiest airports as board rows (the list). Numbers are tabular, so the columns line up. */
+.stats-table { flex: none; display: flex; flex-direction: column; gap: calc(var(--u) * .8); font-size: max(12px, calc(var(--u) * 3.2)); }
+.stat-line { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: calc(var(--u) * .6); align-items: center; }
+#boards-stats .boards-side { flex-basis: calc(var(--u) * 60); }
+.stat-head { font-size: max(10.5px, calc(var(--u) * 2.6)); font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .03em; line-height: 1.1; }
+.stat-head .stat-col { white-space: normal; text-wrap: balance; }
+.stat-cell { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+.stat-label { text-align: left; font-weight: 600; color: var(--ink-soft); white-space: normal; line-height: 1.15; } /* "Planes landed" wraps when its column is narrow */
+.stat-line b { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stats-best { flex: none; padding: calc(var(--u) * 1) calc(var(--u) * 2.2); } /* a short panel: the Today column is the tallest at 640 by 360 */
+.stats-heading { flex: none; margin: 0; font-weight: 700; font-size: max(12px, calc(var(--u) * 3.4)); color: var(--ink-soft); }
+/* World stats, the second part (3.2, DECISIONS 400): the tab's three views (a segmented control in the tab, under its one row of
+   tabs), today's challenge and its tap, the day's hours as bars, the Records view's two cards, and the map. Sizes in --u. */
+.stats-views { flex: none; flex-wrap: nowrap; gap: calc(var(--u) * 1.2); }
+.stats-views button { flex: 1 1 0; min-width: 0; padding-left: 0; padding-right: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stats-view { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.stats-view > .boards-split { flex: 1 1 auto; min-height: 0; }
+/* a card taller than wide (3.3, DECISIONS 444): your best is a strip above the list (its label, rank and name in a row or two),
+   and the list takes the full width and the height that is left; the list still scrolls (.boards-main) */
+@media (max-aspect-ratio: 1/1) {
+  .boards-split { flex-direction: column; gap: calc(var(--u) * 1); }
+  .boards-side { flex: 0 0 auto; }
+  #boards-stats .boards-side { flex-basis: auto; }
+  .boards-you { flex: 0 0 auto; flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: flex-start; column-gap: calc(var(--u) * 2.4); row-gap: calc(var(--u) * .4); padding: calc(var(--u) * 1.4) calc(var(--u) * 2.6); }
+  .board-you-label { flex: 0 0 100%; }
+  .board-you-rank { font-size: calc(var(--u) * 6); }
+  .board-you-name { flex: 1 1 auto; min-width: 0; }
+  .board-you-where { flex: 0 0 100%; }
+}
+/* Today (3.2, DECISIONS 417): three columns, so the day fits a phone's height and the card does not scroll. Column one: the periods
+   and today's best. Column two: the day's hours and the footnote. Column three: the heading and the five busiest airports. Each column
+   is its own height (align-items: start), and the widths give the table and the names their room at 640 by 360. */
+.stats-split { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(200px, 1.8fr) minmax(104px, 0.94fr) minmax(0, 2.5fr); align-items: start; gap: calc(var(--u) * 1.6); }
+.stats-col { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * 1.2); }
+.stats-challenge { font-size: max(12px, calc(var(--u) * 3.4)); line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.stats-beat { align-self: flex-start; min-height: 44px; }
+.stats-hours { flex: none; display: flex; flex-direction: column; gap: calc(var(--u) * .6); }
+.stats-kicker { font-size: max(10.5px, calc(var(--u) * 2.6)); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); line-height: 1.2; }
+.stats-bars { display: flex; align-items: flex-end; gap: 1px; height: calc(var(--u) * 9); border-bottom: 1px solid #c9b98f; }
+.stats-bar { flex: 1 1 0; min-width: 0; min-height: 0; border-radius: 2px 2px 0 0; background: var(--teal); }
+.stats-bar-labels { display: flex; gap: 1px; }
+.stats-bar-label { flex: 1 1 0; min-width: 0; text-align: center; font-size: max(9px, calc(var(--u) * 2.2)); color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: visible; }
+.stats-card { flex: none; display: flex; flex-direction: column; gap: calc(var(--u) * .8); padding: calc(var(--u) * 2) calc(var(--u) * 2.4); border-radius: 14px; background: #f1e7cf; }
+.stats-big { font-weight: 800; font-size: calc(var(--u) * 7); line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink); }
+.stats-small { font-size: max(12px, calc(var(--u) * 3.2)); line-height: 1.3; color: var(--ink); text-wrap: balance; }
+.stats-bar-track { flex: none; height: calc(var(--u) * 2.4); border-radius: 999px; background: #e3d6b8; overflow: hidden; }
+.stats-bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--teal); }
+.stats-map-box { flex: 1 1 auto; min-height: 0; position: relative; border-radius: 14px; background: #9fd3e6; overflow: hidden; }
+.stats-map-box > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.map-land { fill: #e9dcc0; stroke: #7a8b6f; stroke-width: .3; }
+.map-dot { fill: var(--teal); stroke: #fff; stroke-width: .6; opacity: .9; }
+/* five airports, one column at every size (the tablet's two columns would leave the list half empty). Today's rows are 8 u (3.2,
+   DECISIONS 417): the heading and five rows fit the third column at 640 by 360, and the rows are not tapped (no touch target). */
+#stats-airports { display: flex; flex-direction: column; }
+#stats-airports .board-row { min-height: calc(var(--u) * 8); }
+#stats-airports .board-name.code-only .stats-city { display: none; } /* a row too narrow for its city shows the code alone (screens.js) */
+.boards-daily-top { flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--u) * .8); }
+.boards-daily-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: calc(var(--u) * 2); }
+.boards-daily-title { font-weight: 700; font-size: calc(var(--u) * 5); color: var(--gold-dark); }
+.boards-daily-sub { font-weight: 600; font-size: max(12px, calc(var(--u) * 3.3)); color: var(--ink-soft); }
+.boards-streak { margin: 0; font-weight: 700; font-size: max(12px, calc(var(--u) * 3.5)); color: var(--teal); }
+.boards-play { align-self: flex-start; }
+/* your airports: one row per airport (code, name, stars, best, rank); an opened row shows its levels */
+.airport-stat { flex: none; border-radius: 14px; background: #f1e7cf; }
+.airport-stat.open { background: #fff6e3; box-shadow: inset 0 0 0 2px #e7dcc2; }
+.airport-stat-head {
+  width: 100%; min-height: 44px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto; align-items: center; gap: calc(var(--u) * 1.8);
+  padding: calc(var(--u) * 1) calc(var(--u) * 2.6); border: none; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+}
+.as-code { font-weight: 700; font-size: calc(var(--u) * 4.4); }
+.as-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: max(12px, calc(var(--u) * 3.1)); color: var(--ink-soft); }
+.as-stars { font-weight: 700; letter-spacing: 1px; font-size: max(11px, calc(var(--u) * 2.8)); color: var(--gold-dark); white-space: nowrap; }
+.as-row-best, .as-row-rank { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.as-row-best b, .as-row-rank b { font-weight: 700; font-size: max(13px, calc(var(--u) * 3.6)); }
+.as-row-best small, .as-row-rank small { font-weight: 600; font-size: max(10.5px, calc(var(--u) * 2.5)); color: var(--ink-soft); }
+.as-row-rank b { color: var(--teal); }
+.airport-levels { display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--u) * 1.2); padding: 0 calc(var(--u) * 2.6) calc(var(--u) * 2.2); }
+.as-table { width: 100%; border-collapse: collapse; font-size: max(12px, calc(var(--u) * 3.2)); }
+.as-table th { font-weight: 600; color: var(--ink-soft); text-align: left; padding: 2px 4px; }
+.as-table td { font-weight: 600; padding: 4px; font-variant-numeric: tabular-nums; }
+.as-table th:not(:first-child), .as-table td:not(:first-child) { text-align: right; }
+.as-rank { color: var(--teal); }
+.airport-play { align-self: flex-start; }
+/* the account (13 and up, signed in): the switch and Remove my scores, in a card beside the airports */
+.boards-account { justify-content: center; padding: calc(var(--u) * 2) calc(var(--u) * 2.6); border-radius: 14px; background: #f1e7cf; }
+.boards-account .btn { align-self: flex-start; padding-left: 0; padding-right: 0; }
+.boards-sheet .confirm-card { width: min(90vw, calc(var(--u) * 100)); }
+/* two columns of rows on a tablet: the list and the airports take the room the summary leaves */
+@media (min-width: 1000px) {
+  .boards-list, .boards-airports { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-content: start; column-gap: calc(var(--u) * 1.2); }
+  .boards-list > :not(.board-row), .boards-airports > :not(.airport-stat) { grid-column: 1 / -1; }
+  .airport-stat.open { grid-column: 1 / -1; }
+}
+/* the Streak screen (screens.js renderStreak): the hero, the one line, the last 14 days, the facts and the two actions */
+.streak-flame { fill: var(--ink-soft); opacity: .35; } /* the none and broken states, the default */
+.streak-card { width: min(92vw, calc(var(--u) * 110)); gap: calc(var(--u) * 2); align-items: stretch; }
+.streak-head { display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 2); }
+.streak-head h2 { font-size: calc(var(--u) * 6.4); }
+.streak-hero { display: flex; align-items: center; gap: calc(var(--u) * 3); }
+.streak-hero .streak-flame { width: calc(var(--u) * 14); height: calc(var(--u) * 14); flex: none; }
+.streak-figure { display: flex; flex-direction: column; min-width: 0; }
+#streak-count { font-size: max(40px, calc(var(--u) * 12)); font-weight: 700; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+#streak-unit { font-size: max(12px, calc(var(--u) * 3.6)); font-weight: 600; color: var(--ink-soft); }
+.streak-state { margin: 0; text-align: center; font-weight: 600; font-size: max(13px, calc(var(--u) * 3.8)); color: var(--ink); line-height: 1.25; text-wrap: balance; }
+.streak-strip { display: flex; gap: 1px; width: 100%; }
+.streak-cell { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.streak-day { font-size: 11.5px; font-weight: 600; line-height: 1; color: var(--ink-soft); }
+.streak-glyph { position: relative; box-sizing: border-box; display: block; width: max(14px, calc(var(--u) * 3.6)); height: max(14px, calc(var(--u) * 3.6)); border-radius: 50%; }
+.streak-glyph.played { background: var(--red); }
+.streak-glyph.played::after { content: ''; position: absolute; left: 34%; top: 20%; width: 26%; height: 44%; border: solid var(--cream); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.streak-glyph.skipped { border: 2px solid var(--ink-soft); }
+.streak-glyph.today { border: 2px dashed var(--teal); }
+.streak-glyph.none::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: var(--cream-2); }
+/* a skipped day that kept the streak alive: the holding pattern, wider than the squares (its racetrack is a loop, 28 by 16),
+   so the loop and its plane read at the strip's square size too; the SVG is vector, so it is sharp at any density */
+.streak-glyph.hold { width: max(21px, calc(var(--u) * 5.6)); height: max(12px, calc(var(--u) * 3.2)); color: var(--ink-soft); }
+.streak-glyph.hold svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.streak-glyph.hold .hp-plane { fill: var(--ink); stroke: var(--cream); stroke-width: 1.1; stroke-linejoin: round; paint-order: stroke; }
+.streak-facts { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.streak-facts p { margin: 0; font-weight: 600; font-size: max(13px, calc(var(--u) * 3.6)); color: var(--ink-soft); text-align: center; }
+.streak-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(var(--u) * 2); }
+.streak-actions .btn { min-height: 44px; }
+
+/* Achievements */
+.ach-head { display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 2); min-height: 48px; }
+.ach-head h2 { font-size: calc(var(--u) * 6.4); }
+.ach-rank { flex: none; display: flex; flex-direction: column; gap: calc(var(--u) * .8); }
+.ach-rank-top { margin: 0; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px calc(var(--u) * 2); }
+#ach-rank-name { font-size: calc(var(--u) * 4.8); color: var(--teal); }
+#ach-count { font-weight: 600; font-size: max(11.5px, calc(var(--u) * 3)); color: var(--ink-soft); }
+.ach-bar { height: calc(var(--u) * 2); min-height: 8px; border-radius: 999px; background: #e7dcc2; overflow: hidden; }
+.ach-bar i { display: block; height: 100%; min-width: 0; background: var(--teal); border-radius: 999px; transition: width .6s cubic-bezier(.2, .9, .3, 1); }
+.ach-rank-line { margin: 0; font-weight: 600; font-size: max(12px, calc(var(--u) * 3.2)); color: var(--ink-soft); }
+.ach-totals { flex: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: calc(var(--u) * 1.2); }
+.ach-total { display: flex; flex-direction: column; align-items: center; text-align: center; padding: calc(var(--u) * 1.2) 4px; border-radius: 10px; background: #f1e7cf; }
+.ach-total b { font-size: calc(var(--u) * 4.4); line-height: 1.1; color: var(--teal); font-variant-numeric: tabular-nums; }
+.ach-total span { font-size: max(11.5px, calc(var(--u) * 2.8)); font-weight: 600; color: var(--ink-soft); line-height: 1.15; }
+/* the badges are the only part that scrolls: the rank, the totals and Done stay on the card (as the Leaderboards list does) */
+.ach-grid { flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; align-content: start; touch-action: pan-y; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--u) * 62)), 1fr)); gap: calc(var(--u) * 1.4);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent 100%); }
+.ach-badge { display: flex; align-items: center; gap: calc(var(--u) * 2); min-width: 0; padding: calc(var(--u) * 1.2) calc(var(--u) * 2.2); border-radius: 12px; background: #f1e7cf; }
+.ach-badge.locked { background: #ebe2cc; }
+.ach-disc {
+  --ring: #5fb34d; flex: none; width: max(40px, calc(var(--u) * 9.4)); height: max(40px, calc(var(--u) * 9.4)); border-radius: 50%;
+  display: grid; place-items: center; background: #fff6e3; box-shadow: inset 0 0 0 calc(var(--u) * .7) var(--ring);
+}
+.ach-badge[data-tier="gold"] .ach-disc { --ring: #f2c14e; }
+.ach-badge[data-tier="orange"] .ach-disc { --ring: #f28c38; }
+.ach-glyph { font-style: normal; font-size: calc(var(--u) * 5.6); line-height: 1; }
+.ach-badge.locked .ach-glyph { filter: grayscale(1); opacity: .55; }
+.ach-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ach-name { font-size: max(13px, calc(var(--u) * 3.6)); font-weight: 700; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ach-line { font-size: max(11.5px, calc(var(--u) * 2.9)); font-weight: 600; color: var(--ink-soft); line-height: 1.2; }
+.ach-when { color: var(--teal); }
+.ach-text .ach-bar { height: calc(var(--u) * 1.4); min-height: 6px; margin-top: 3px; }
+.ach-foot { flex: none; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: calc(var(--u) * 2); }
+.ach-foot .close-btn { min-width: min(100%, calc(var(--u) * 50)); }
+@media (prefers-reduced-motion: reduce) { .ach-bar i { transition: none; } }
+
+/* U7 server: no styles (the server has no page) */
+
+/* U8 gates and native: the first-launch gate (age, month, under-13, Agree) and the legal sheet.
+   The gate is a single column, no taller than the screen allows, so the Pixel 9 (412 high) never scrolls it. */
+.gate { background: rgba(14, 26, 30, .7); }
+.gate-card { width: min(90vw, calc(var(--u) * 110)); gap: calc(var(--u) * 2.2); text-align: center; }
+.gate-card h2 { font-size: calc(var(--u) * 6.6); }
+.gate-card .gate-body, .gate-card .gate-changed, .gate-card .gate-q { margin: 0; font-size: calc(var(--u) * 4.2); line-height: 1.35; color: var(--ink); }
+.gate-card .gate-changed, .gate-card .gate-q { font-weight: 600; }
+.gate-note { margin: 0; font-size: calc(var(--u) * 3.4); line-height: 1.3; color: var(--ink-soft); min-height: 1em; }
+.gate-year {
+  font: inherit; font-size: calc(var(--u) * 4.6); font-weight: 600; color: var(--ink);
+  width: 100%; min-height: 48px; padding: 0 calc(var(--u) * 3); border-radius: 999px;
+  border: 2px solid var(--cream-2); background: #fff; box-shadow: inset 0 calc(var(--u) * .4) calc(var(--u) * .8) rgba(0,0,0,.08);
+}
+/* the two links inside the sentence: 44 px to tap, and the line keeps its height */
+.gate-link {
+  font: inherit; font-weight: 600; color: var(--teal); text-decoration: underline; background: none; border: 0; cursor: pointer;
+  padding: 12px 0; margin: -12px 0; min-height: 44px;
+}
+.gate-card .btn:disabled { opacity: .45; cursor: default; box-shadow: none; }
+.gate-actions { width: 100%; }
+.gate-actions .btn { min-width: min(100%, calc(var(--u) * 46)); }
+
+/* the legal sheet (the same three tabs in the Agree screen and About): a full-height card, the page scrolls inside it */
+.legal-card { width: min(94vw, calc(var(--u) * 150)); height: min(92dvh, calc(var(--u) * 110)); padding-bottom: calc(var(--u) * 2); }
+/* the Legal sheet opens over About, which stays open under it (Back returns to it). About's card is wider on phones, so
+   its close button would peek out beside the Legal card: the About card is hidden while the sheet is up */
+body:has(#legal.show) #about .card { visibility: hidden; }
+.legal-tabs { display: flex; gap: calc(var(--u) * 1.2); width: 100%; }
+.legal-tab {
+  flex: 1 1 0; min-width: 0; min-height: 44px; font: inherit; font-size: calc(var(--u) * 3.6); font-weight: 600;
+  border: 0; border-radius: 999px; background: var(--cream-2); color: var(--ink); cursor: pointer; padding: 0 calc(var(--u) * 1.6);
+}
+.legal-tab[aria-selected="true"] { background: var(--teal); color: var(--cream); }
+.legal-body { position: relative; flex: 1 1 auto; min-height: 0; width: 100%; border-radius: calc(var(--u) * 2); overflow: hidden; background: #f7f3ea; }
+.legal-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #f7f3ea; }
+
+/* U9 about: the legal notice set small and left-aligned, the three legal links as 44 px text buttons with dots between,
+   and the last line centred in the game font with a small orange heart */
+.about-card .credits, .about-card .legal-notice { align-self: stretch; }
+/* short phones: the gaps and the card's padding tighten, so the Pixel 9 and 844 x 390 fit the whole card */
+@media (max-height: 420px) { .about-card { gap: calc(var(--u) * .8); padding-top: calc(var(--u) * 2.4); padding-bottom: calc(var(--u) * 1.4); } }
+.legal-notice { margin: 0; font-size: max(12px, calc(var(--u) * 2.9)); line-height: 1.32; color: var(--ink-soft); text-align: left; }
+.legal-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 calc(var(--u) * 1.2); width: 100%; }
+.legal-link {
+  font: inherit; font-size: max(13px, calc(var(--u) * 3.4)); font-weight: 600; color: var(--teal); text-decoration: underline;
+  min-width: 44px; min-height: 44px; padding: 0 calc(var(--u) * 1); background: none; border: 0; cursor: pointer;
+}
+.legal-sep { font-size: max(13px, calc(var(--u) * 3.4)); font-weight: 600; color: var(--ink-soft); }
+.love { margin: 0; text-align: center; font-size: max(12px, calc(var(--u) * 3.4)); font-weight: 600; color: var(--ink); }
+.heart { color: #d9761f; }
+/* the sign-off and Done: a footer that stays at the card's foot, so Done is in reach however far the notice scrolls */
+.about-foot { position: sticky; bottom: 0; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 1.3); padding-top: calc(var(--u) * 1); background: var(--cream); }
+
+/* Short Final Pro (2.7): the Play button's free-games line (day 4 on), the Settings row, the end card's offer and the upgrade sheet */
+#btn-demo .pb-left { display: block; font-size: max(10px, min(calc(12.5px * var(--ui)), 5.8cqi)); }
+.pro-row, .pgs-row { margin-top: 6px; }
+.pro-card .pro-lead { font-weight: 600; font-size: calc(var(--u) * 4.2); }
+.pro-card .pro-used { font-weight: 600; font-size: calc(var(--u) * 3.8); color: var(--red-dark); }
+.pro-line { font-size: max(12.5px, calc(var(--u) * 3.4)); color: var(--ink-soft); text-align: center; }
+
+/* The browser demo (DECISIONS 445 to 449). The build writes data-flavor="web-demo" on html; the app's is "app", so the demo's own
+   parts are hidden there and the app's are hidden in the demo. Nothing else depends on the flavour. */
+:root[data-flavor="web-demo"] :is(#home-stats, .tour-row, #home-world, #btn-streak, #btn-boards, #btn-achievements,
+  #btn-feed-realonly, #feed-save-note, #feed-game-block, #btn-feed-details, #btn-feed-copy, #btn-restart, #btn-pause-rpo,
+  #btn-next-airport, #btn-over-pro, #btn-again, #btn-share-video, #btn-over-board, [data-fmt="challenge"], [data-fmt="video"],
+  #btn-rpo, #btn-reminder, #btn-streak-saver, #btn-weekly-recap, [data-setting="worldStats"], [data-setting="realWeather"],
+  #set-pro, #set-cloud, #btn-reset, #about-pro) { display: none !important; }
+:root[data-flavor="web-demo"] .set-item:has(> :is(#btn-rpo, #btn-reminder, #btn-streak-saver, #btn-weekly-recap, [data-setting="worldStats"])) { display: none !important; }
+:root:not([data-flavor="web-demo"]) .web-only { display: none !important; }
+:root[data-flavor="web-demo"] canvas#game { height: 100dvh; cursor: crosshair; }
+:root[data-flavor="web-demo"] button:focus-visible, :root[data-flavor="web-demo"] a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+:root[data-flavor="web-demo"] #home-feed { pointer-events: none; }
+:root[data-flavor="web-demo"] .pause-level > .set-note { display: none; } /* a demo game is never ranked, so the level's ranking note is the app's */
+/* the home's demo note reads like the app's stats line (cream on the map, with its shadow); the Settings note sits on the cream card */
+.web-note { margin: 4px 0 0; color: var(--cream); opacity: .9; font-weight: 500; font-size: max(12px, calc(var(--u) * 3.2)); text-shadow: 0 1px 0 rgba(0,0,0,.3); text-wrap: pretty; }
+.web-set { margin: 0; font-size: max(12.5px, calc(var(--u) * 3.4)); color: var(--ink-soft); }
+.web-set { text-align: center; margin-bottom: calc(var(--u) * 1.2); }
+a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; }
+a.legal-link { text-decoration: underline; display: inline-flex; align-items: center; }
+.web-invite { display: grid; gap: calc(var(--u) * 1); justify-items: center; text-align: center; padding-top: calc(var(--u) * 1.6); border-top: 2px dashed var(--cream-2); }
+.web-invite h3 { margin: 0; font-size: calc(var(--u) * 4.4); color: var(--teal-dark); }
+.web-invite p { margin: 0; font-size: max(12.5px, calc(var(--u) * 3.4)); color: var(--ink-soft); }
+/* the turn card: a portrait phone (the app is landscape on a phone) and the unsupported card, both over the whole page */
+.turn-card { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 16px; background: var(--teal-dark); }
+.turn-body { width: min(92vw, 420px); display: grid; gap: 18px; justify-items: center; text-align: center; padding: 28px 22px; }
+.turn-body h2 { margin: 0; font-size: 26px; color: var(--teal-dark); }
+.turn-body p { margin: 0; font-size: 16px; color: var(--ink-soft); }
+@media (orientation: portrait) and (max-width: 599px) { :root[data-flavor="web-demo"] #turn-card { display: flex; } }
+:root[data-flavor="web-demo"] #unsupported:not([hidden]) { display: flex; }

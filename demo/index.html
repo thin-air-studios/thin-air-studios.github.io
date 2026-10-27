@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="en" data-flavor="web-demo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16323a">
+<title>Short Final</title>
+<link rel="stylesheet" href="style.css?v=7227d0de">
+<link rel="preload" href="fonts/fredoka-latin-600-normal.woff2?v=7227d0de" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="radio" class="radio" aria-live="polite"><span class="radio-who"></span><span class="radio-text"><span class="typed"></span><span class="rest"></span></span></div>
+<div id="safe-probe"></div>
+
+<!-- Home -->
+<section id="menu" class="screen">
+  <div class="menu-left">
+    <div class="brand">
+      <img class="logo-mark" src="img/logo.svg?v=7227d0de" alt="">
+      <div>
+        <h1>Short<br>Final</h1>
+        <p class="tagline">Real traffic. Any airport.</p>
+        <p class="web-only web-note">Web demo: one free game. No sign-in, no scores.</p>
+        <p id="home-stats" class="home-stats"></p>
+      </div>
+    </div>
+    <div class="search">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+      <!-- 2.8 (DECISIONS 330): readonly with inputmode none, so the phone's keyboard never opens; the game's own keys (#search-kb) type into it -->
+      <input id="search" type="text" readonly inputmode="none" placeholder="Search any airport" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Search any airport by code, name or city" aria-controls="airport-list search-kb">
+      <button id="search-clear" class="search-clear" aria-label="Clear search"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    </div>
+    <div class="menu-actions">
+      <!-- its lines: the title; the place, with the rank word after it when ranked; when unranked, the reason on a line of its own.
+           The words are set by main.js syncPlayButton (playbutton.js). Nothing on it is cut (2.4 item 3) -->
+      <button id="btn-demo" class="pill pending">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+        <span><span class="pb-title">Play now</span><small><span class="pb-place">Random airport</span><span class="pb-rank">· Ranked</span></small><small class="pb-unranked" hidden></small><small class="pb-left" hidden></small></span>
+      </button>
+      <button id="diff-chip" class="pill subtle">
+        <span>Difficulty<small id="diff-chip-value">Normal</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg>
+      </button>
+      <!-- the Tour (U5): a row of its own under the two above, since three pills do not fit one row; the one-time nudge
+           hangs off its top edge (showFeatured sets it, the Tour and the first game clear it) -->
+      <div class="tour-row">
+        <button id="btn-tour" class="pill subtle tour-pill">
+          <span>Tour<small>See what you can do</small></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg>
+        </button>
+        <span id="tour-tag" class="tour-tag" hidden>New here?</span>
+      </div>
+    </div>
+    <!-- the live feed's last check, so the player can see whether the flights are real before choosing (hidden while searching);
+         a tap checks again (main.js runFeedCheck). A button, so the whole line is the touch target (44 px). Alone in this column
+         since 3.2 (World stats moved to the airport column, DECISIONS 396) -->
+    <button type="button" class="hint home-feed" id="home-feed"></button>
+  </div>
+  <div class="menu-right">
+    <div id="airport-list" class="airport-list"></div>
+    <!-- World stats (3.1; worldstats.js, DECISIONS 384): today's players and planes, or the all-time planes. Moved in 3.2 (DECISIONS
+         396) from under the feed's line to the foot of this column, so the left column holds the feed's line alone and a cutout
+         cannot push the line off the screen. One line, never wrapping; hidden when there is nothing to say, with the boards
+         closed and offline. Its place for the rotating ticker (DECISIONS 402). -->
+    <p class="hint home-world" id="home-world" hidden></p>
+  </div>
+  <!-- 2.8: the game's keys for the search (searchkb.js draws them; shown only while the search is open with the keys up, style.css) -->
+  <div id="search-kb" class="search-kb"></div>
+  <!-- the home corner (ui 7): five labelled icon buttons, Streak first (screens.js renderStreakCorner); the icons are SVG in the gear's and the i's style (O14) -->
+  <div class="corner">
+    <button id="btn-streak" class="corner-btn" aria-label="Streak">
+      <span class="disc"><svg class="streak-flame" viewBox="6 2.2 12 17.5" aria-hidden="true"><path d="M12 2.2c.5 3 2.2 4.6 3.7 6.2 1.4 1.5 2.3 3.1 2.3 5.3a6 6 0 0 1-12 0c0-2.2.9-3.9 2.3-5.4.2 1.4.9 2.3 1.8 2.8C9.5 8.3 10.9 5.2 12 2.2z"/></svg><b class="streak-chip" hidden></b></span>
+      <span class="lbl">Streak</span>
+    </button>
+    <button id="btn-boards" class="corner-btn" aria-label="Leaderboards">
+      <span class="disc"><svg viewBox="2 2 20 20"><path d="M7 4h10v2h3v3a4 4 0 0 1-4 4h-.3A5 5 0 0 1 13 15.9V18h3v2H8v-2h3v-2.1A5 5 0 0 1 8.3 13H8a4 4 0 0 1-4-4V6h3zm0 4H6v1a2 2 0 0 0 1 1.7zm10 0v2.7A2 2 0 0 0 18 9V8z" /></svg></span>
+      <span class="lbl">Leaderboards</span>
+    </button>
+    <button id="btn-achievements" class="corner-btn" aria-label="Achievements">
+      <span class="disc"><svg viewBox="0 0 24 24"><path d="M6.5 2.5h3.6l1.9 5.2H8.4zm7.4 0h3.6l-1.5 5.2h-3.5z"/><circle cx="12" cy="15" r="6.2" fill="none" stroke-width="2.2"/><path d="M12 11.8l.9 1.9 2 .2-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.2z"/></svg></span>
+      <span class="lbl">Achievements</span>
+    </button>
+    <button id="btn-settings" class="corner-btn" aria-label="Settings">
+      <span class="disc"><svg viewBox="0 0 24 24"><path d="M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8zm8.3 4.6-.1-1.2 2-1.6-2-3.4-2.4.8a8 8 0 0 0-2-1.2L15.3 4h-4l-.5 2.6a8 8 0 0 0-2 1.2l-2.4-.8-2 3.4 2 1.6a8 8 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-.8a8 8 0 0 0 2 1.2l.5 2.6h4l.5-2.6a8 8 0 0 0 2-1.2l2.4.8 2-3.4-2-1.6z" /></svg></span>
+      <span class="lbl">Settings</span>
+    </button>
+    <button id="btn-about" class="corner-btn" aria-label="About">
+      <span class="disc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke-width="2.4"/><rect x="10.7" y="10" width="2.6" height="7.5" rx="1.2"/><circle cx="12" cy="7" r="1.6"/></svg></span>
+      <span class="lbl">About</span>
+    </button>
+  </div>
+</section>
+
+<!-- Loading -->
+<section id="loading" class="screen dim">
+  <div class="card loading-card">
+    <div class="spinner"></div>
+    <h2 id="loading-title">Loading</h2>
+    <!-- U3: status lines; U6 adds the rank line under them -->
+    <p id="loading-status" class="muted"></p>
+    <p id="loading-rank" class="loading-rank muted"></p>
+    <div class="row">
+      <button id="btn-skip-map" class="btn small" hidden>Play on runways now</button>
+      <button id="btn-cancel-load" class="btn small ghost">Cancel</button>
+    </div>
+  </div>
+</section>
+
+<!-- Pause (ui 4): the play controls and the live feed on the left; Level, Departures and the sound switches on the right.
+     The level picker is not a .seg with data-setting: the global settings handler would write it into the save -->
+<section id="pause" class="screen dim">
+  <div class="card pause-card">
+    <div class="pause-main">
+      <h2>Paused</h2>
+      <div id="pause-wx" class="pause-wx"></div>
+      <p id="pause-rank" class="pause-rank" hidden></p>
+      <button id="btn-resume" class="btn primary">Resume</button>
+      <!-- the live feed's plain status (main.js refreshPauseFeed), then the one switch: the same switch as
+           Settings and the Live feed card (main.js refreshRpoSwitches). It takes the place of the old simulated-planes button -->
+      <div id="pause-feed" class="pause-feed" hidden>
+        <p id="pause-feed-line" class="pause-feed-line"></p>
+        <div class="row">
+          <button id="btn-pause-feed" class="btn small">Live feed</button>
+        </div>
+        <button class="toggle switch" id="btn-pause-rpo" data-pause-setting="realPlanesOnly" role="switch" aria-checked="false"><span class="tg-text"><span>Real planes only</span><small class="set-note" id="pause-rpo-note"></small></span></button>
+      </div>
+      <div class="row">
+        <button id="btn-restart" class="btn">Restart</button>
+        <button id="btn-quit" class="btn">Home</button>
+      </div>
+    </div>
+    <div class="pause-set">
+      <div id="pause-level" class="set-group pause-level">
+        <label>Level</label>
+        <div class="seg pause-seg" id="pause-levels">
+          <button data-pause-level="beginner">Beginner</button><button data-pause-level="easy">Easy</button><button data-pause-level="normal">Normal</button>
+        </div>
+        <p class="set-note">Changing level during a game makes that game unranked.</p>
+      </div>
+      <button class="toggle switch" id="btn-pause-dep" data-pause-setting="departures" role="switch" aria-checked="true"><span class="tg-text"><span>Departures</span></span></button>
+      <p class="set-note" id="pause-dep-note"></p>
+      <div class="pause-toggles">
+        <button class="toggle switch" data-setting="sound" role="switch" aria-checked="false"><span>Sound</span></button>
+        <button class="toggle switch" data-setting="music" role="switch" aria-checked="false"><span>Music</span></button>
+        <button class="toggle switch" data-setting="haptics" role="switch" aria-checked="false"><span>Haptics</span></button>
+        <button class="toggle switch" data-setting="radio" role="switch" aria-checked="false"><span>Radio</span></button>
+        <button class="toggle switch" data-setting="voice" role="switch" aria-checked="false"><span>Voices</span></button>
+      </div>
+      <!-- a setting that did not save (main.js settingNotSaved): the toast is hidden on this card, so the words show here -->
+      <p class="set-note save-note" id="pause-save-note" role="status" hidden></p>
+    </div>
+  </div>
+</section>
+
+<!-- the level change's confirm sheet: it stacks over the pause card (its dim is lighter) -->
+<section id="confirm" class="screen dim confirm" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="card confirm-card">
+    <h2 id="confirm-title"></h2>
+    <p id="confirm-body" class="set-note"></p>
+    <div class="row">
+      <button id="btn-confirm-yes" class="btn primary">Change level</button>
+      <button id="btn-confirm-no" class="btn ghost">Keep it</button>
+    </div>
+  </div>
+</section>
+
+<!-- Things too slow? (skysky.js): a real-only game's sky has stayed short for this level. It pauses the game under it, silently;
+     Keep, Back and Add all close it, and closing resumes the game (main.js closeSlowSky). Its words come from skysky.js -->
+<section id="slow" class="screen dim confirm slow" role="dialog" aria-modal="true" aria-labelledby="slow-title">
+  <div class="card confirm-card slow-card">
+    <p id="slow-kicker" class="slow-kicker"></p>
+    <h2 id="slow-title"></h2>
+    <p id="slow-body" class="slow-body"></p>
+    <p id="slow-note" class="set-note"></p>
+    <div class="row slow-row">
+      <button id="btn-slow-add" class="btn primary">Add simulated planes</button>
+      <button id="btn-slow-keep" class="btn ghost">Keep real planes only</button>
+    </div>
+  </div>
+</section>
+
+<!-- Short Final Pro's sheet (propay.js openProSheet): what Pro gives, the price from Google Play, Buy, and Not now. It opens when a free
+     game is asked for with none left (over the home screen), or from the end card's offer (over the end card, which is not held) -->
+<section id="pro-sheet" class="screen dim confirm" role="dialog" aria-modal="true" aria-labelledby="pro-title">
+  <div class="card confirm-card pro-card">
+    <h2 id="pro-title"></h2>
+    <p id="pro-lead" class="pro-lead"></p>
+    <p id="pro-used" class="pro-used"></p>
+    <p id="pro-keep" class="set-note"></p>
+    <p id="pro-msg" class="set-note" hidden></p>
+    <div class="row">
+      <button id="btn-sheet-buy" class="btn primary">Buy</button>
+      <button id="btn-pro-later" class="btn ghost">Not now</button>
+    </div>
+    <p id="pro-daily" class="set-note"></p>
+  </div>
+</section>
+
+<!-- The one-time reminder card (DECISIONS 392; main.js maybeOfferReminders): over the home screen only, shown at most twice in all. Yes turns the
+     three reminders on and asks the phone's notification question; Not now (or Back) closes it -->
+<section id="reminder-offer" class="screen dim confirm" role="dialog" aria-modal="true" aria-labelledby="reminder-offer-title">
+  <div class="card confirm-card offer-card">
+    <h2 id="reminder-offer-title">Want reminders for each day’s challenge and your streak?</h2>
+    <p class="set-note">Yes turns on all three: the daily challenge, the streak saver and the weekly recap. No more than one a day. You can switch them off in Settings.</p>
+    <div class="row">
+      <button id="btn-reminder-yes" class="btn primary">Yes</button>
+      <button id="btn-reminder-later" class="btn ghost">Not now</button>
+    </div>
+  </div>
+</section>
+
+<!-- Game over -->
+<!-- the end card: its score, the stats line and the rank line (endcard.js), and the Leaderboard button (screens.js) -->
+<section id="over" class="screen dim">
+  <div class="card over-card">
+    <h2 id="over-title">Mid-air collision!</h2>
+    <div class="over-score"><span id="over-score">0</span><small id="over-unit">points</small></div>
+    <div id="over-best" class="over-best"></div>
+    <p id="over-cell" class="over-cell" hidden></p>
+    <p id="over-rank" class="over-rank" hidden></p>
+    <div id="over-next" class="over-next"></div>
+    <div id="over-live" class="over-live"></div>
+    <div id="over-ach" class="over-ach"></div>
+    <div id="over-stats" class="over-stats"></div>
+    <button id="btn-next-airport" class="btn small next-airport" hidden></button>
+    <!-- from the third free game's end card (main.js gameOver, pro.js endOfferDue): Pro is offered here, the card is not held -->
+    <button id="btn-over-pro" class="btn small next-airport" hidden>Unlimited games with Pro</button>
+    <!-- the demo only (DECISIONS 446): one short invite to the app on Google Play, under the stats, with its one button -->
+    <div class="web-only web-invite">
+      <h3>Liked it?</h3>
+      <p>The app has real planes at every airport, daily challenges and friends’ challenges. It is free on Google Play.</p>
+      <a id="btn-over-store" class="btn primary web-store" target="_blank" rel="noopener">Get Short Final free on Google Play</a>
+    </div>
+    <div class="row">
+      <button id="btn-again" class="btn big primary">Fly again</button>
+      <button id="btn-over-menu" class="btn">Home</button>
+      <button id="btn-share" class="btn small share-alt">Share</button>
+      <button id="btn-share-video" class="btn small share-alt" hidden>Video</button>
+      <button id="btn-over-board" class="btn small share-alt" hidden>Leaderboard</button>
+    </div>
+  </div>
+</section>
+
+<!-- Share a result: the card image on the left, full height; the title, format, the share sheet, copy and save, and the
+     one-tap apps on the right -->
+<section id="share" class="screen dim">
+  <div class="card share-card">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <div class="share-preview"><img id="share-img" alt=""><pre id="share-text" class="share-text" hidden></pre>
+      <video id="share-vid" class="share-vid" muted loop playsinline hidden></video>
+      <div id="share-busy" class="share-busy" hidden role="status" aria-live="polite">
+        <p id="share-busy-text">Making your video… 0%</p>
+        <div class="share-bar"><i id="share-bar-fill"></i></div>
+        <button id="btn-share-cancel" class="btn small share-alt">Cancel</button>
+      </div>
+    </div>
+    <div class="share-side">
+      <div class="share-head">
+        <h2>Share your score</h2>
+      </div>
+      <div class="pick" id="share-format">
+        <button data-fmt="feed" class="on">Card</button>
+        <button data-fmt="story">Story</button>
+        <button data-fmt="text">Text</button>
+        <button data-fmt="challenge" hidden>Challenge</button>
+        <button data-fmt="video">Video</button>
+      </div>
+      <div class="pick share-clips" id="share-clips" role="group" aria-label="Which part of the game" hidden>
+        <button data-clip="last">Last 20 s</button>
+        <button data-clip="best" class="on">Best moment</button>
+        <button data-clip="lapse">Time-lapse</button>
+      </div>
+      <div class="share-go">
+        <button id="btn-share-sheet" class="btn primary">Share…</button>
+        <button id="btn-share-copy" class="btn small share-alt">Copy text</button>
+        <button id="btn-share-save" class="btn small share-alt">Save image</button>
+      </div>
+      <div id="share-apps" class="share-apps"></div>
+      <p class="hint" id="share-hint">Only your airport, score and game stats are shared: no names, location or flight numbers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Settings -->
+<!-- the Live feed card: opened by tapping the line under the airport name (or the pause card); it pauses the game while open.
+     Plain status, the switch and the real planes in the game by flight number. Details (closed by each open) holds the groups
+     and the last update; Copy feed report sits in the footer while Details are open (main.js renderFeedCard, setFeedDetails) -->
+<section id="feed" class="screen dim">
+  <div class="card feed-card" role="dialog" aria-modal="true" aria-labelledby="feed-title">
+    <button class="close-x" data-feed-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <!-- the body scrolls; the footer (Done, and Copy feed report while Details are open) stays on screen (style.css .feed-body) -->
+    <div class="feed-body">
+      <h2 id="feed-title">Live feed</h2>
+      <p id="feed-status" class="feed-status"></p>
+      <!-- the switch (the same component as Settings) and its one line, from settingsnotes.js -->
+      <button id="btn-feed-realonly" class="toggle switch" data-feed-setting="realPlanesOnly" role="switch" aria-checked="false"><span class="tg-text"><span>Real planes only</span><small class="set-note" id="feed-realonly-hint"></small></span></button>
+      <p class="set-note save-note" id="feed-save-note" role="status" hidden></p>
+      <div id="feed-game-block">
+        <h3>In your game right now</h3>
+        <ul id="feed-game" class="feed-rows"></ul>
+      </div>
+      <button id="btn-feed-details" class="btn small feed-details-btn" aria-expanded="false" aria-controls="feed-details">Details</button>
+      <div id="feed-details" class="feed-details" hidden>
+        <p id="feed-clock" class="hint"></p>
+        <div id="feed-near">
+          <h3 id="feed-near-head"></h3>
+          <ul id="feed-rows" class="feed-rows"></ul>
+          <p id="feed-caption" class="hint"></p>
+        </div>
+        <p id="feed-sim" class="hint" hidden></p>
+        <textarea id="feed-report" class="feed-report" readonly hidden></textarea>
+      </div>
+    </div>
+    <div class="feed-foot">
+      <button id="btn-feed-copy" class="btn small" hidden>Copy feed report</button>
+      <button class="btn primary close-btn" data-feed-close>Done</button>
+    </div>
+  </div>
+</section>
+
+<!-- Settings (ui 2): the level in full width, then two columns of switches. Each switch has one line for its state
+     (settingsnotes.js); the main switches sit above the fold on a phone -->
+<section id="settings" class="screen dim">
+  <div class="card settings-card">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <h2>Settings</h2>
+    <p class="web-only set-note web-set">Web demo: the planes are simulated. Real planes, reminders and sign-in are in the app.</p>
+    <div class="set-group set-level">
+      <label>Level</label>
+      <div class="seg" data-setting="difficulty">
+        <button data-v="beginner">Beginner</button><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="chaos">Chaos</button>
+      </div>
+      <p class="set-note" id="feed-set-note"></p>
+    </div>
+    <!-- one grid for the switches, two columns, so each row lines up across the card. A switch's one line sits under its
+         label inside the row, and the divider comes after the row. The main switches come first, so they are above the fold
+         on a phone (412 px tall); the Music track list comes after the grid (below) -->
+    <div class="set-cols">
+      <div class="set-item">
+        <button class="toggle switch" id="btn-rpo" data-setting="realPlanesOnly" role="switch" aria-checked="false"><span class="tg-text"><span>Real planes only</span><small class="set-note" id="rpo-note"></small></span></button>
+      </div>
+      <button class="toggle switch" data-setting="sound" role="switch" aria-checked="false"><span>Sound effects</span></button>
+      <div class="set-item">
+        <button class="toggle switch" id="btn-dep" data-setting="departures" role="switch" aria-checked="true"><span class="tg-text"><span>Departures</span><small class="set-note" id="dep-note"></small></span></button>
+      </div>
+      <button class="toggle switch" data-setting="music" role="switch" aria-checked="false"><span>Music</span></button>
+      <button class="toggle switch" data-setting="radio" role="switch" aria-checked="false"><span>Radio chatter</span></button>
+      <div class="set-item">
+        <button class="toggle switch" data-setting="voice" role="switch" aria-checked="false"><span>Radio voices</span></button>
+        <div id="voice-status" class="voice-status" hidden>
+          <p class="hint" id="voice-status-text"></p>
+          <button id="btn-voice-settings" class="btn small ghost" hidden>Phone voice settings</button>
+        </div>
+      </div>
+      <button class="toggle switch" data-setting="haptics" role="switch" aria-checked="false"><span>Haptics</span></button>
+      <button class="toggle switch" data-setting="symbols" role="switch" aria-checked="false"><span>Colour-blind symbols</span></button>
+      <button class="toggle switch" data-setting="realWeather" role="switch" aria-checked="false"><span>Real weather</span></button>
+      <button class="toggle switch" data-setting="bullet" role="switch" aria-checked="false"><span>Bullet mode</span></button>
+      <!-- the daily challenge reminder (reminder.js; the switch asks the phone for notifications, main.js): not a data-setting, its own handler -->
+      <div class="set-item">
+        <button class="toggle switch" id="btn-reminder" role="switch" aria-checked="false"><span class="tg-text"><span>Daily challenge reminder</span><small class="set-note" id="reminder-note"></small></span></button>
+      </div>
+      <!-- the streak saver and the Sunday recap (DECISIONS 392; reminder.js, main.js toggleReminder): the same kind of switch, with their own lines -->
+      <div class="set-item">
+        <button class="toggle switch" id="btn-streak-saver" role="switch" aria-checked="false"><span class="tg-text"><span>Streak saver</span><small class="set-note" id="streak-saver-note"></small></span></button>
+      </div>
+      <div class="set-item">
+        <button class="toggle switch" id="btn-weekly-recap" role="switch" aria-checked="false"><span class="tg-text"><span>Weekly recap</span><small class="set-note" id="weekly-recap-note"></small></span></button>
+      </div>
+      <!-- World stats (3.1; worldstats.js, DECISIONS 384): on by default, saved in the save (data-setting). Off, nothing is sent; viewing still works -->
+      <div class="set-item">
+        <button class="toggle switch" data-setting="worldStats" role="switch" aria-checked="true"><span class="tg-text"><span>Count my games in World stats</span><small class="set-note" id="worldstats-note"></small></span></button>
+      </div>
+      <div class="set-group">
+        <label>Lighting</label>
+        <div class="seg" data-setting="lighting">
+          <button data-v="real">Real clock</button><button data-v="day">Always day</button><button data-v="night">Always night</button>
+        </div>
+      </div>
+    </div>
+    <!-- the Music track: one radio row per track, built from the registry (music.js) by main.js. Full width, under the
+         switches, so the card scrolls to it on a phone; a row's name and its one-line blurb, the chosen one marked -->
+    <div class="set-group track-group">
+      <label id="track-label">Music track</label>
+      <div class="track-list" id="track-list" role="radiogroup" aria-labelledby="track-label"></div>
+    </div>
+    <!-- Short Final Pro (propay.js renderSettings): its status, Buy (only when there is something to buy, with the Google Play
+         price) and Restore purchase (asks Google Play; the answer shows under it). It never says how many days are left -->
+    <div class="set-group set-pro" id="set-pro">
+      <label>Short Final Pro</label>
+      <p class="set-note" id="pro-status">Checking Google Play…</p>
+      <div class="row pro-row">
+        <button id="btn-pro-buy" class="btn primary" hidden>Buy</button>
+        <button id="btn-pro-restore" class="btn ghost">Restore purchase</button>
+      </div>
+      <p class="set-note" id="pro-restore-note" hidden></p>
+    </div>
+    <!-- Rate Short Final (2.9; main.js btn-rate): the game's Google Play page, for everyone at any time. Google's own review
+         question is asked separately, after a good game (review.js); this row never asks it -->
+    <div class="set-group set-rate" id="set-rate">
+      <label>Rate Short Final</label>
+      <div class="row pro-row">
+        <button id="btn-rate" class="btn ghost">Rate on Google Play</button>
+      </div>
+    </div>
+
+    <!-- Google Play Games (3.0; playgames.js playGamesRow, main.js renderSettingsNotes): one line ("Signed in", "Checking Play Games…")
+         or the one Sign in button, following the sign-in live. Hidden where Play Games is not set up, and for a player who has not agreed -->
+    <div class="set-group set-pgs" id="set-pgs" hidden>
+      <label>Google Play Games</label>
+      <p class="set-note" id="pgs-note" hidden></p>
+      <div class="row pgs-row">
+        <button id="btn-pgs-signin" class="btn ghost" hidden>Sign in</button>
+      </div>
+    </div>
+    <!-- Cloud save (cloud.js; DECISIONS 363): one line, from cloud.js cloudLine (cloudsave.js cloudNote). Plain text only -->
+    <div class="set-group set-cloud" id="set-cloud">
+      <label>Cloud save</label>
+      <p class="set-note" id="cloud-note">Checking Play Games…</p>
+    </div>
+    <!-- OpenSky API client: hidden for now, may come back. Live flights use anonymous OpenSky access
+         meanwhile (main.js startAirport); saved credentials stay in the save but aren't used.
+    <div class="set-group">
+      <label>OpenSky API client (optional)</label>
+      <p class="hint">The live feed works without an account (about 6 hours of play a day). With a free OpenSky account, create an API client on your OpenSky account page and paste its ID and secret here for faster updates.</p>
+      <input id="os-id" type="text" placeholder="client_id" autocomplete="off" spellcheck="false" autocapitalize="off">
+      <input id="os-secret" type="password" placeholder="client_secret" autocomplete="off" spellcheck="false" autocapitalize="off">
+      <p class="hint" id="os-status"></p>
+    </div>
+    -->
+    <div class="settings-foot">
+      <button id="btn-reset" class="btn small ghost">Reset progress</button>
+      <button class="btn primary close-btn" data-close>Done</button>
+    </div>
+  </div>
+</section>
+
+<!-- About: the version, the data credits, the legal notice word for word (requirement 25), the three legal links (each opens
+     the sheet on its tab, legal.js) and the last line. The How-to list, the logbook and the achievements live on the Tour and
+     the Achievements screen now. -->
+<section id="about" class="screen dim">
+  <div class="card about-card">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <h2>Short Final</h2>
+    <p class="version">Version <span id="about-version"></span></p>
+    <p class="pro-line" id="about-pro"></p>
+    <p class="credits">Airport maps, coastlines, water © OpenStreetMap contributors (ODbL). Airports and runways: OurAirports (public domain). Passenger rankings: ACI World. Live feed: The OpenSky Network. Flight routes: Virtual Radar Server (CC0). Weather: aviationweather.gov (NOAA). Time zones: timezone-boundary-builder (ODbL) and tz-lookup (CC0). Font: Fredoka (SIL OFL).</p>
+    <p class="legal-notice">© 2026 Thin Air Studios LLC. All rights reserved worldwide. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. This game, including its software, design, artwork, sounds, music, text, and original features and gameplay systems, is owned by Thin Air Studios LLC and protected by the copyright, trademark and other intellectual-property laws of the United States and other countries, and by international treaties. Any unauthorized copying, reproduction, distribution, modification, reverse engineering, decompiling, or creation of derivative works, in whole or in part, is strictly prohibited and may result in civil and criminal penalties. Use of this game is subject to the Terms of Use. Data and fonts credited above belong to their owners and are used under their licences. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
+    <!-- the sign-off and Done stay in reach while the notice above scrolls on a short phone -->
+    <div class="about-foot">
+      <nav class="legal-links" aria-label="Legal">
+        <button class="legal-link" data-legal="terms">Terms of Use</button><span class="legal-sep" aria-hidden="true">·</span><button class="legal-link" data-legal="privacy">Privacy policy</button><span class="legal-sep" aria-hidden="true">·</span><button class="legal-link" data-legal="licences">Licences</button>
+      </nav>
+      <p class="love">Game designed with love in Colorado, USA <span class="heart">♥</span></p>
+      <button class="btn primary close-btn" data-close>Done</button>
+    </div>
+  </div>
+</section>
+
+<!-- the Leaderboards screen (screens.js): World (the airport and level you play most, your best or rank, the list), Daily
+     challenge and Your airports. The head, the tabs and the filters are one row each; the list is the only part that scrolls
+     (.boards-main), and the summary beside it stays in view. -->
+<section id="boards" class="screen dim">
+  <div class="card boards-card" role="dialog" aria-modal="true" aria-labelledby="boards-title">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <div class="boards-head">
+      <h2 id="boards-title">Leaderboards</h2>
+      <button id="btn-boards-pgs" class="btn small" hidden>Google Play Games boards</button>
+    </div>
+    <div class="pick boards-tabs" role="tablist" aria-label="Leaderboards">
+      <button role="tab" data-boards-tab="world" class="on" aria-selected="true">World</button>
+      <button role="tab" data-boards-tab="daily" aria-selected="false">Daily challenge</button>
+      <button role="tab" data-boards-tab="mine" aria-selected="false">Your airports</button>
+      <button role="tab" data-boards-tab="stats" aria-selected="false">World stats</button>
+    </div>
+    <div id="boards-body" class="boards-body">
+      <div id="boards-world" class="boards-pane" aria-busy="false">
+        <div class="boards-filters">
+          <button id="boards-airport" class="boards-airport" type="button" aria-label="Choose an airport"><b id="boards-airport-code"></b><i aria-hidden="true">▾</i></button>
+          <div class="seg boards-levels" role="group" aria-label="Level">
+            <button data-level="beginner">Beginner</button><button data-level="easy">Easy</button><button data-level="normal">Normal</button><button data-level="hard">Hard</button><button data-level="chaos">Chaos</button>
+          </div>
+          <div class="pick boards-period" role="group" aria-label="Period">
+            <button data-period="today">Today</button><button data-period="week" class="on">This week</button><button data-period="all">All time</button>
+          </div>
+        </div>
+        <div class="boards-split">
+          <aside class="boards-side">
+            <div id="boards-you" class="boards-you" hidden></div>
+          </aside>
+          <div class="boards-main">
+            <div id="boards-search" class="boards-search" hidden>
+              <input id="boards-search-input" type="search" placeholder="Search any airport" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Search any airport by code, name or city">
+              <ul id="boards-results" class="boards-results"></ul>
+            </div>
+            <div id="boards-list" class="boards-list"></div>
+            <p id="boards-note" class="boards-note hint" hidden></p>
+            <p id="boards-explainer" class="boards-explainer"></p>
+          </div>
+        </div>
+      </div>
+      <div id="boards-daily" class="boards-pane" hidden>
+        <!-- the tab's two views (3.3, DECISIONS 430): today's daily challenge, or this weekend's event (screens.js showDailyView) -->
+        <div class="seg daily-views" role="group" aria-label="Daily challenge or weekend event">
+          <button data-daily-view="today" class="on" aria-pressed="true">Today</button>
+          <button data-daily-view="weekend" aria-pressed="false">Weekend</button>
+        </div>
+        <div id="boards-daily-today">
+          <div class="boards-split">
+            <aside class="boards-side">
+              <div class="boards-daily-top">
+                <div id="boards-daily-head" class="boards-daily-head"></div>
+                <p id="boards-daily-streak" class="boards-streak"></p>
+                <button id="btn-boards-daily-play" class="btn small boards-play">Play today’s challenge</button>
+              </div>
+              <div id="boards-daily-you" class="boards-you" hidden></div>
+            </aside>
+            <div class="boards-main">
+              <div id="boards-daily-list" class="boards-list"></div>
+              <p id="boards-daily-note" class="boards-note hint" hidden></p>
+            </div>
+          </div>
+        </div>
+        <div id="boards-daily-weekend" hidden>
+          <div class="boards-split">
+            <aside class="boards-side">
+              <div class="boards-daily-top">
+                <div id="boards-weekend-head" class="boards-daily-head"></div>
+                <p id="boards-weekend-date" class="boards-streak"></p>
+                <p id="boards-weekend-next" class="boards-streak" hidden></p>
+                <button id="btn-boards-weekend-play" class="btn small boards-play">Play this weekend’s event</button>
+              </div>
+              <div id="boards-weekend-you" class="boards-you" hidden></div>
+            </aside>
+            <div class="boards-main">
+              <div id="boards-weekend-list" class="boards-list"></div>
+              <p id="boards-weekend-note" class="boards-note hint" hidden></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="boards-mine" class="boards-pane" hidden>
+        <div class="boards-split">
+          <aside id="boards-account" class="boards-side boards-account" hidden>
+            <button id="btn-boards-showname" class="toggle switch" role="switch" aria-checked="true"><span>Show my name on World boards</span></button>
+            <button id="btn-boards-remove" class="btn small ghost">Remove my scores</button>
+          </aside>
+          <div class="boards-main">
+            <div id="boards-airports" class="boards-airports"></div>
+          </div>
+        </div>
+      </div>
+      <!-- World stats (3.1; screens.js loadStats, worldstats.js, DECISIONS 384): the three periods beside the busiest airports today, and
+           today's best game. Counts are UTC days; nothing names a player -->
+      <div id="boards-stats" class="boards-pane" hidden>
+        <!-- the tab's views (3.2, DECISIONS 400): a segmented control under the tabs; Today is the view open at first (screens.js: showStatsTab) -->
+        <div class="seg stats-views" role="group" aria-label="World stats view">
+          <button data-stats-view="today" class="on" aria-pressed="true">Today</button>
+          <button data-stats-view="records" aria-pressed="false">Records</button>
+          <button data-stats-view="map" aria-pressed="false">Map</button>
+        </div>
+        <!-- three columns (3.2, DECISIONS 417): the periods and today's best; the day's hours and the footnote; the five busiest airports.
+             Three columns keep the day inside the card at a phone's height (640 by 360 to 960 by 412) -->
+        <div id="stats-today" class="stats-view">
+          <div class="stats-split">
+            <div class="stats-col">
+              <div id="stats-table" class="stats-table" role="table" aria-label="World stats: players, games and planes landed"></div>
+              <div id="stats-best" class="boards-you stats-best" hidden></div>
+            </div>
+            <div class="stats-col">
+              <div id="stats-hours" class="stats-hours" role="img" aria-label="Planes landed in each hour of today, on your clock" hidden></div>
+              <p id="stats-note" class="boards-note hint" hidden></p>
+            </div>
+            <div class="stats-col">
+              <p class="stats-heading">Busiest airports today</p>
+              <div id="stats-airports" class="boards-list"></div>
+            </div>
+          </div>
+        </div>
+        <div id="stats-records" class="stats-view" hidden>
+          <div class="boards-split">
+            <aside class="boards-side">
+              <div id="stats-record" class="stats-card" hidden></div>
+              <div id="stats-goal" class="stats-card" hidden></div>
+            </aside>
+            <div class="boards-main">
+              <p id="stats-records-note" class="boards-note hint"></p>
+            </div>
+          </div>
+        </div>
+        <div id="stats-map" class="stats-view" hidden>
+          <div class="stats-map-box">
+            <svg id="stats-map-svg" viewBox="0 0 360 180" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Airports played today, a dot for each, sized by planes landed"></svg>
+          </div>
+          <p id="stats-map-note" class="boards-note hint"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- the Achievements screen (screens.js): the controller's rank and its bar, the totals, and all 24 badges, each earned on
+     its date or with its progress -->
+<section id="achievements" class="screen dim">
+  <div class="card ach-card" role="dialog" aria-modal="true" aria-labelledby="ach-title">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <div class="ach-head">
+      <h2 id="ach-title">Achievements</h2>
+    </div>
+    <div class="ach-rank">
+      <p class="ach-rank-top"><b id="ach-rank-name"></b><span id="ach-count"></span></p>
+      <div class="ach-bar ach-rank-bar"><i id="ach-bar-fill"></i></div>
+      <p id="ach-rank-line" class="ach-rank-line"></p>
+    </div>
+    <div id="ach-totals" class="ach-totals"></div>
+    <div id="ach-grid" class="ach-grid"></div>
+    <div class="ach-foot">
+      <button id="btn-ach-pgs" class="btn small" hidden>Open in Google Play Games</button>
+      <button class="btn primary close-btn" data-close>Done</button>
+    </div>
+  </div>
+</section>
+
+<!-- the Streak screen (screens.js): the play streak, its count and one line, the last 14 days, the next milestone, and Play now
+     or today's challenge (streak.js). Back and the X close it; a short screen scrolls the card, Play now stays in view -->
+<section id="streak" class="screen dim">
+  <div class="card streak-card" role="dialog" aria-modal="true" aria-labelledby="streak-title">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <div class="streak-head">
+      <h2 id="streak-title">Streak</h2>
+    </div>
+    <div id="streak-hero" class="streak-hero">
+      <svg class="streak-flame" viewBox="6 2.2 12 17.5" aria-hidden="true"><path d="M12 2.2c.5 3 2.2 4.6 3.7 6.2 1.4 1.5 2.3 3.1 2.3 5.3a6 6 0 0 1-12 0c0-2.2.9-3.9 2.3-5.4.2 1.4.9 2.3 1.8 2.8C9.5 8.3 10.9 5.2 12 2.2z"/></svg>
+      <div class="streak-figure">
+        <b id="streak-count">0</b>
+        <span id="streak-unit">Start a new streak</span>
+      </div>
+    </div>
+    <p id="streak-state" class="streak-state"></p>
+    <div id="streak-strip" class="streak-strip" role="group" aria-label="Last 14 days"></div>
+    <div id="streak-facts" class="streak-facts">
+      <p id="streak-best"></p>
+      <p id="streak-next"></p>
+    </div>
+    <div id="streak-actions" class="streak-actions">
+      <button id="btn-streak-play" class="btn primary">Play now</button>
+      <button id="btn-streak-daily" class="btn small">Today’s challenge</button>
+    </div>
+  </div>
+</section>
+
+<!-- the Leaderboards' sheet: Report name, and Remove my scores (screens.js), over the boards -->
+<section id="boards-sheet" class="screen dim boards-sheet" role="dialog" aria-modal="true" aria-labelledby="boards-sheet-title">
+  <div class="card confirm-card">
+    <h2 id="boards-sheet-title"></h2>
+    <p id="boards-sheet-body" class="set-note"></p>
+    <div class="row">
+      <button id="btn-sheet-yes" class="btn primary"></button>
+      <button id="btn-sheet-no" class="btn ghost">Cancel</button>
+    </div>
+  </div>
+</section>
+
+<!-- U8: the first-launch gate (screens 9). Age is the first question: the year, and the month when the year turns 13 this year
+     (gate-month). Then Agree for a player 13 or older (gate-agree), or the under-13 screen (gate-under13), which has no way in.
+     Back: the year question and Agree leave the app; the month question goes back to the year when it follows one. -->
+<section id="gate-age" class="screen dim gate" role="dialog" aria-modal="true" aria-labelledby="gate-age-title">
+  <div class="card gate-card">
+    <h2 id="gate-age-title">Welcome to Short Final</h2>
+    <label class="gate-q" for="gate-year">What year were you born?</label>
+    <select id="gate-year" class="gate-year"></select>
+    <p class="gate-note">Your answer stays on this phone and is never sent anywhere.</p>
+    <button id="btn-gate-next" class="btn primary" disabled>Next</button>
+  </div>
+</section>
+<section id="gate-month" class="screen dim gate" role="dialog" aria-modal="true" aria-labelledby="gate-month-title">
+  <div class="card gate-card">
+    <h2 id="gate-month-title">Welcome to Short Final</h2>
+    <label class="gate-q" for="gate-month-pick">What month were you born?</label>
+    <select id="gate-month-pick" class="gate-year"></select>
+    <p class="gate-note">Your answer stays on this phone and is never sent anywhere.</p>
+    <button id="btn-gate-month-next" class="btn primary" disabled>Next</button>
+  </div>
+</section>
+<section id="gate-under13" class="screen dim gate" role="dialog" aria-modal="true" aria-labelledby="gate-under13-title">
+  <div class="card gate-card">
+    <h2 id="gate-under13-title">Short Final is for ages 13 and up</h2>
+    <p class="gate-body">Thanks for stopping by. The game is made for players aged 13 and up, so it can't open for you yet. Come back when you're 13.</p>
+    <button id="btn-gate-under13" class="btn primary">Close</button>
+  </div>
+</section>
+<section id="gate-agree" class="screen dim gate" role="dialog" aria-modal="true" aria-labelledby="gate-agree-title">
+  <div class="card gate-card">
+    <h2 id="gate-agree-title">Before you fly</h2>
+    <p id="gate-changed" class="gate-changed" hidden></p>
+    <p class="gate-body">By playing, you agree to the <button id="btn-gate-terms" class="gate-link" type="button">Terms of Use</button> and <button id="btn-gate-privacy" class="gate-link" type="button">Privacy Policy</button>.</p>
+    <div class="row gate-actions">
+      <button id="btn-gate-agree" class="btn primary">Agree &amp; play</button>
+      <button id="btn-gate-notnow" class="btn ghost">Not now</button>
+    </div>
+  </div>
+</section>
+<!-- U8 (and U9's About links): the in-app legal pages, three tabs, one iframe per tab (legal.js) -->
+<section id="legal" class="screen dim" role="dialog" aria-modal="true" aria-labelledby="legal-title">
+  <div class="card legal-card">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <h2 id="legal-title">Legal</h2>
+    <div class="legal-tabs" role="tablist" aria-label="Legal pages">
+      <button class="legal-tab" role="tab" data-legal-tab="terms" aria-selected="true">Terms of Use</button>
+      <button class="legal-tab" role="tab" data-legal-tab="privacy" aria-selected="false" tabindex="-1">Privacy policy</button>
+      <button class="legal-tab" role="tab" data-legal-tab="licences" aria-selected="false" tabindex="-1">Licences</button>
+    </div>
+    <div class="legal-body">
+      <iframe class="legal-frame" data-legal-frame="terms" title="Terms of Use"></iframe>
+      <iframe class="legal-frame" data-legal-frame="privacy" title="Privacy policy" hidden></iframe>
+      <iframe class="legal-frame" data-legal-frame="licences" title="Licences" hidden></iframe>
+    </div>
+  </div>
+</section>
+<!-- the Tour (U5, screens 4.1): the categories as tabs (a rail at the left on a short phone), one card at a time with its shot, a bold
+     title, one or two lines, Try it where the card has one, the arrows, the swipe and the dots. Its lines come from tour-data.js (tour.js draws them) -->
+<section id="tour" class="screen dim">
+  <div class="card tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <button class="close-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    <div class="tour-side">
+      <div class="tour-head">
+        <div class="tour-heading">
+          <h2 id="tour-title">Tour</h2>
+          <p class="hint">See what you can do</p>
+        </div>
+      </div>
+      <div id="tour-cats" class="tour-cats" role="tablist" aria-label="Tour categories"></div>
+    </div>
+    <div class="tour-main">
+      <div id="tour-stage" class="tour-stage">
+        <button id="btn-tour-prev" class="tour-arrow" aria-label="Previous feature"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg></button>
+        <div class="tour-frame"><img id="tour-shot" class="tour-shot" alt=""></div>
+        <button id="btn-tour-next" class="tour-arrow" aria-label="Next feature"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6"/></svg></button>
+      </div>
+      <h3 id="tour-name" class="tour-name"></h3>
+      <div id="tour-body" class="tour-body"></div>
+      <div class="tour-foot">
+        <div id="tour-dots" class="tour-dots" aria-label="Features"></div>
+        <button id="tour-try" class="btn small tour-try none"></button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- New screens go above this line -->
+<!-- the browser demo only (DECISIONS 446): a phone held upright cannot play (the app is landscape on a phone), so the card asks it to turn;
+     the game starts when it turns (style.css shows the card on a portrait phone; main.js pauses a game under it). The store links get
+     their referrer in main.js (demo.js demoStoreUrl) -->
+<div id="turn-card" class="web-only turn-card" role="dialog" aria-modal="true" aria-labelledby="turn-title">
+  <div class="card turn-body">
+    <h2 id="turn-title">Turn your phone sideways</h2>
+    <p>Short Final plays in landscape. Turn your phone to play the demo.</p>
+    <a class="btn primary web-store" data-store="turn" target="_blank" rel="noopener">Get it on Google Play</a>
+  </div>
+</div>
+<div id="unsupported" class="web-only turn-card" role="alert" hidden>
+  <div class="card turn-body">
+    <h2>This browser can’t run the demo.</h2>
+    <a class="btn primary web-store" data-store="unsupported" target="_blank" rel="noopener">Get Short Final free on Google Play</a>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<!-- the background area map's note, in play (ui 8.2): it sits under the title block and under a toast -->
+<div id="area-note" class="area-note" role="status" aria-live="polite" data-state="">
+  <span class="spinner"></span><span class="tick" aria-hidden="true">✓</span><span class="area-words"></span>
+</div>
+<div id="ach-pop" class="ach-pop" aria-live="polite"><span class="ach-icon"></span><span class="ach-words"><small>Achievement</small><b></b></span></div>
+
+<script type="module" src="js/main.js?v=7227d0de"></script>
+</body>
+</html>

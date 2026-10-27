@@ -1,0 +1,8 @@
+Vendored files in this folder (the game ships them as they are; nothing here is built from source).
+
+File                  Package and version                                   Licence file            sha256
+mp4-muxer.mjs         mp4-muxer 5.2.2, by Vanilagy (npm package mp4-muxer)  LICENSE-mp4-muxer.txt   d2c4c782f180c86ed30b1f5d9487a34a0d370bf9b4535285734ea187d38f9bb5
+tz.js                 @photostructure/tz-lookup 11.7.0 (npm package)        LICENSE-tz-lookup.txt   10383dd45e0707770a6f265f24d211e1725feea0cc0e6a06c0ed0a2cf762628f
+
+mp4-muxer.mjs has no version string of its own, so its version is the one legal/licences.md records. tz.js names its version on its first line.
+tests/vendor.test.mjs checks each checksum above against the file on disk. When a vendored file is replaced, update its version and checksum here, and legal/licences.md with it.

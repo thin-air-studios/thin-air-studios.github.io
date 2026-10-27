@@ -17,6 +17,10 @@
   .shots figcaption { margin-top: 8px; font-size: 15px; line-height: 1.4; color: var(--muted); }
   .hero .badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
   .hero .badge[hidden] { display: none; }
+  /* the store badge is the page's one filled button; the demo is the outlined second choice under it */
+  .hero a.badge { text-decoration: none; }
+  .hero .demo-go { display: inline-block; margin-top: 14px; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--accent); color: var(--accent); font-family: "Fredoka", system-ui, sans-serif; font-weight: 600; text-decoration: none; }
+  .hero a.badge:focus-visible, .hero .demo-go:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 </style>
 </head>
 <body>
@@ -26,9 +30,10 @@
     <h1>Short Final<sup>™</sup></h1>
     <p class="tagline">Real traffic. Any airport.</p>
     <div class="badges">
-      <span class="badge" id="badge-soon">Coming soon to Google Play</span>
-      <span class="badge" id="badge-free" hidden>Free on Google Play</span>
+      <span class="badge" id="badge-soon" hidden>Coming soon to Google Play</span>
+      <a class="badge" id="badge-free" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dhome">Free on Google Play</a>
     </div>
+    <p><a class="demo-go" href="demo/">Try the free demo in your browser</a></p>
   </section>
   <section class="card">
     <p>Short Final is an air traffic game played with the real sky. Pick any airport on Earth, and the real flights landing there arrive at the edge of your screen on their real bearing, under their real flight numbers.</p>
@@ -58,20 +63,18 @@
   </section>
 </main>
 <footer>
-  <nav><a href="play/">Get the game</a><a href="privacy/">Privacy policy</a><a href="terms/">Terms of Use</a><a href="mailto:thinaircapital@gmail.com">Contact</a></nav>
+  <nav><a href="play/">Get the game</a><a href="demo/">Try the demo</a><a href="privacy/">Privacy policy</a><a href="terms/">Terms of Use</a><a href="mailto:thinaircapital@gmail.com">Contact</a></nav>
   <p>© 2026 Thin Air Studios LLC. All rights reserved. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
   <p class="love">Game designed with love in Colorado, USA <span>♥</span></p>
 </footer>
 <script>
-  // The Google Play listing is live: set true the day it is published (the same switch as play/index.html). Until then only
-  // "Coming soon" shows, and "Free on Google Play" is never said.
+  // The Google Play listing is live (21 Oct 2026): the badge links to it, with the website as its install source. Set false only
+  // if the listing comes down (the same switch as play/index.html); "Coming soon" then shows and the link hides.
   (function () {
     'use strict';
-    var STORE_LIVE = false;
-    if (STORE_LIVE) {
-      document.getElementById('badge-soon').hidden = true;
-      document.getElementById('badge-free').hidden = false;
-    }
+    var STORE_LIVE = true;
+    document.getElementById('badge-soon').hidden = STORE_LIVE;
+    document.getElementById('badge-free').hidden = !STORE_LIVE;
   })();
 </script>
 </body>

@@ -29,6 +29,7 @@
     <p id="real" hidden></p>
     <p><a class="play-go" id="go" href="../">About Short Final</a></p>
     <p class="muted" id="soon" hidden>Coming soon to Google Play. The game is free.</p>
+    <p class="muted" id="webtry"><a id="webtry-link" href="../demo/?a=KDFW">Or try KDFW in your browser</a></p>
   </div>
   <p class="muted">If Short Final is on your phone, this link can open the game at this airport, ready to play. Otherwise it shows this page.</p>
 </section>
@@ -41,8 +42,9 @@
 <script>
 // Links from the game (links.js): "Beat my score" links (?a=<airport code>, &d=<daily number>, &utm_source=<where it was shared>), and
 // friends' challenges (3.2): &c=<seed>, &l=<level letter>, &s=<the challenger's score>, &k=<rules>, &x=1 (the challenger had real planes)
-// and &n=<name, when one was typed>. The page names the airport, and once the game is on Google Play it sends the phone to the store
-// with the source as the install tag (the Play referrer). Nothing here is personal, and nothing is sent anywhere but the Play link.
+// and &n=<name, when one was typed>; 3.3 adds &sc=<the challenger's screen>, &lo=<the layout's code> and &v=<the game's version>.
+// The page names the airport, and once the game is on Google Play it sends the phone to the store with the source as the install tag
+// (the Play referrer). Nothing here is personal, and nothing is sent anywhere but the Play link.
 (function () {
   'use strict';
   // The store page is live (the 3.1 listing, 22 Oct 2026): the button goes to Google Play. Set false only if the listing comes down.
@@ -69,6 +71,10 @@
     return Array.from(s).slice(0, 12).join('').trim(); // by letter, as the game cuts it, so a letter outside the BMP stays whole
   }
 
+  // the game's version that makes a challenge's planes the same as its game's (DECISIONS 437): a link from this version, with the
+  // screen and layout the game needs. The game's own words are the authority (it knows the friend's map; this page does not).
+  var PAGE_VERSION = '3.3';
+
   // the weather part (w=), as the game reads it (links.js WEATHER_RE): "1" for the generated weather, or "1.<dir>.<kt>.<gust>.<fog>.<storms>"
   var WEATHER = /^1(?:\.(x|\d{1,3})\.(\d{1,3})\.(\d{1,3})\.([012])\.([01]))?$/;
   function weatherOk(w) {
@@ -84,12 +90,14 @@
     var d = q.get('d') || '';
     var c = q.get('c') || '', l = q.get('l') || '', s = q.get('s') || '';
     var w = q.get('w');
+    var sc = q.get('sc'), lo = q.get('lo') || '', v = q.get('v') || '';
     var known = Object.prototype.hasOwnProperty.call(LEVELS, l);
     // a challenge is shown only when all its parts are there and well formed; a bad part shows the airport, as an old link does.
-    // A link with no weather part is an old one. Every challenge's planes are similar, not the same: the friend's screen and the
-    // challenger's live feed still move them (DECISIONS 421)
+    // A link with no weather part is an old one. A challenge's planes are the same only when the link is from this version, with its
+    // screen and layout, and no real planes came in (DECISIONS 435, 437); the game decides the words for the friend's own map
     var challenge = /^[0-9a-z]{1,7}$/i.test(c) && known && /^\d{1,7}$/.test(s) && (w == null || weatherOk(w)) ? {
-      level: LEVELS[l], score: Number(s), real: q.get('x') === '1', name: cleanName(q.get('n'))
+      level: LEVELS[l], score: Number(s), real: q.get('x') === '1', name: cleanName(q.get('n')),
+      same: v === PAGE_VERSION && q.get('x') !== '1' && /^\d{3,4}x\d{3,4}$/.test(sc || '') && /^[0-9a-f]{8}$/.test(lo)
     } : null;
     var source = (q.get('utm_source') || '').toLowerCase().replace(/[^a-z0-9-]/g, '') || (challenge ? 'challenge' : 'share');
     return {
@@ -116,7 +124,7 @@
   document.title = 'Short Final: ' + title.replace(/^Short Final: /, '');
   document.getElementById('title').textContent = title;
   if (ch) {
-    document.getElementById('lede').textContent = 'Land similar planes' + (place ? ' at ' + place : '') + ', on ' + ch.level + ', and see if you can beat ' + ch.score + '.';
+    document.getElementById('lede').textContent = 'Land ' + (ch.same ? 'the same' : 'similar') + ' planes' + (place ? ' at ' + place : '') + ', on ' + ch.level + ', and see if you can beat ' + ch.score + '.';
   } else if (place) {
     document.getElementById('lede').textContent = 'Land the real flights arriving at ' + place + ', in its real weather, and see if you can beat the score.';
   }
@@ -131,6 +139,11 @@
     real.hidden = false;
   }
   var go = document.getElementById('go');
+  // the browser demo opens at this page's airport (each airport in PLACES has a map on the website, so the demo has it)
+  var webCode = PLACES[p.code] ? p.code : 'KDFW';
+  var webTry = document.getElementById('webtry-link');
+  webTry.href = '../demo/?a=' + webCode;
+  webTry.textContent = 'Or try ' + webCode + ' in your browser';
   if (STORE_LIVE) {
     go.textContent = ch ? 'Get Short Final free on Google Play' : 'Get it free on Google Play';
     go.href = playLink(p);
