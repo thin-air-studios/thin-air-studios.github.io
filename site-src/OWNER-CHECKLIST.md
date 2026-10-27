@@ -33,7 +33,7 @@ Menu names below were checked against the official help pages where they exist. 
 2. Open the property menu at the top left and click **Add property**. Choose **Domain** (the left-hand option). Type `playshortfinal.com`, then click **Continue**.
 3. Google shows a TXT record. If it offers to add the record for Cloudflare, choose that, sign in, and allow it. If not, copy the TXT record value. Then in Cloudflare: open playshortfinal.com, click **DNS**, then **Records**, then **Add record**. Set Type to `TXT`, Name to `@`, paste the value into Content, and click **Save**.
 4. Back in Search Console, click **Verify**. DNS can take a few minutes.
-5. In the left menu, click **Sitemaps**. Type `sitemap.xml` in the "Add a new sitemap" box and click **Submit**. The status should show Success within a day.
+5. In the left menu, click **Sitemaps**. Type the full address `https://playshortfinal.com/sitemap.xml` in the "Add a new sitemap" box (a Domain property needs the full address, not just `sitemap.xml`) and click **Submit**. The status should show Success within a day.
 
 ## Step 3: Bing Webmaster Tools (3 min)
 
