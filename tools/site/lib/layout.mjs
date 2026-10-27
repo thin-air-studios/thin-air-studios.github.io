@@ -71,7 +71,7 @@ function footer(ctx, lang, playKey) {
       <div>
         <h2>${L('footer.explore')}</h2>
         <ul>
-          ${[['airports', '/airports/', 'nav.airports'], ['guides', '/guides/', 'nav.guides'], ['events', '/events/', 'nav.events'], ['press', '/press/', 'nav.press']].filter(([key]) => sectionLive(config, key)).map(([, href, label]) => html`<li><a href="${href}">${L(label)}</a></li>`)}
+          ${[['airports', '/airports/', 'nav.airports'], ['guides', '/guides/', 'nav.guides'], ['events', '/events/', 'nav.events'], ['press', '/press/', 'nav.press'], ['classroom', '/classroom/', 'footer.classroom']].filter(([key]) => sectionLive(config, key)).map(([, href, label]) => html`<li><a href="${href}">${L(label)}</a></li>`)}
         </ul>
       </div>
       <div>

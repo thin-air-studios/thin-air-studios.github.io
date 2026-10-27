@@ -1,0 +1,20 @@
+{
+  "_about": "English words for the top-controllers panel on airport pages (tools/site/lib/boardpanel.mjs). Placeholders: {code} (the airport's IATA code, or its ICAO code when it has none), {level} (a level name), {n} (a count). Other languages can follow these keys later.",
+  "heading": "Top controllers at {code} this week",
+  "intro": "Each player's best ranked score at {code} this week. Weeks start on Monday, on the airport's clock.",
+  "levelsLabel": "Level",
+  "levels": {
+    "beginner": "Beginner",
+    "easy": "Easy",
+    "normal": "Normal",
+    "hard": "Hard",
+    "chaos": "Chaos"
+  },
+  "captionOne": "1 player this week on {level}",
+  "captionMany": "{n} players this week on {level}",
+  "emptyAll": "No one has landed planes at {code} this week. Be the first: get the app",
+  "emptyLevel": "No one has landed planes on {level} at {code} this week yet. Be the first: get the app",
+  "failed": "We could not load this board. Try another level, or try again later.",
+  "play": "Get Short Final on Google Play",
+  "names": "Names show only where a player has chosen to show them. Everyone else appears as Pilot and four digits. Scores come from ranked games."
+}

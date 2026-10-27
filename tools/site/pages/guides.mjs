@@ -464,6 +464,7 @@ function hubPage(ctx, S, guides) {
   </header>
   <section class="section--tight" aria-label="${S['hub.listLabel']}">
     <div class="grid">${cards}</div>
+    <p>${S['hub.classroomLead']} <a href="/classroom/">${S['hub.classroomLink']}</a></p>
   </section>
 </div>`;
   const url = `${config.domain}/guides/`;

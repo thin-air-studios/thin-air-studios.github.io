@@ -36,7 +36,8 @@
   },
   "features": {
     "challengeLinks": true,
-    "challengeBoards": false
+    "challengeBoards": false,
+    "airportBoards": false
   },
   "languages": [
     {
@@ -178,6 +179,7 @@
     "guides": true,
     "events": true,
     "press": true,
+    "classroom": true,
     "about": false
   }
 }

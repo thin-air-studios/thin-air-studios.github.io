@@ -7,6 +7,8 @@
   "hub.more": "Read the guide",
   "hub.minutes": "{minutes} min read",
   "hub.listLabel": "All guides",
+  "hub.classroomLead": "Teaching with these guides?",
+  "hub.classroomLink": "The classroom page has three lesson ideas for teachers and clubs.",
   "article.byline": "By {publisher} · Published {published} · {minutes} min read",
   "article.updated": "Updated {updated}",
   "toc.label": "In this guide",

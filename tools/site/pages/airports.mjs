@@ -9,6 +9,8 @@ import { playLink } from '../lib/play.mjs';
 import { buildAirportData, sizeThenName } from '../lib/airportdata.mjs';
 import { makeCopy, group, oneDecimal, paragraphFor, descriptionFor, titleFor } from '../lib/airportcopy.mjs';
 import { airportPath } from '../lib/slug.mjs';
+import { boardPanel } from '../lib/boardpanel.mjs';
+import { englishAlternates } from '../lib/localairports.mjs';
 
 export const order = 60;
 
@@ -145,6 +147,7 @@ function airportPage(ctx, A, m, t, rules) {
       <ul class="chips">${nearby}</ul>
     </div>
   </section>
+  ${boardPanel(ctx, m)}
   <section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">${t('airport.finalTitle', { code: short })}</h2>
@@ -168,10 +171,12 @@ function airportPage(ctx, A, m, t, rules) {
     geo: { '@type': 'GeoCoordinates', latitude: m.lat, longitude: m.lon },
     address: { '@type': 'PostalAddress', ...(m.city ? { addressLocality: m.city } : {}), addressCountry: m.countryCode },
   };
+  const alternates = englishAlternates(ctx, m);
   const page = layout(ctx, {
     lang: 'en',
     path: m.path,
     title: titleFor(m, t),
+    alternates,
     description: descriptionFor(m, t),
     section: 'airports',
     playKey: key,
@@ -180,7 +185,7 @@ function airportPage(ctx, A, m, t, rules) {
     noindex: !m.index,
     body,
   });
-  return { path: m.path, html: withAssets(page), lastmod: m.map.at || config.contentDate, section: 'airports', noindex: !m.index };
+  return { path: m.path, html: withAssets(page), lastmod: m.map.at || config.contentDate, section: 'airports', noindex: !m.index, alternates };
 }
 
 /** One country with maps: its airports by size, then by longest runway. */

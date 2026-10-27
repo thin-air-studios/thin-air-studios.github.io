@@ -7,6 +7,7 @@ import path from 'node:path';
 import { html } from '../lib/html.mjs';
 import { storeBody, storeHeadline } from '../lib/brand.mjs';
 import { homeAlternates, homeJsonLd, heroBlock, statsBlock, picturesBlock, trailerBlock, pickSection, finalBlock, shell, brandScript } from './home.mjs';
+import { localHomeBlock } from '../lib/localairports.mjs';
 
 export const order = 11;
 
@@ -37,6 +38,7 @@ function localizedPage(ctx, language) {
   ${picturesBlock(ctx, code)}
   ${trailerBlock(ctx, code)}
   ${pickSection(ctx, code)}
+  ${localHomeBlock(ctx, code)}
   ${finalBlock(ctx, code, playKey)}
   ${brandScript}`;
 

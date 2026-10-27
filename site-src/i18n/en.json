@@ -201,5 +201,16 @@
   "press.shotHolding": "A plane is drawn around a holding racetrack near the airport, with the track lit up.",
   "press.shotHome": "The home screen: pick an airport, play the ranked daily, or choose from the busiest airports by passengers.",
   "press.shotMusic": "The music list: seven original tracks, from Tower Jazz to Funky groove.",
-  "press.shotVideo": "A share card for a 20-second video, titled Your best moment."
+  "press.shotVideo": "A share card for a 20-second video, titled Your best moment.",
+  "footer.classroom": "Teachers and clubs",
+  "classroom.title": "Short Final for teachers and aviation clubs",
+  "classroom.description": "Short Final for classes and aviation clubs: what the free game teaches, how to use the browser demo in a lesson, and three lesson ideas.",
+  "classroom.crumb": "Teachers and clubs",
+  "classroom.eyebrow": "For teachers and aviation clubs",
+  "classroom.h1": "Short Final in the classroom and at the club",
+  "classroom.lead": "Short Final is a free phone game about air traffic control, built on real airports. Here is what it is, why it can help a class or club, how to use the free browser demo in a lesson, and three lessons you can run with paper and one shared screen.",
+  "classroom.endTitle": "Real flights are in the Android app",
+  "classroom.endBody": "The browser demo plays simulated planes only. The free Android app brings in live flights from The OpenSky Network. The app is for players aged 13 and up.",
+  "classroom.contactTitle": "Contact",
+  "classroom.contactBody": "Questions about using Short Final in a class or club, or a correction to this page, go to"
 }
