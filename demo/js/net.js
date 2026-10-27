@@ -1,6 +1,6 @@
 // HTTP for the game. On Android requests go through the native shell (no CORS limits: OpenSky
 // and aviationweather.gov don't allow browser origins); in a desktop browser we fall back to fetch.
-import { noteDate } from './clock.js?v=7227d0de'; // every reply's Date header keeps the Pro day's clock honest (2.8; DECISIONS 331)
+import { noteDate } from './clock.js?v=86c2b44d'; // every reply's Date header keeps the Pro day's clock honest (2.8; DECISIONS 331)
 
 const bridge = typeof window !== 'undefined' ? window.HPAndroid : undefined;
 const pending = new Map();

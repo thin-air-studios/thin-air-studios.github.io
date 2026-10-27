@@ -10,7 +10,7 @@
   "airport.descShort": "Map and runways of {name} ({code}) in {place}, from OpenStreetMap and public airport data.",
   "airport.eyebrow": "Airport map and runways",
   "airport.playDemo": "Play {code} in your browser",
-  "airport.demoNote": "The browser demo is free and plays one game per visit with simulated planes.",
+  "airport.demoNote": "The browser demo is free and gives 3 free games a day with simulated planes.",
   "airport.playStore": "Get Short Final on Google Play",
   "airport.aboutTitle": "About {code}",
   "airport.mapCaption": "Map: OpenStreetMap contributors, captured {date}. North is up and the drawing is simplified. Each runway is labelled at its ends.",

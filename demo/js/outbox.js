@@ -15,10 +15,10 @@
 // resets on a UTC day or month, so it can wait longer than a week. Its retryAt is the Worker's Retry-After, and no request is
 // sent before it. A 429 (the Worker's rate limit: one layout a second, six scores a minute) waits for its window the same way,
 // and onRetry says when the queue should be looked at again.
-import { boardsLive, makeApi } from './boards.js?v=7227d0de';
-import { canPlayGames, clockNow } from './profile.js?v=7227d0de';
-import { playGames } from './platform.js?v=7227d0de';
-import { writeSave } from './storage.js?v=7227d0de';
+import { boardsLive, makeApi } from './boards.js?v=86c2b44d';
+import { canPlayGames, clockNow } from './profile.js?v=86c2b44d';
+import { playGames } from './platform.js?v=86c2b44d';
+import { writeSave } from './storage.js?v=86c2b44d';
 
 export const OUTBOX_DAYS = 7;
 export const OUTBOX_MAX = 20; // the games in the queue; the oldest go past it

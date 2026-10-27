@@ -1,8 +1,8 @@
-// The browser demo's rules and words (DECISIONS 445 to 449). No DOM, no storage, no network: the tests can read them. The demo is
-// the game built with WEB_DEMO true (flavor.js); the app never reaches the demo's branches, and these rules are only asked from them.
-// The words are in the game's own voice and are the demo's only words on its screens.
+// The browser demo's rules and words (DECISIONS 445 to 454). No DOM, no network, and no storage of its own: the tests can read them.
+// The demo is the game built with WEB_DEMO true (flavor.js); the app never reaches the demo's branches, and these rules are only asked
+// from them. The words are in the game's own voice and are the demo's only words on its screens.
 
-import { STORE_URL } from './links.js?v=7227d0de';
+import { STORE_URL } from './links.js?v=86c2b44d';
 
 // the game-time cap, in the sim's seconds: ten minutes. Paused time is not counted (the sim does not step while paused).
 export const DEMO_GAME_S = 600;
@@ -10,15 +10,26 @@ export const DEMO_GAME_S = 600;
 export const DEMO_MAP_WAIT_MS = 8000;
 // the install referrer's source for every link the demo makes (links.js shareLinkFor)
 export const DEMO_SOURCE = 'web-demo';
+// the free games a day in this browser (DECISIONS 454; the same number as the app's free games, pro.js FREE_GAMES)
+export const DEMO_FREE_GAMES = 3;
+// the browser storage key of the day's record: one small object, { day, n } (see demoDayCount)
+export const DEMO_STORAGE_KEY = 'short-final-demo';
+// the key demoStorageWorks writes and removes at once, to see whether the browser's store takes a write (once per page load)
+export const DEMO_PROBE_KEY = 'short-final-demo-probe';
+// the API host the demo's copy uses for the online boards (tools/build-demo.mjs writes it into the copy's config.js; the app keeps its own)
+export const DEMO_API_BASE = 'https://api.playshortfinal.com';
 
 export const DEMO_WORDS = Object.freeze({
-  homeNote: 'Web demo: one free game. No sign-in, no scores.',
+  homeNote: 'Web demo: 3 free games a day. No sign-in, no scores.',
+  homeNoteOnce: 'Web demo: 1 free game per page load. No sign-in, no scores.', // when the browser keeps no count (blocked or read-only storage)
   search: 'Search airports',
   playTitle: 'Play',
   playPlace: 'Random busy airport',
-  playNote: 'One free game',
+  playLeft3: '3 free games today',
+  playLeft2: '2 free games left today',
+  playLeft1: '1 free game left today',
   afterTitle: 'Get the app',
-  afterPlace: 'More games on Google Play',
+  afterPlace: 'Back tomorrow, or get the app',
   afterNote: 'Free on Google Play',
   feedHome: 'No real planes here: the planes are simulated.',
   loadingTitle: 'Demo',
@@ -36,7 +47,7 @@ export const DEMO_WORDS = Object.freeze({
   inviteButton: 'Get Short Final free on Google Play',
   overDemo: 'Demo over',
   overTime: 'Time’s up for the demo',
-  secondStart: 'The demo has one game. Get the app for more.',
+  usedUp: 'The day’s free games are used. Back tomorrow, or get the app.', // a Play tap once the day's games are used
   skipMap: 'Playing on the runways.', // the player pressed Play on runways now
   mapFailed: 'The map did not load. Playing on the runways.', // any other failure: a missing, slow or unreachable map
   turnTitle: 'Turn your phone sideways',
@@ -58,8 +69,8 @@ export function demoStoreUrl({ medium = 'web', campaign = 'home' } = {}) {
 
 /** The website's own pages the demo's About sheet opens (Terms and the policy are not copied into the demo, DECISIONS 446). */
 export const DEMO_LEGAL_URLS = Object.freeze({
-  terms: 'https://thin-air-studios.github.io/terms/',
-  privacy: 'https://thin-air-studios.github.io/privacy/',
+  terms: 'https://playshortfinal.com/terms/',
+  privacy: 'https://playshortfinal.com/privacy/',
 });
 
 /**
@@ -77,12 +88,14 @@ export function demoTimeUp(simTime, capS = DEMO_GAME_S) {
 }
 
 /**
- * The Play pill's three lines in the demo. Before any game: Play, the picked airport's name (or the random word), One free game.
- * After the one game: Get the app, More games on Google Play, Free on Google Play (a tap opens the Play page).
+ * The Play pill's three lines in the demo. `left` is the free games left today (demoGamesLeft). While any are left: Play, the picked
+ * airport's name (or the random word), and "3 free games today", "2 free games left today" or "1 free game left today". With none left:
+ * Get the app, Back tomorrow, or get the app, Free on Google Play (a tap opens the Play page).
  */
-export function demoPlayWords({ played = false, pickName = '' } = {}) {
-  if (played) return { title: DEMO_WORDS.afterTitle, place: DEMO_WORDS.afterPlace, note: DEMO_WORDS.afterNote };
-  return { title: DEMO_WORDS.playTitle, place: pickName || DEMO_WORDS.playPlace, note: DEMO_WORDS.playNote };
+export function demoPlayWords({ left = DEMO_FREE_GAMES, pickName = '' } = {}) {
+  if (left <= 0) return { title: DEMO_WORDS.afterTitle, place: DEMO_WORDS.afterPlace, note: DEMO_WORDS.afterNote };
+  const note = left >= DEMO_FREE_GAMES ? DEMO_WORDS.playLeft3 : left === 2 ? DEMO_WORDS.playLeft2 : DEMO_WORDS.playLeft1;
+  return { title: DEMO_WORDS.playTitle, place: pickName || DEMO_WORDS.playPlace, note };
 }
 
 /**
@@ -100,15 +113,77 @@ export function demoBrowserSupport({ decompression = false } = {}) {
   return decompression ? 'ok' : 'unsupported';
 }
 
-// one game per page load: held in memory only (nothing is stored, so a reload starts a new visit; DECISIONS 446)
-let gameStarted = false;
-/** True once this page load has started its one game. */
-export const demoGameStarted = () => gameStarted;
-/** Marks the page load's one game as started (called once the game's map has loaded, as the app counts a game). */
-export function demoMarkStarted() {
-  gameStarted = true;
+// ------------------------------------------------------------------ the free games (DECISIONS 454)
+// The count is one record in the browser's storage: { day, n }, the local day (airportdb.js localDay, a whole number) and the games
+// counted on it. Nothing else is stored. A game counts once its map has loaded (main.js). The functions take a storage-like object
+// (getItem and setItem: the browser's own store, which main.js passes in), or null when the browser has none. A storage that throws (private mode, blocked
+// site data, a full quota) is not an error: the count falls back to the page load's own, with the old rule of one game per page load
+// (DECISIONS 446). `memory` is that page count: the games counted in this page load while the storage could not hold them.
+
+/** The home screen's demo note: 3 a day when the browser keeps the day's count (`stored`), else one game per page load (homeNoteOnce). */
+export function demoHomeNote(stored) {
+  return stored ? DEMO_WORDS.homeNote : DEMO_WORDS.homeNoteOnce;
 }
-/** Test hook only: the flag is cleared (the page's own tests start a new page instead). */
-export function demoResetStarted() {
-  gameStarted = false;
+
+/**
+ * True when the storage takes a write: a probe value is set and removed. A storage that throws on the write (a full quota, or one the
+ * browser keeps read-only) cannot hold the count, so the page treats it as blocked: the one-game rule, the same words as blocked storage.
+ * Null (no storage) is not usable either.
+ */
+export function demoStorageWorks(storage) {
+  try {
+    storage.setItem(DEMO_PROBE_KEY, '1');
+    storage.removeItem(DEMO_PROBE_KEY);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+const isCount = (v) => Number.isInteger(v) && v >= 0;
+
+/** The day's record from a storage-like object: { stored, day, n }. A missing or broken record reads as a new day with no games. */
+export function demoDayCount(storage, day) {
+  let raw;
+  try {
+    raw = storage.getItem(DEMO_STORAGE_KEY);
+  } catch (_) {
+    return { stored: false, day, n: 0 }; // no storage (null) or a storage that throws
+  }
+  let rec = null;
+  if (typeof raw === 'string') {
+    try {
+      const v = JSON.parse(raw);
+      if (v && Number.isInteger(v.day) && isCount(v.n)) rec = { day: v.day, n: v.n };
+    } catch (_) { /* a broken record is a new day */ }
+  }
+  if (!rec || day > rec.day) return { stored: true, day, n: 0 }; // a new day starts the count at 0
+  return { stored: true, day: rec.day, n: rec.n }; // the same day, or the clock set back: the day it reached keeps its count
+}
+
+/**
+ * The free games left today: { played, left, stored }. With the storage working, DEMO_FREE_GAMES less the day's count. With it blocked
+ * or failing (stored false), or once a count could not be saved in this page load (memory above 0), the page's own rule: one game.
+ */
+export function demoGamesLeft(storage, day, memory = 0) {
+  const d = demoDayCount(storage, day);
+  if (!d.stored || memory > 0) return { played: memory, left: Math.max(0, 1 - memory), stored: false };
+  return { played: d.n, left: Math.max(0, DEMO_FREE_GAMES - d.n), stored: true };
+}
+
+/**
+ * Counts one game started on `day` (called once its map has loaded). Returns demoGamesLeft's shape after the game; `stored` says whether
+ * the record was saved. A save that fails hands the count to the page: stored false, and no game is left for the rest of the page load.
+ */
+export function demoCountGame(storage, day, memory = 0) {
+  const before = demoGamesLeft(storage, day, memory);
+  if (before.stored) {
+    const d = demoDayCount(storage, day);
+    const next = { day: d.day, n: d.n + 1 };
+    try {
+      storage.setItem(DEMO_STORAGE_KEY, JSON.stringify(next));
+      return { played: next.n, left: Math.max(0, DEMO_FREE_GAMES - next.n), stored: true };
+    } catch (_) { /* a full or blocked save: the page's own count below */ }
+  }
+  return { played: before.played + 1, left: 0, stored: false };
 }

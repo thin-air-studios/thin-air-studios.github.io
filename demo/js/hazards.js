@@ -1,7 +1,7 @@
 // Wake turbulence and (always simulated) emergencies.
-import { CLASSES, LANE_S, SIM_HZ } from './config.js?v=7227d0de';
-import { dist, makeRng, TAU, clamp, wrapAngle } from './util.js?v=7227d0de';
-import { endGeometry } from './airport.js?v=7227d0de';
+import { CLASSES, LANE_S, SIM_HZ } from './config.js?v=86c2b44d';
+import { dist, makeRng, TAU, clamp, wrapAngle } from './util.js?v=86c2b44d';
+import { endGeometry } from './airport.js?v=86c2b44d';
 
 export const WAKE_EVERY = 0.2;     // s between wake points
 const WAKE_RADIUS = 9;      // units: how close counts as "in the wake"

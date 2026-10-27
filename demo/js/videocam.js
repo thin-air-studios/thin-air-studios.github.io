@@ -5,8 +5,8 @@
 // plane of a pair is cut when the pair is far apart, and a plane at the edge or just past it is whole. The zoom never crops a followed
 // plane or the ends of the runway it lands on. The box is the one plane of a single loss (engine out, fuel, wake, storm), the two of a
 // collision.
-import { WORLD_H, SIM_HZ } from './config.js?v=7227d0de';
-import { VIDEO_W, BAND_H } from './videoclip.js?v=7227d0de';
+import { WORLD_H, SIM_HZ } from './config.js?v=86c2b44d';
+import { VIDEO_W, BAND_H } from './videoclip.js?v=86c2b44d';
 
 // the view may show this far (world units) past the airspace's edge: the ground the game paints there (render.js BG_MARGIN). 0 keeps
 // the view inside the airspace; then a plane at the edge sits on the band's edge, and a far-apart pair can be cut

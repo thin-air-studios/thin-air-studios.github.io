@@ -2,25 +2,25 @@
 // need one (Report name, Remove my scores). The corner buttons, the home stats line and the end card's Leaderboard button
 // come here. The logic is in boards.js, achscreen.js and stats.js; this file puts it on the screen. main.js passes in what
 // it owns: the save, the screen stack's show, the toast, the press sound, and the start of a game.
-import * as db from './airportdb.js?v=7227d0de';
-import { WEEKEND_EPOCH, weekendAirport, weekendDates, weekendOf, lastWeekendOf, nextWeekendOf, themeOf } from './weekend.js?v=7227d0de';
-import { register } from './screenstack.js?v=7227d0de';
-import { haptic, onPlayGamesState, playGames } from './platform.js?v=7227d0de';
-import { achievementsLabel, boardsLabel } from './playgames.js?v=7227d0de';
-import { BOARDS, STAR_GOALS } from './config.js?v=7227d0de';
-import { airportRows, cellOf, cellsFor, mostPlayed, topLevel } from './stats.js?v=7227d0de';
-import { canPlayGames, clockNow } from './profile.js?v=7227d0de';
-import { SAVE_FAILED } from './settingsnotes.js?v=7227d0de';
-import { badgeCount, earnedLabel, groups, orderedBadges, progressFor, rankProgress, totals } from './achscreen.js?v=7227d0de';
-import { tierOf } from './achievements.js?v=7227d0de';
-import { cellStates, nextMilestone, streakLine, streakScreenLine, streakState } from './streak.js?v=7227d0de';
+import * as db from './airportdb.js?v=86c2b44d';
+import { WEEKEND_EPOCH, weekendAirport, weekendDates, weekendOf, lastWeekendOf, nextWeekendOf, themeOf } from './weekend.js?v=86c2b44d';
+import { register } from './screenstack.js?v=86c2b44d';
+import { haptic, onPlayGamesState, playGames } from './platform.js?v=86c2b44d';
+import { achievementsLabel, boardsLabel } from './playgames.js?v=86c2b44d';
+import { BOARDS, STAR_GOALS } from './config.js?v=86c2b44d';
+import { airportRows, cellOf, cellsFor, mostPlayed, topLevel } from './stats.js?v=86c2b44d';
+import { canPlayGames, clockNow } from './profile.js?v=86c2b44d';
+import { SAVE_FAILED } from './settingsnotes.js?v=86c2b44d';
+import { badgeCount, earnedLabel, groups, orderedBadges, progressFor, rankProgress, totals } from './achscreen.js?v=86c2b44d';
+import { tierOf } from './achievements.js?v=86c2b44d';
+import { cellStates, nextMilestone, streakLine, streakScreenLine, streakState } from './streak.js?v=86c2b44d';
 import {
   COPY, LEVELS, LEVEL_NAMES, airportZone, boardUrl, boardsLive, fetchBoard, isCallsign, localDayIn, makeApi, playGamesBoardFor,
   refreshBoardsLive,
-} from './boards.js?v=7227d0de';
-import { outboxState } from './outbox.js?v=7227d0de';
-import { COPY as STATS_COPY, airportShortName, bestChallenge, goalView, hourBars, myWeekLanded, readWorldStats, recordWords, rewardLine, statsView, withCommas } from './worldstats.js?v=7227d0de';
-import { LAND_PATH, mapDots } from './worldmap.js?v=7227d0de';
+} from './boards.js?v=86c2b44d';
+import { outboxState } from './outbox.js?v=86c2b44d';
+import { COPY as STATS_COPY, airportShortName, bestChallenge, goalView, hourBars, myWeekLanded, readWorldStats, recordWords, rewardLine, statsView, withCommas } from './worldstats.js?v=86c2b44d';
+import { LAND_PATH, mapDots } from './worldmap.js?v=86c2b44d';
 
 const $ = (id) => document.getElementById(id);
 const starsOf = (score) => STAR_GOALS.filter((g) => score >= g).length;

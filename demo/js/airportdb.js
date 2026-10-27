@@ -1,7 +1,7 @@
-import { assetUrl } from './flavor.js?v=7227d0de';
+import { assetUrl } from './flavor.js?v=86c2b44d';
 // Offline airport database (trimmed OurAirports, public domain): search + runway lookup.
-import { haversine } from './geo.js?v=7227d0de';
-import { ARRIVAL } from './arrivals.js?v=7227d0de';
+import { haversine } from './geo.js?v=86c2b44d';
+import { ARRIVAL } from './arrivals.js?v=86c2b44d';
 
 let loader = async (path) => {
   const r = await fetch(assetUrl(path));

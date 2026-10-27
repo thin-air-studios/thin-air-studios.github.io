@@ -13,7 +13,7 @@
   "article.updated": "Updated {updated}",
   "toc.label": "In this guide",
   "demo.heading": "Try it yourself",
-  "demo.body": "The free browser demo opens {airport} with simulated planes. It runs one game per visit and needs no install.",
+  "demo.body": "The free browser demo opens {airport} with simulated planes. It gives 3 free games a day and needs no install.",
   "demo.button": "Open {code} in the browser demo",
   "play.heading": "Play Short Final on Android",
   "play.body": "Short Final is free on Google Play. Pick any of more than 29,000 airports, and real planes from live flight data come in when the feed has them. The 50 busiest airports ship inside the app, so they open even offline.",

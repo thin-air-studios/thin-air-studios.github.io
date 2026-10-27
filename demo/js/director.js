@@ -3,12 +3,12 @@
 // callsign). The target is met first, always. Real planes only (realOnly) is a switch on any level: no simulated flight
 // is ever made, so the sky holds what the real sky can give and says so when it is short (starved). It also scales
 // weather and emergencies (none on real planes only).
-import { makeRng } from './util.js?v=7227d0de';
-import { CLASSES } from './config.js?v=7227d0de';
-import { AIRLINES } from './airlines.js?v=7227d0de';
-import { classifyFlight } from './classify.js?v=7227d0de';
-import { usable } from './feedstate.js?v=7227d0de';
-import { compareKeys } from './area.js?v=7227d0de';
+import { makeRng } from './util.js?v=86c2b44d';
+import { CLASSES } from './config.js?v=86c2b44d';
+import { AIRLINES } from './airlines.js?v=86c2b44d';
+import { classifyFlight } from './classify.js?v=86c2b44d';
+import { usable } from './feedstate.js?v=86c2b44d';
+import { compareKeys } from './area.js?v=86c2b44d';
 
 export const DIFFICULTIES = {
   // a gentle start: a handful of aircraft, no rushes, storms, emergencies or departures (main.js)

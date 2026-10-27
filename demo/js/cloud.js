@@ -1,4 +1,4 @@
-import { WEB_DEMO } from './flavor.js?v=7227d0de';
+import { WEB_DEMO } from './flavor.js?v=86c2b44d';
 // Cloud save (DECISIONS 363): the save's progress is kept in the player's Play Games Saved Games, and merged with the copies on the
 // player's other phones (cloudsave.js). It runs for a 13-and-up player who agreed, and only while signed in to Play Games. It fails
 // silently: a save that does not go through keeps the game going, and the Settings line says when the last one did.
@@ -7,10 +7,10 @@ import { WEB_DEMO } from './flavor.js?v=7227d0de';
 // meanwhile runs once more after. Remote progress goes into the save only at home (never during a game: the game holds the save's
 // maps), and a background save writes without applying. Reset progress records a flag first: nothing is merged until the copy is
 // gone, so an old copy cannot bring the reset progress back.
-import { applyCloud, cloudIsCurrent, cloudNote, cloudPayload, cloudText, mergeCloud, parseCloud } from './cloudsave.js?v=7227d0de';
-import { localDay, todaysDaily } from './airportdb.js?v=7227d0de';
-import { proDate } from './clock.js?v=7227d0de';
-import { cloudStore, playGames } from './platform.js?v=7227d0de';
+import { applyCloud, cloudIsCurrent, cloudNote, cloudPayload, cloudText, mergeCloud, parseCloud } from './cloudsave.js?v=86c2b44d';
+import { localDay, todaysDaily } from './airportdb.js?v=86c2b44d';
+import { proDate } from './clock.js?v=86c2b44d';
+import { cloudStore, playGames } from './platform.js?v=86c2b44d';
 
 export const CLOUD_KEY = 'holdingpattern.cloud.v1';
 // the save is sent this long after the last game ends, so a run of games makes one sync

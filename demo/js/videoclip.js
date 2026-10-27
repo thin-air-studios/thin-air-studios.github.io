@@ -2,8 +2,8 @@
 // on it, the radio calls as captions and the words on the frame. Pure: no DOM, no canvas, no Web Audio, so the tests read it.
 // A real plane keeps the name the game gives it (its carrier and flight number, with the red dot): the owner's decision of 2026-10-14
 // (the placeholder names the first version used were withdrawn). A simulated plane has no name, as in the game.
-import { Radio } from './radio.js?v=7227d0de';
-import { CLASSES, TUNING, WORLD_H } from './config.js?v=7227d0de';
+import { Radio } from './radio.js?v=86c2b44d';
+import { CLASSES, TUNING, WORLD_H } from './config.js?v=86c2b44d';
 
 export const VIDEO_W = 1080;
 export const VIDEO_H = 1920;

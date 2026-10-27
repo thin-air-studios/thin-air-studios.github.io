@@ -2,10 +2,10 @@
 // OpenStreetMap) with boats on them, mountains drawn where the real ranges are (Denver's Rockies to
 // the west), tumbleweeds rolling across desert airports. Static parts are painted once into the
 // background; boats and tumbleweeds are visual only (no simulation state, never rewound).
-import { makeProjection } from './geo.js?v=7227d0de';
-import { worldScale } from './airport.js?v=7227d0de';
-import { WORLD_H, UPRIGHT_H_MAX, UPRIGHT_W } from './config.js?v=7227d0de';
-import { makeRng, TAU } from './util.js?v=7227d0de';
+import { makeProjection } from './geo.js?v=86c2b44d';
+import { worldScale } from './airport.js?v=86c2b44d';
+import { WORLD_H, UPRIGHT_H_MAX, UPRIGHT_W } from './config.js?v=86c2b44d';
+import { makeRng, TAU } from './util.js?v=86c2b44d';
 
 // ------------------------------------------------------------------ data
 

@@ -1,16 +1,16 @@
-import { WEB_DEMO } from './flavor.js?v=7227d0de';
+import { WEB_DEMO } from './flavor.js?v=86c2b44d';
 // The first-launch gate (requirements 23 and 24, screens 9): the age question (the year, then the month when the year alone
 // cannot tell whether the player is 13 yet), then Agree for a player 13 or older, or the friendly screen for a player under 13,
 // which has no way into the game, no links out and no request. profile.js decides which one a launch shows; this file draws
 // them and records the answers. The age answer is kept in save.profile on this phone and goes nowhere (tests/profile.test.mjs
 // checks that).
-import { gateState, answerAge, agree, canPlayGames, needsMonth, clockNow } from './profile.js?v=7227d0de';
-import { writeSave } from './storage.js?v=7227d0de';
-import { playGames, exitApp } from './platform.js?v=7227d0de';
-import { signInOffer } from './playgames.js?v=7227d0de';
-import { register, openScreen, closeScreen } from './screenstack.js?v=7227d0de';
-import { todayKey } from './util.js?v=7227d0de';
-import { openLegal } from './legal.js?v=7227d0de';
+import { gateState, answerAge, agree, canPlayGames, needsMonth, clockNow } from './profile.js?v=86c2b44d';
+import { writeSave } from './storage.js?v=86c2b44d';
+import { playGames, exitApp } from './platform.js?v=86c2b44d';
+import { signInOffer } from './playgames.js?v=86c2b44d';
+import { register, openScreen, closeScreen } from './screenstack.js?v=86c2b44d';
+import { todayKey } from './util.js?v=86c2b44d';
+import { openLegal } from './legal.js?v=86c2b44d';
 
 /** The gate screen each state shows. The home screen has none. */
 export const GATE_SCREEN = { age: 'gate-age', month: 'gate-month', under13: 'gate-under13', agree: 'gate-agree' };

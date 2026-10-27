@@ -95,4 +95,4 @@ export const LANE_S = 6;
 // The online boards (server/). Off until the Worker is deployed and a test score is accepted (release step 6), so the
 // World tab makes no request before then (release step 22). The Google web client id for server sign-in is not here: the app reads it from
 // games-ids.xml (game_web_client_id, platform.js playGames.webClientId). Without it no session is made and posts wait.
-export const BOARDS = { base: 'https://short-final.toddwiseman.workers.dev', live: false };
+export const BOARDS = { base: 'https://api.playshortfinal.com', live: false };

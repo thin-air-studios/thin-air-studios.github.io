@@ -1,8 +1,8 @@
 // Radio chatter: short, realistic tower/pilot exchanges for what's happening on screen, shown in a
 // ticker at the bottom of the screen with a squelch click. Purely flavour: it never blocks play.
-import { displayName } from './airlines.js?v=7227d0de';
-import { CLASSES } from './config.js?v=7227d0de';
-import { takeoffIdent } from './airport.js?v=7227d0de';
+import { displayName } from './airlines.js?v=86c2b44d';
+import { CLASSES } from './config.js?v=86c2b44d';
+import { takeoffIdent } from './airport.js?v=86c2b44d';
 
 const PHONETIC = {
   A: 'Alpha', B: 'Bravo', C: 'Charlie', D: 'Delta', E: 'Echo', F: 'Foxtrot', G: 'Golf', H: 'Hotel', I: 'India', J: 'Juliett',

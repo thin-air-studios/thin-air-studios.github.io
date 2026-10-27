@@ -1,6 +1,6 @@
 // Airport operations: now and then a runway closes for an inspection (bird activity, debris) while
 // an airport ops truck drives its length, then reopens. The player re-routes around it.
-import { TAU, makeRng } from './util.js?v=7227d0de';
+import { TAU, makeRng } from './util.js?v=86c2b44d';
 
 const WARN = 10; // s of warning before it closes
 const CLOSED = 26; // s closed

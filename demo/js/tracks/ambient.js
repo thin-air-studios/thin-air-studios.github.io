@@ -17,7 +17,7 @@
 //      runs (the low-pass rises across the note)
 // Variation: the melody takes one of two other lines on alternate passes (cycle 1 and 3), the chime moves to the other
 // bars on the odd passes, and the plucks run their figure the other way round on odd passes.
-import { mtof } from './pitch.js?v=7227d0de';
+import { mtof } from './pitch.js?v=86c2b44d';
 
 // --- the score (D major) -----------------------------------------------------------------------------------------------
 // One chord per bar: its name (for reading), the bass root for the drone and the pulse (MIDI), and the pad voicing

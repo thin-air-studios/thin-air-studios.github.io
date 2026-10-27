@@ -3,13 +3,13 @@
 // and Chaos a busy runway at touchdown, or a lethal wake encounter (WakeLookahead, the wakes hazards.js would lay and find).
 // The real sim is never touched: the ghost has its own zones, its own RNG state and its own copy of the departures' ground
 // stepper, and it is restored from a light copy at each run.
-import { Sim } from './sim.js?v=7227d0de';
-import { Departures } from './departures.js?v=7227d0de';
-import { makeRng } from './util.js?v=7227d0de';
-import { setActiveEnd } from './airport.js?v=7227d0de';
-import { CLASSES } from './config.js?v=7227d0de';
-import { airVelOf } from './weather.js?v=7227d0de';
-import { WAKE_EVERY, FRESH, wakeHitAt, wakeLethal, highUpAt, laneThroughLethalWake } from './hazards.js?v=7227d0de';
+import { Sim } from './sim.js?v=86c2b44d';
+import { Departures } from './departures.js?v=86c2b44d';
+import { makeRng } from './util.js?v=86c2b44d';
+import { setActiveEnd } from './airport.js?v=86c2b44d';
+import { CLASSES } from './config.js?v=86c2b44d';
+import { airVelOf } from './weather.js?v=86c2b44d';
+import { WAKE_EVERY, FRESH, wakeHitAt, wakeLethal, highUpAt, laneThroughLethalWake } from './hazards.js?v=86c2b44d';
 
 export const HORIZON = 3; // s of look-ahead
 export const GHOST_STEP = 1 / 120; // the ghost's fixed step (the sim's own)

@@ -1,8 +1,8 @@
 // Holding stacks: two named fixes out on the edge of the airspace, each with a published racetrack
 // hold. Aircraft sent there are stacked 1,000 ft apart (5,000-8,000), so they're separated from each
 // other, but not from anyone else crossing the pattern.
-import { clamp, dist, mapLabel, cssScale, hudScale, TAU } from './util.js?v=7227d0de';
-import { WORLD_H } from './config.js?v=7227d0de';
+import { clamp, dist, mapLabel, cssScale, hudScale, TAU } from './util.js?v=86c2b44d';
+import { WORLD_H } from './config.js?v=86c2b44d';
 
 export const STACK_LEVELS = 4;
 export const FIX_RADIUS = 16;

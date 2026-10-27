@@ -1,6 +1,6 @@
 // Particles, floating text, camera shake and slow-motion: the "juice".
-import { TAU, damp, clamp } from './util.js?v=7227d0de';
-import { reducedMotion } from './motion.js?v=7227d0de';
+import { TAU, damp, clamp } from './util.js?v=86c2b44d';
+import { reducedMotion } from './motion.js?v=86c2b44d';
 
 // contrails: at most 300 particles in all, and six puffs a second from any one aircraft (the spacing is 0.2 s)
 export const CONTRAIL_MAX = 300;

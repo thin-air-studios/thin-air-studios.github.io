@@ -4,9 +4,9 @@
 //
 // The time: the daily challenge is ready from local midnight, so its reminder comes at 9 am, the phone's own time. Days are local
 // day numbers (airportdb.js localDay); the daily number is that less DAILY_EPOCH, as the shell computes them.
-import { DAILY_EPOCH } from './airportdb.js?v=7227d0de';
-import { weekendOf } from './weekend.js?v=7227d0de';
-import { streakState, RUN_GAP } from './streak.js?v=7227d0de';
+import { DAILY_EPOCH } from './airportdb.js?v=86c2b44d';
+import { weekendOf } from './weekend.js?v=86c2b44d';
+import { streakState, RUN_GAP } from './streak.js?v=86c2b44d';
 
 export const REMINDER_HOUR = 9;
 export const EVENING_HOUR = 19; // the streak saver and the Sunday recap

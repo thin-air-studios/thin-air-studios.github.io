@@ -1,6 +1,6 @@
 // Bridges to the Android shell (haptics, version, exit). Falls back gracefully in a browser.
-import { VERSION } from './version.js?v=7227d0de';
-import { isPending } from './playgames.js?v=7227d0de';
+import { VERSION } from './version.js?v=86c2b44d';
+import { isPending } from './playgames.js?v=86c2b44d';
 
 const bridge = typeof window !== 'undefined' ? window.HPAndroid : undefined;
 

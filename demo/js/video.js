@@ -3,11 +3,11 @@
 // the game's own music under the clip (audio.js renderTrackOffline, at the clip's traffic layers), the encoder (videoenc.js) and the
 // file. Progress runs 0..1; a cancel stops between two frames and leaves nothing behind. Nothing here posts: the file is handed to
 // the share sheet or saved by the caller (deliver, videoenc.js), and only then does anything leave the phone.
-import { SIM_HZ } from './config.js?v=7227d0de';
-import { clipPlan, frameCount, MIN_GAME_S, VIDEO_W, VIDEO_H, VIDEO_FPS, bottomBlock, inChunks, simTimeAt, reachesEnd } from './videoclip.js?v=7227d0de';
-import { ClipScene, scanReplayAsync, drawFrame, frameWords, loadIcon } from './videorender.js?v=7227d0de';
-import { renderTrackOffline } from './audio.js?v=7227d0de';
-import { openSink } from './videoenc.js?v=7227d0de';
+import { SIM_HZ } from './config.js?v=86c2b44d';
+import { clipPlan, frameCount, MIN_GAME_S, VIDEO_W, VIDEO_H, VIDEO_FPS, bottomBlock, inChunks, simTimeAt, reachesEnd } from './videoclip.js?v=86c2b44d';
+import { ClipScene, scanReplayAsync, drawFrame, frameWords, loadIcon } from './videorender.js?v=86c2b44d';
+import { renderTrackOffline } from './audio.js?v=86c2b44d';
+import { openSink } from './videoenc.js?v=86c2b44d';
 
 /** Thrown when the player cancels: the caller goes back to the clip choices. */
 export class VideoCancelled extends Error {

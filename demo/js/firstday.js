@@ -5,7 +5,7 @@
 //
 // Nothing here blocks play: the answer comes back in the background, and a failed request is asked again later. It is asked only
 // once the age question is answered (main.js homeOpened), and never by the sideload build (its hash is '').
-import { validPro } from './pro.js?v=7227d0de';
+import { validPro } from './pro.js?v=86c2b44d';
 
 export const FIRST_DAY_RETRY_MS = 10 * 60 * 1000;
 

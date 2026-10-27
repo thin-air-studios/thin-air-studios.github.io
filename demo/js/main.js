@@ -1,89 +1,89 @@
 // Game controller: screens, airport loading, the live-traffic loop, input, and wiring sim events
 // to sound and feel.
-import { SIM_HZ, CLASSES, ZONE_COLORS, STAR_GOALS, TUNING } from './config.js?v=7227d0de';
-import { Sim } from './sim.js?v=7227d0de';
-import { Renderer, canvasDpr, hudRectsFor } from './render.js?v=7227d0de';
-import { worldShape } from './worldshape.js?v=7227d0de';
-import { DensityGovernor, densityKey, startDensity, nextDensity } from './density.js?v=7227d0de';
-import { FX } from './fx.js?v=7227d0de';
-import { AudioEngine } from './audio.js?v=7227d0de';
-import { loadSave, writeSave, writeSaveDetail, resetSave } from './storage.js?v=7227d0de';
-import { haptic, setHaptics, appVersion, keepAwake, setRotationLock, shareText, speech, sharing, playGames, videoBridge, deviceHash, requestReview, openStorePage, openDemoPage, dailyReminder, onPlayGamesState, playGamesChanged } from './platform.js?v=7227d0de';
-import { noteFinishedGame, noteAsked, goodGame, reviewDue, REVIEW_SETTLE_MS } from './review.js?v=7227d0de';
-import { reminderNote, streakNote, recapNote, offerDue, offerShown, weekAfterLanding } from './reminder.js?v=7227d0de';
-import { TICKER_BUSIEST_MIN, afterCounted, gameNote, heldWorldAt, heldWorldStats, landedWord, percentLine, projectedLanded, readDailyHistogram, readWorldStats, sanitizeWorldStats, sendGameNote, shouldSendGameNote, tickerFacts, tickerPick, withCommas, worldStatsNote } from './worldstats.js?v=7227d0de';
-import { initCloud, cloudLine, syncCloud, scheduleCloudSave, flushCloudSave, resetCloud } from './cloud.js?v=7227d0de';
-import { shareTexts, renderCard, evenColumns, videoCaption } from './share.js?v=7227d0de';
-import { pickFromLink, parseChallengeLink, checkChallenge, linkInCaption } from './links.js?v=7227d0de';
-import { challengeFromGame, challengeHadReal, challengeWords, challengeScoreLine, challengeWho, challengeRealLine, challengeTexts, challengeSamePlanes, challengeWxSeed, weatherOfSeed, repeatableGame } from './challenge.js?v=7227d0de';
-import { damp, lerp, clamp, dist2, setHudScale, hudScale, textLines } from './util.js?v=7227d0de';
-import { drawAircraftShape } from './sprites.js?v=7227d0de';
-import * as db from './airportdb.js?v=7227d0de';
-import { buildWorld, landableClasses, setActiveEnd, takeoffIdent } from './airport.js?v=7227d0de';
-import { loadLayout, loadMetar, demoFeed, loadSurroundings, cacheGet, cacheSet, cacheDel, cacheKeys, newPolite, queueFullMap, START_WAIT_MS } from './airportdata.js?v=7227d0de';
-import { surroundingsInWorld, waterMask, Scenery } from './scenery.js?v=7227d0de';
-import { groundTheme, nearField } from './airportpaint.js?v=7227d0de';
-import { bearingToCanvas, bboxAround, haversine } from './geo.js?v=7227d0de';
-import { OpenSkyClient, LiveFeed, dailyFeed, countInArea } from './opensky.js?v=7227d0de';
-import { askForRoute, arrivalNote } from './routes.js?v=7227d0de';
-import { http } from './net.js?v=7227d0de';
-import { TrafficDirector, DIFFICULTIES, backdropOptions, runwayPace } from './director.js?v=7227d0de';
-import { gameConfig, challengeConfig, playRecorded, recordedPlayCode, gameTitleWord, DEMO_AIRPORTS } from './modes.js?v=7227d0de';
-import { weatherFromMetar, chooseActiveEnds, plainWeather } from './metar.js?v=7227d0de';
-import tzlookup from './vendor/tz.js?v=7227d0de';
-import { Lighting } from './lighting.js?v=7227d0de';
-import { bothEnds } from './closures.js?v=7227d0de';
-import { Bullet } from './bullet.js?v=7227d0de';
-import { endChanged, eitherEnd, stopFastForward } from './hazards.js?v=7227d0de';
-import { Radio, towerAccent, trafficUnder, callTypeWord, emergencyCall } from './radio.js?v=7227d0de';
-import { feedState, usable, mixLine, bannerLine, feedStatus, almostUsedUp, homeFeedLine, endLines, feedRecord, feedSaveDue, dotColour, RECORDED_STATUS } from './feedstate.js?v=7227d0de';
-import { checkDue, checkRecord, tapNote, CHECK_TIMEOUT_MS, RADIUS_M } from './feedcheck.js?v=7227d0de';
-import { realOnlyNote, departuresNote, levelChoices, levelConfirm, SAVE_FAILED } from './settingsnotes.js?v=7227d0de';
-import { PGS_FAILED, playGamesRow } from './playgames.js?v=7227d0de';
-import { TRACKS, trackByKey } from './music.js?v=7227d0de';
-import { register, openScreen, closeScreen, backOne, openScreens } from './screenstack.js?v=7227d0de';
-import { setLevelMidGame, setDeparturesMidGame, applyRewind, applyRealOnly, revealFixes } from './midgame.js?v=7227d0de';
-import { SLOW_SHEET, RPO_FLASH_MS, rpoFlash, KEEP_RUN_START, newSlowSky, resetSlowSky, noteSlowSky, slowSkyDue, afterKeep, breakRun } from './skysky.js?v=7227d0de';
-import { feedWords, nearHeading, breakdownRows, breakdownTotal, inGameLines, reportText, agoWords, nextWords } from './feedcard.js?v=7227d0de';
-import { nameForRival } from './area.js?v=7227d0de';
-import { displayName } from './airlines.js?v=7227d0de';
-import { Sky } from './sky.js?v=7227d0de';
-import { ACHIEVEMENTS, AchievementTracker, rankFor } from './achievements.js?v=7227d0de';
-import { bestInGame } from './achscreen.js?v=7227d0de';
-import { airportZone, boardsLive, catchUpPayload, makeApi, refreshBoardsLive } from './boards.js?v=7227d0de';
-import { canonicalLayout, hashText, stashLayout, queueGame, postQueued, cancelOutbox } from './outbox.js?v=7227d0de';
-import { statsLine, rankLine, rankWord, loadingRankLine, fillEndCard, countEndCard } from './endcard.js?v=7227d0de';
-import { playButtonWords, pickKey, lastPlayedOf, savedPickOf } from './playbutton.js?v=7227d0de';
-import { weekendOf, weekendAirport, weekendSetup, weekendWx, weekendSeed, themeOf, weekendLine } from './weekend.js?v=7227d0de';
+import { SIM_HZ, CLASSES, ZONE_COLORS, STAR_GOALS, TUNING } from './config.js?v=86c2b44d';
+import { Sim } from './sim.js?v=86c2b44d';
+import { Renderer, canvasDpr, hudRectsFor } from './render.js?v=86c2b44d';
+import { worldShape } from './worldshape.js?v=86c2b44d';
+import { DensityGovernor, densityKey, startDensity, nextDensity } from './density.js?v=86c2b44d';
+import { FX } from './fx.js?v=86c2b44d';
+import { AudioEngine } from './audio.js?v=86c2b44d';
+import { loadSave, writeSave, writeSaveDetail, resetSave } from './storage.js?v=86c2b44d';
+import { haptic, setHaptics, appVersion, keepAwake, setRotationLock, shareText, speech, sharing, playGames, videoBridge, deviceHash, requestReview, openStorePage, openDemoPage, dailyReminder, onPlayGamesState, playGamesChanged } from './platform.js?v=86c2b44d';
+import { noteFinishedGame, noteAsked, goodGame, reviewDue, REVIEW_SETTLE_MS } from './review.js?v=86c2b44d';
+import { reminderNote, streakNote, recapNote, offerDue, offerShown, weekAfterLanding } from './reminder.js?v=86c2b44d';
+import { TICKER_BUSIEST_MIN, afterCounted, gameNote, heldWorldAt, heldWorldStats, landedWord, percentLine, projectedLanded, readDailyHistogram, readWorldStats, sanitizeWorldStats, sendGameNote, shouldSendGameNote, tickerFacts, tickerPick, withCommas, worldStatsNote } from './worldstats.js?v=86c2b44d';
+import { initCloud, cloudLine, syncCloud, scheduleCloudSave, flushCloudSave, resetCloud } from './cloud.js?v=86c2b44d';
+import { shareTexts, renderCard, evenColumns, videoCaption } from './share.js?v=86c2b44d';
+import { pickFromLink, parseChallengeLink, checkChallenge, linkInCaption } from './links.js?v=86c2b44d';
+import { challengeFromGame, challengeHadReal, challengeWords, challengeScoreLine, challengeWho, challengeRealLine, challengeTexts, challengeSamePlanes, challengeWxSeed, weatherOfSeed, repeatableGame } from './challenge.js?v=86c2b44d';
+import { damp, lerp, clamp, dist2, setHudScale, hudScale, textLines } from './util.js?v=86c2b44d';
+import { drawAircraftShape } from './sprites.js?v=86c2b44d';
+import * as db from './airportdb.js?v=86c2b44d';
+import { buildWorld, landableClasses, setActiveEnd, takeoffIdent } from './airport.js?v=86c2b44d';
+import { loadLayout, loadMetar, demoFeed, loadSurroundings, cacheGet, cacheSet, cacheDel, cacheKeys, newPolite, queueFullMap, START_WAIT_MS } from './airportdata.js?v=86c2b44d';
+import { surroundingsInWorld, waterMask, Scenery } from './scenery.js?v=86c2b44d';
+import { groundTheme, nearField } from './airportpaint.js?v=86c2b44d';
+import { bearingToCanvas, bboxAround, haversine } from './geo.js?v=86c2b44d';
+import { OpenSkyClient, LiveFeed, dailyFeed, countInArea } from './opensky.js?v=86c2b44d';
+import { askForRoute, arrivalNote } from './routes.js?v=86c2b44d';
+import { http } from './net.js?v=86c2b44d';
+import { TrafficDirector, DIFFICULTIES, backdropOptions, runwayPace } from './director.js?v=86c2b44d';
+import { gameConfig, challengeConfig, playRecorded, recordedPlayCode, gameTitleWord, DEMO_AIRPORTS } from './modes.js?v=86c2b44d';
+import { weatherFromMetar, chooseActiveEnds, plainWeather } from './metar.js?v=86c2b44d';
+import tzlookup from './vendor/tz.js?v=86c2b44d';
+import { Lighting } from './lighting.js?v=86c2b44d';
+import { bothEnds } from './closures.js?v=86c2b44d';
+import { Bullet } from './bullet.js?v=86c2b44d';
+import { endChanged, eitherEnd, stopFastForward } from './hazards.js?v=86c2b44d';
+import { Radio, towerAccent, trafficUnder, callTypeWord, emergencyCall } from './radio.js?v=86c2b44d';
+import { feedState, usable, mixLine, bannerLine, feedStatus, almostUsedUp, homeFeedLine, endLines, feedRecord, feedSaveDue, dotColour, RECORDED_STATUS } from './feedstate.js?v=86c2b44d';
+import { checkDue, checkRecord, tapNote, CHECK_TIMEOUT_MS, RADIUS_M } from './feedcheck.js?v=86c2b44d';
+import { realOnlyNote, departuresNote, levelChoices, levelConfirm, SAVE_FAILED } from './settingsnotes.js?v=86c2b44d';
+import { PGS_FAILED, playGamesRow } from './playgames.js?v=86c2b44d';
+import { TRACKS, trackByKey } from './music.js?v=86c2b44d';
+import { register, openScreen, closeScreen, backOne, openScreens } from './screenstack.js?v=86c2b44d';
+import { setLevelMidGame, setDeparturesMidGame, applyRewind, applyRealOnly, revealFixes } from './midgame.js?v=86c2b44d';
+import { SLOW_SHEET, RPO_FLASH_MS, rpoFlash, KEEP_RUN_START, newSlowSky, resetSlowSky, noteSlowSky, slowSkyDue, afterKeep, breakRun } from './skysky.js?v=86c2b44d';
+import { feedWords, nearHeading, breakdownRows, breakdownTotal, inGameLines, reportText, agoWords, nextWords } from './feedcard.js?v=86c2b44d';
+import { nameForRival } from './area.js?v=86c2b44d';
+import { displayName } from './airlines.js?v=86c2b44d';
+import { Sky } from './sky.js?v=86c2b44d';
+import { ACHIEVEMENTS, AchievementTracker, rankFor } from './achievements.js?v=86c2b44d';
+import { bestInGame } from './achscreen.js?v=86c2b44d';
+import { airportZone, boardsLive, catchUpPayload, makeApi, refreshBoardsLive } from './boards.js?v=86c2b44d';
+import { canonicalLayout, hashText, stashLayout, queueGame, postQueued, cancelOutbox } from './outbox.js?v=86c2b44d';
+import { statsLine, rankLine, rankWord, loadingRankLine, fillEndCard, countEndCard } from './endcard.js?v=86c2b44d';
+import { playButtonWords, pickKey, lastPlayedOf, savedPickOf } from './playbutton.js?v=86c2b44d';
+import { weekendOf, weekendAirport, weekendSetup, weekendWx, weekendSeed, themeOf, weekendLine } from './weekend.js?v=86c2b44d';
 // Short Final Pro (DECISIONS 280): the free games' rules (pro.js) and the shell's purchase state, the sheet and Settings (propay.js)
-import { advancePro, gameRule, countGame, playLeftWords, endOfferDue, ABOUT_PRO_LINE } from './pro.js?v=7227d0de';
-import { initPro, isPro, proSettled, openProSheet, closeProSheet, buyPro, restorePro, renderSettings } from './propay.js?v=7227d0de';
-import { initScreens, openBoards, openAchievements, refreshBoardsCache, renderStreakCorner } from './screens.js?v=7227d0de';
-import { initTour, markTourSeen } from './tour.js?v=7227d0de';
-import { makeGame, stepWorld, outcomeOf, liveFeedTick } from './simdriver.js?v=7227d0de';
-import { GhostRunner } from './ghost.js?v=7227d0de';
-import { Recorder, packReplay, REPLAY_MAX_PACKED } from './replay.js?v=7227d0de';
-import { makeVideo, canMakeVideo, VideoCancelled } from './video.js?v=7227d0de';
-import { deliver, stageBytes } from './videoenc.js?v=7227d0de';
-import { CLIPS, DEFAULT_CLIP } from './videoclip.js?v=7227d0de';
-import { startRanking, shouldPostScores, isRanked, easiestOf, LEVEL_ORDER, noteRanking } from './ranking.js?v=7227d0de';
-import { recordGame } from './stats.js?v=7227d0de';
-import { streakState, streakLine, recordPlayed, celebrateSound, MILESTONE_LINES } from './streak.js?v=7227d0de';
-import { VERSION } from './version.js?v=7227d0de';
-import { reducedMotion, bindRipples } from './motion.js?v=7227d0de';
-import { skyGesture, gestureAfterLanding, gestureAfterPlaneLift, groundTapWins, fingerMoveAction, tailUnder, tailReach, tailHandleReach, tailScale, tailMoveAction, liftEndsPath, tapTogglesHold, tapSlopPx, tailBeatsPlane, ringUnder, TAP_PX, RING_REACH_PX } from './fingers.js?v=7227d0de';
-import { canPlayGames, clearAgreement, clockNow, gateState } from './profile.js?v=7227d0de';
-import { initGate, checkGate, takeSignInOffer } from './gate.js?v=7227d0de';
-import { initLegal } from './legal.js?v=7227d0de';
+import { advancePro, gameRule, countGame, playLeftWords, endOfferDue, ABOUT_PRO_LINE } from './pro.js?v=86c2b44d';
+import { initPro, isPro, proSettled, openProSheet, closeProSheet, buyPro, restorePro, renderSettings } from './propay.js?v=86c2b44d';
+import { initScreens, openBoards, openAchievements, refreshBoardsCache, renderStreakCorner } from './screens.js?v=86c2b44d';
+import { initTour, markTourSeen } from './tour.js?v=86c2b44d';
+import { makeGame, stepWorld, outcomeOf, liveFeedTick } from './simdriver.js?v=86c2b44d';
+import { GhostRunner } from './ghost.js?v=86c2b44d';
+import { Recorder, packReplay, REPLAY_MAX_PACKED } from './replay.js?v=86c2b44d';
+import { makeVideo, canMakeVideo, VideoCancelled } from './video.js?v=86c2b44d';
+import { deliver, stageBytes } from './videoenc.js?v=86c2b44d';
+import { CLIPS, DEFAULT_CLIP } from './videoclip.js?v=86c2b44d';
+import { startRanking, shouldPostScores, isRanked, easiestOf, LEVEL_ORDER, noteRanking } from './ranking.js?v=86c2b44d';
+import { recordGame } from './stats.js?v=86c2b44d';
+import { streakState, streakLine, recordPlayed, celebrateSound, MILESTONE_LINES } from './streak.js?v=86c2b44d';
+import { VERSION } from './version.js?v=86c2b44d';
+import { reducedMotion, bindRipples } from './motion.js?v=86c2b44d';
+import { skyGesture, gestureAfterLanding, gestureAfterPlaneLift, groundTapWins, fingerMoveAction, tailUnder, tailReach, tailHandleReach, tailScale, tailMoveAction, liftEndsPath, tapTogglesHold, tapSlopPx, tailBeatsPlane, ringUnder, TAP_PX, RING_REACH_PX } from './fingers.js?v=86c2b44d';
+import { canPlayGames, clearAgreement, clockNow, gateState } from './profile.js?v=86c2b44d';
+import { initGate, checkGate, takeSignInOffer } from './gate.js?v=86c2b44d';
+import { initLegal } from './legal.js?v=86c2b44d';
 // 2.8 (DECISIONS 330 to 332): the Pro day on the trusted clock, the trial's first day across a reinstall, the search's own keys
-import { proDate } from './clock.js?v=7227d0de';
-import { askFirstDay, applyFirstDay, FIRST_DAY_RETRY_MS } from './firstday.js?v=7227d0de';
-import { nearYou, phoneZone, placeless, keysAfter, typeKey } from './searchkeys.js?v=7227d0de';
-import { buildKeys } from './searchkb.js?v=7227d0de';
+import { proDate } from './clock.js?v=86c2b44d';
+import { askFirstDay, applyFirstDay, FIRST_DAY_RETRY_MS } from './firstday.js?v=86c2b44d';
+import { nearYou, phoneZone, placeless, keysAfter, typeKey } from './searchkeys.js?v=86c2b44d';
+import { buildKeys } from './searchkb.js?v=86c2b44d';
 // the browser demo (DECISIONS 445 to 449): its flavour and rules. The app never takes a WEB_DEMO branch
-import { WEB_DEMO } from './flavor.js?v=7227d0de';
-import { windowMoved } from './windowchange.js?v=7227d0de';
-import { DEMO_WORDS, demoTimeUp, demoPlayWords, demoEndTitle, demoBrowserSupport, demoGameStarted, demoMarkStarted, demoStoreUrl } from './demo.js?v=7227d0de';
+import { WEB_DEMO } from './flavor.js?v=86c2b44d';
+import { windowMoved } from './windowchange.js?v=86c2b44d';
+import { DEMO_WORDS, demoTimeUp, demoPlayWords, demoEndTitle, demoBrowserSupport, demoGamesLeft, demoCountGame, demoStoreUrl, demoStorageWorks, demoHomeNote } from './demo.js?v=86c2b44d';
 
 /** Today for the Pro rules: the local day on the phone's clock, never past trusted time (clock.js; DECISIONS 331). */
 const proToday = () => db.localDay(proDate());
@@ -1365,7 +1365,7 @@ let loadToken = 0;
  * and nothing else happens: the game was never asked to load, so nothing is counted. The daily challenge never needs a free game.
  */
 function proAllowsNow(daily = false) {
-  if (WEB_DEMO) return true; // the demo's one free game is its own rule (demo.js)
+  if (WEB_DEMO) return demoGate(); // the demo's free games are its own rule (demo.js, DECISIONS 454); a restart or Fly again passes it too
   const rule = gameRule({ pro: save.pro, today: proToday(), daily, isPro: isPro() });
   save.pro = rule.state;
   if (rule.allowed) return true;
@@ -1374,13 +1374,11 @@ function proAllowsNow(daily = false) {
 }
 
 async function startAirport(info, { demo = false, daily = 0, challenge = null, weekend = 0 } = {}) {
-  // the browser demo: one free game per page load (demo.js). A second start says so and nothing loads; with no DecompressionStream no game starts
+  // the browser demo: 3 free games a day in this browser (demo.js, DECISIONS 454). With none left the Play page opens and the toast says
+  // why, and nothing loads; with no DecompressionStream no game starts
   if (WEB_DEMO) {
     if (demoUnsupported) return;
-    if (demoGameStarted()) { // Play after the one game: the Play page opens, and the toast says why (demo.js)
-      openDemoPage(demoStoreUrl({ medium: 'web', campaign: 'home' }));
-      return toast(DEMO_WORDS.secondStart, 3200);
-    }
+    if (!demoGate()) return;
   }
   // a phone that has not shown Pro yet waits (at most 1.5 s) for Google Play's first answer before the rule is read (propay.js)
   // the weekend event is free, as the daily is (weekend.js)
@@ -1896,7 +1894,7 @@ function newGame() {
   audio.intensity = 1;
   audio.startTrack(save.settings.musicTrack);
   keepAwake(true);
-  if (WEB_DEMO) demoMarkStarted(); // the page's one free game is this one (DECISIONS 446): counted once the map has loaded
+  if (WEB_DEMO) demoCount(); // the day's free games (DECISIONS 454): this game counts once its map has loaded
   updateTitle();
 }
 
@@ -3940,6 +3938,7 @@ document.addEventListener('visibilitychange', () => {
   else {
     window.HP_onResume();
     renderStreakCorner(); // the day may have changed while the app was away
+    if (WEB_DEMO) syncPlayButton(); // the demo's pill follows the day too (demoRedrawAtMidnight, which a sleeping phone may have missed)
   }
 });
 // the streak's state changes at local midnight: the home corner follows it while the home screen is up
@@ -4512,6 +4511,9 @@ function demoSetup() {
   for (const a of document.querySelectorAll('a.web-store')) a.href = demoStoreUrl({ medium: 'web', campaign: a.dataset.store || 'home' });
   document.querySelector('p.version').firstChild.textContent = 'Demo, version ';
   if (demoUnsupported) $('unsupported').hidden = false;
+  // the home note says what the page keeps: 3 a day when the browser keeps the count, else one game per page load (demo.js demoHomeNote)
+  document.querySelector('.web-note').textContent = demoHomeNote(demoToday().stored);
+  demoRedrawAtMidnight();
 }
 
 /** A phone held upright (a portrait phone: the width under 600 px in portrait, as the turn card's rule in style.css). */
@@ -4531,10 +4533,52 @@ function demoTurnPause() {
   }
 }
 
-/** The demo's Play pill: Play, the airport (or Random busy airport), One free game; after the one game, Get the app (demo.js). */
+// the demo's free games (DECISIONS 454): one record in the browser's storage, { day, n }; the storage may be blocked (private mode), and
+// then the count is the page load's own, with one game (demo.js demoGamesLeft). demoMemory is that count; it stays 0 while storage works.
+let demoMemory = 0;
+// the browser's localStorage, probed once: null when the browser does not give it (a blocked site) or takes no write (a full or read-only
+// store), so the page's one-game rule applies (demo.js demoStorageWorks). demo.js takes it as a storage-like object.
+let demoStorage; // undefined until the first read, then the usable store or null
+function demoStore() {
+  if (demoStorage === undefined) {
+    try {
+      demoStorage = demoStorageWorks(window.localStorage) ? window.localStorage : null;
+    } catch (_) {
+      demoStorage = null;
+    }
+  }
+  return demoStorage;
+}
+/** The free games left today, and the games counted today (demo.js demoGamesLeft), on the phone's local day. */
+const demoToday = () => demoGamesLeft(demoStore(), db.localDay(), demoMemory);
+/** Counts the game that has just loaded its map (demo.js demoCountGame). A save that fails is kept in the page's count. */
+function demoCount() {
+  const r = demoCountGame(demoStore(), db.localDay(), demoMemory);
+  if (!r.stored) demoMemory = r.played;
+}
+
+/** The demo's start gate (DECISIONS 454): a game may start while the day has a free game. With none left, the Play page opens and the toast says why. */
+function demoGate() {
+  if (demoToday().left > 0) return true;
+  openDemoPage(demoStoreUrl({ medium: 'web', campaign: 'home' }));
+  toast(DEMO_WORDS.usedUp, 3200);
+  return false;
+}
+
+/** The demo's pill follows the local day: it is drawn again at each local midnight, when the day's free games start again (demo.js). */
+function demoRedrawAtMidnight() {
+  const now = new Date();
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  setTimeout(() => {
+    syncPlayButton();
+    demoRedrawAtMidnight();
+  }, midnight - now + 1000); // a second past midnight, so the local day (db.localDay) has changed
+}
+
+/** The demo's Play pill: Play, the airport (or Random busy airport), and the free games left today; with none left, Get the app (demo.js). */
 function demoPlayButton() {
   const btn = $('btn-demo');
-  const w = demoPlayWords({ played: demoGameStarted(), pickName: picked ? picked.info.name : '' });
+  const w = demoPlayWords({ left: demoToday().left, pickName: picked ? picked.info.name : '' });
   btn.querySelector('.pb-title').textContent = w.title;
   btn.querySelector('.pb-place').textContent = w.place;
   const rank = btn.querySelector('.pb-rank');

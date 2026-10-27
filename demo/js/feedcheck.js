@@ -3,9 +3,9 @@
 // function takes nowMs). main.js makes the request and saves the record (runFeedCheck). The check spends one credit of the
 // day's free allowance, so the rules keep the game's credits: it never sends while OpenSky asked us to wait, never within a
 // minute of the last request it sent, and a tap or a return to the app leaves the last 150 credits of the day to games.
-import { sameDay, waitWords } from './feedstate.js?v=7227d0de';
+import { sameDay, waitWords } from './feedstate.js?v=86c2b44d';
 
-export { ON_MS, OLD_MS } from './feedstate.js?v=7227d0de';
+export { ON_MS, OLD_MS } from './feedstate.js?v=86c2b44d';
 
 export const CHECK_GAP_MS = 60e3; // between two requests the check sends
 export const AWAY_MS = 600e3; // away this long before a return checks

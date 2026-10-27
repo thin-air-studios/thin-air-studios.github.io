@@ -1,11 +1,11 @@
 // OpenSky Network live traffic: parsing, OAuth2 client-credentials auth, and a polling feed that
 // treats the API's credit limits as a hard budget (anonymous: 400 credits/day, 1 credit per
 // bounding-box query under 25 sq deg; authenticated: 4000/day).
-import { haversine, bearing, angleDiff, bboxAround } from './geo.js?v=7227d0de';
-import { classifyFlight } from './classify.js?v=7227d0de';
-import { ARRIVAL, arrivalCheck, estimatePosition } from './arrivals.js?v=7227d0de';
-import { judge } from './area.js?v=7227d0de';
-import { pollFactor } from './feedstate.js?v=7227d0de';
+import { haversine, bearing, angleDiff, bboxAround } from './geo.js?v=86c2b44d';
+import { classifyFlight } from './classify.js?v=86c2b44d';
+import { ARRIVAL, arrivalCheck, estimatePosition } from './arrivals.js?v=86c2b44d';
+import { judge } from './area.js?v=86c2b44d';
+import { pollFactor } from './feedstate.js?v=86c2b44d';
 
 // the dead reckoning is arrivals.js's (one copy); the feed's callers and tests read it from here
 export { estimatePosition };

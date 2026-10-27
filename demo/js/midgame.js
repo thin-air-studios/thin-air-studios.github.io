@@ -6,10 +6,10 @@
 // The game object g (main.js for the live game, simdriver.js for a replay) holds: sim, world, director, weather, hazards,
 // ops, departures, realOnly, daily, seed, firstAfter, settings (the saved settings: departures and difficulty), ranking
 // (live only), rec (live only), and steps (the fixed steps run so far).
-import { Departures } from './departures.js?v=7227d0de';
-import { purgeSimulated } from './sim.js?v=7227d0de';
-import { noteRanking } from './ranking.js?v=7227d0de';
-import { startSimOverride, clearSimOverride } from './modes.js?v=7227d0de';
+import { Departures } from './departures.js?v=86c2b44d';
+import { purgeSimulated } from './sim.js?v=86c2b44d';
+import { noteRanking } from './ranking.js?v=86c2b44d';
+import { startSimOverride, clearSimOverride } from './modes.js?v=86c2b44d';
 
 /** The pause picker's levels: a game can step down to these, and up to Normal from Beginner or Easy, never to Hard or Chaos. */
 export const PICKER_LEVELS = ['beginner', 'easy', 'normal'];

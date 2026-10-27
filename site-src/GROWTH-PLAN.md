@@ -99,7 +99,7 @@ Links from other sites tell Google the site is worth ranking. They also send peo
 
 - The press kit (/press/): fact sheet, icon, feature graphic, logo and the trailer. Easy for writers to use.
 - The trailer (YouTube link on the press kit and home page).
-- The browser demo (/demo/): one free game per visit, with real airports via ?a=<airport code>. This is the best thing to show people who cannot install an app.
+- The browser demo (/demo/): 3 free games a day, with real airports via ?a=<airport code>. This is the best thing to show people who cannot install an app.
 - The guides, once checked.
 - Airport pages, where a local site or fan wants a map.
 

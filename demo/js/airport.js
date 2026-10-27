@@ -1,7 +1,7 @@
 // Turns raw airport data (OurAirports row + runways, optional OpenStreetMap/Overpass JSON) into a
 // layout in metres, then into a game world (units) with landing zones.
-import { makeProjection, bearing, headingFromIdent, angleDiff, polygonCentroid, polygonArea, haversine, destination, distToSegment } from './geo.js?v=7227d0de';
-import { WORLD_H, CLASSES, TUNING } from './config.js?v=7227d0de';
+import { makeProjection, bearing, headingFromIdent, angleDiff, polygonCentroid, polygonArea, haversine, destination, distToSegment } from './geo.js?v=86c2b44d';
+import { WORLD_H, CLASSES, TUNING } from './config.js?v=86c2b44d';
 
 const HARD = /^(asphalt|concrete|paved|paving_stones|metal|bitumen|tarmac|concrete:plates|concrete:lanes|chipseal|sett)$/i;
 const SOFT = /^(grass|gravel|dirt|ground|earth|sand|unpaved|compacted|fine_gravel|mud|clay|turf|pebblestone|rock|coral|snow|ice)$/i;

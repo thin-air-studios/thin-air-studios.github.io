@@ -2,10 +2,10 @@
 // Ranked or Unranked rule for the settings as they are now, and the one reason a game is unranked. No DOM, so the words are
 // tested without the game; main.js syncPlayButton puts them on the button. The rules are ranking.js's (startRanking) and
 // modes.js's (gameConfig), read the way endcard.js loadingRankLine reads them.
-import { gameConfig } from './modes.js?v=7227d0de';
-import { cityName } from './airportdb.js?v=7227d0de';
-import { REASON_ORDER, isRanked, startRanking } from './ranking.js?v=7227d0de';
-import { themeOf } from './weekend.js?v=7227d0de';
+import { gameConfig } from './modes.js?v=86c2b44d';
+import { cityName } from './airportdb.js?v=86c2b44d';
+import { REASON_ORDER, isRanked, startRanking } from './ranking.js?v=86c2b44d';
+import { themeOf } from './weekend.js?v=86c2b44d';
 
 /** The words for the reasons a player's own settings can cause on the home screen (ranking.js reasons). */
 export const PLAY_REASON_WORDS = {

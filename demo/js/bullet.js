@@ -2,10 +2,10 @@
 // a heartbeat. The prediction is the ghost run (ghost.js), 4 times a second in real time. On Hard and Chaos a busy runway
 // at touchdown, or a light plane about to fly into a lethal wake, is predicted the same way. The one-per-game 5-second rewind
 // is rewind.js, kept here as a handle.
-import { lerp, damp, TAU } from './util.js?v=7227d0de';
-import { CLASSES, TUNING } from './config.js?v=7227d0de';
-import { GhostRunner } from './ghost.js?v=7227d0de';
-import { RewindBuffer } from './rewind.js?v=7227d0de';
+import { lerp, damp, TAU } from './util.js?v=86c2b44d';
+import { CLASSES, TUNING } from './config.js?v=86c2b44d';
+import { GhostRunner } from './ghost.js?v=86c2b44d';
+import { RewindBuffer } from './rewind.js?v=86c2b44d';
 
 const SLOW = 0.25; // time scale while a conflict is predicted
 export const CADENCE = 0.25; // s of real time between ghost runs (4 Hz)

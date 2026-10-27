@@ -1,18 +1,18 @@
-import { WEB_DEMO } from './flavor.js?v=7227d0de';
+import { WEB_DEMO } from './flavor.js?v=86c2b44d';
 // Draws a frame: the real airport, paths, aircraft, effects and the HUD. Owns the camera
 // (fit-to-airspace, pinch zoom, pan).
-import { WORLD_H, ZONE_COLORS, CLASSES, TUNING, SPRITE_SCALE } from './config.js?v=7227d0de';
-import { clamp, TAU, cssScale, collectMapLabels } from './util.js?v=7227d0de';
-import { worldShape } from './worldshape.js?v=7227d0de';
-import { drawAircraftShape, drawSpinners, spriteBitmap } from './sprites.js?v=7227d0de';
-import { FONT } from './fx.js?v=7227d0de';
-import { paintAirport, paintActiveEnds, groundTheme } from './airportpaint.js?v=7227d0de';
-import { tailColor } from './airlines.js?v=7227d0de';
-import { drawFixes } from './stacks.js?v=7227d0de';
-import { STACK_FUEL, eitherEnd } from './hazards.js?v=7227d0de';
-import { uiScales } from './uiscale.js?v=7227d0de';
-import { reducedMotion, pulse as pulseAt, springOut, smooth, flashGate, speedStreaks, approach } from './motion.js?v=7227d0de';
-import { ClosureMarks, drawClosureMarks, drawClosurePills } from './closures.js?v=7227d0de';
+import { WORLD_H, ZONE_COLORS, CLASSES, TUNING, SPRITE_SCALE } from './config.js?v=86c2b44d';
+import { clamp, TAU, cssScale, collectMapLabels } from './util.js?v=86c2b44d';
+import { worldShape } from './worldshape.js?v=86c2b44d';
+import { drawAircraftShape, drawSpinners, spriteBitmap } from './sprites.js?v=86c2b44d';
+import { FONT } from './fx.js?v=86c2b44d';
+import { paintAirport, paintActiveEnds, groundTheme } from './airportpaint.js?v=86c2b44d';
+import { tailColor } from './airlines.js?v=86c2b44d';
+import { drawFixes } from './stacks.js?v=86c2b44d';
+import { STACK_FUEL, eitherEnd } from './hazards.js?v=86c2b44d';
+import { uiScales } from './uiscale.js?v=86c2b44d';
+import { reducedMotion, pulse as pulseAt, springOut, smooth, flashGate, speedStreaks, approach } from './motion.js?v=86c2b44d';
+import { ClosureMarks, drawClosureMarks, drawClosurePills } from './closures.js?v=86c2b44d';
 
 const BG_MARGIN = 80; // world units of ground painted beyond the airspace edge
 const NO_INSETS = { l: 0, r: 0, t: 0, b: 0 }; // a screen without a camera cutout (hudRectsWorld)

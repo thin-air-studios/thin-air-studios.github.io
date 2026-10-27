@@ -4,24 +4,24 @@
 // or the planes that crashed, followed by the camera (videocam.js, the Last 20 s). Browser only: canvas, Image and the fonts. What the
 // words say is videoclip.js. Nothing is recorded here: the replay is the one the game kept (replay.js), so the video shows the game as
 // it was.
-import { SIM_HZ, WORLD_H, ZONE_COLORS, CLASSES } from './config.js?v=7227d0de';
-import { buildWorld } from './airport.js?v=7227d0de';
-import { makeGame, stepWorld, applyInput, STEP } from './simdriver.js?v=7227d0de';
-import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple } from './replay.js?v=7227d0de';
-import { Renderer } from './render.js?v=7227d0de';
-import { FX, FONT } from './fx.js?v=7227d0de';
-import { Scenery, waterMask, surroundingsInWorld } from './scenery.js?v=7227d0de';
-import { Lighting } from './lighting.js?v=7227d0de';
-import { Sky } from './sky.js?v=7227d0de';
-import { groundTheme, nearField } from './airportpaint.js?v=7227d0de';
-import { bearingToCanvas } from './geo.js?v=7227d0de';
-import { assetUrl } from './flavor.js?v=7227d0de';
-import { hudScale, setHudScale } from './util.js?v=7227d0de';
+import { SIM_HZ, WORLD_H, ZONE_COLORS, CLASSES } from './config.js?v=86c2b44d';
+import { buildWorld } from './airport.js?v=86c2b44d';
+import { makeGame, stepWorld, applyInput, STEP } from './simdriver.js?v=86c2b44d';
+import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple } from './replay.js?v=86c2b44d';
+import { Renderer } from './render.js?v=86c2b44d';
+import { FX, FONT } from './fx.js?v=86c2b44d';
+import { Scenery, waterMask, surroundingsInWorld } from './scenery.js?v=86c2b44d';
+import { Lighting } from './lighting.js?v=86c2b44d';
+import { Sky } from './sky.js?v=86c2b44d';
+import { groundTheme, nearField } from './airportpaint.js?v=86c2b44d';
+import { bearingToCanvas } from './geo.js?v=86c2b44d';
+import { assetUrl } from './flavor.js?v=86c2b44d';
+import { hudScale, setHudScale } from './util.js?v=86c2b44d';
 import {
   VIDEO_FPS, VIDEO_W, VIDEO_H, bandHeightFor, CLIP_S, clipView, frameLayout, captionHeight, CAPTION_LINE, CAPTION_MAX_LINES, frameCount, simTimeAt,
   arrivalNoteOf, callsFor, checkInCalls, captionRadio, Captions, windWords, momentOf, topBand, bottomBlock, inChunks, slotWords,
-} from './videoclip.js?v=7227d0de';
-import { FollowCamera, Track, TRACK_STEP, LOOK_S } from './videocam.js?v=7227d0de';
+} from './videoclip.js?v=86c2b44d';
+import { FollowCamera, Track, TRACK_STEP, LOOK_S } from './videocam.js?v=86c2b44d';
 
 // The in-map labels of a clip (the callsigns, the arrival notes, the closure pills) are drawn at this HUD scale. The game's own is 1
 // (about 1.04 on the reference phone). The band is 1080 px wide and a phone shows it at about 410 CSS px, so the game's labels on a

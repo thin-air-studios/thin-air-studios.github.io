@@ -1,6 +1,6 @@
 // Original top-down aircraft, drawn with canvas paths. Heading 0 points along +x.
-import { ZONE_COLORS } from './config.js?v=7227d0de';
-import { TAU } from './util.js?v=7227d0de';
+import { ZONE_COLORS } from './config.js?v=86c2b44d';
+import { TAU } from './util.js?v=86c2b44d';
 
 function capsule(ctx, x0, x1, hw) {
   ctx.beginPath();

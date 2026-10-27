@@ -1,8 +1,8 @@
 // Stats for every airport at every level (save.stats). A finished game adds to the cell of the easiest level it was
 // played at, ranked or not. Demos and daily games make no cell: the daily keeps its own record (save.daily).
-import { easiestOf, LEVEL_ORDER } from './ranking.js?v=7227d0de';
-import { BUSIEST } from './airportdb.js?v=7227d0de';
-import { DEMO_AIRPORTS } from './modes.js?v=7227d0de';
+import { easiestOf, LEVEL_ORDER } from './ranking.js?v=86c2b44d';
+import { BUSIEST } from './airportdb.js?v=86c2b44d';
+import { DEMO_AIRPORTS } from './modes.js?v=86c2b44d';
 
 /** The offline "Play now" airports: the one list (modes.js), read by the demo recording, the migration and Play now. */
 export { DEMO_AIRPORTS };

@@ -1,10 +1,10 @@
-import { WEB_DEMO, assetUrl } from './flavor.js?v=7227d0de';
-import { DEMO_SOURCE } from './demo.js?v=7227d0de';
+import { WEB_DEMO, assetUrl } from './flavor.js?v=86c2b44d';
+import { DEMO_SOURCE } from './demo.js?v=86c2b44d';
 // Sharing a result: the caption, the spoiler-free daily line (Wordle style) and the result card image.
 // Nothing personal goes out: no callsigns, no location, no ids. Just the airport, the score and the shape
 // of the game.
-import { FONT } from './fx.js?v=7227d0de';
-import { shareLinkFor } from './links.js?v=7227d0de';
+import { FONT } from './fx.js?v=86c2b44d';
+import { shareLinkFor } from './links.js?v=86c2b44d';
 
 /**
  * The game minute by minute (game.timeline: {landed, trouble, crash} per minute of sim time) as one

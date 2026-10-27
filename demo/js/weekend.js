@@ -4,7 +4,7 @@
 // test/contract.test.mjs checks the two agree, so a change here fails the server tests until that file follows.
 //
 // Days are local day numbers (airportdb.js localDay: whole days since 1970 on the phone's clock). Weekdays are Monday 0 .. Sunday 6.
-import { BUSIEST } from './airportdb.js?v=7227d0de';
+import { BUSIEST } from './airportdb.js?v=86c2b44d';
 
 // The first weekend the rotation counts from: Saturday 31 Oct 2026. A fixed date, not the release date, so the rotation does not move.
 export const WEEKEND_EPOCH = 20757;

@@ -1,14 +1,14 @@
 // Loads everything an airport needs: runways (OurAirports), layout (OpenStreetMap, saved on the device), weather (METAR) and a
 // live traffic feed — or recorded fixtures in demo mode. The full map comes from the website or the public servers after the
 // game has started on the runways (DECISIONS 372).
-import { getRunways } from './airportdb.js?v=7227d0de';
-import { WEB_DEMO, assetUrl } from './flavor.js?v=7227d0de';
-import { DEMO_MAP_WAIT_MS } from './demo.js?v=7227d0de';
-import { buildLayout, overpassQuery, fetchRadius } from './airport.js?v=7227d0de';
-import { http, USER_AGENT } from './net.js?v=7227d0de';
-import { METAR_URL, parseMetarJson } from './metar.js?v=7227d0de';
-import { parseStates } from './opensky.js?v=7227d0de';
-import { surroundQuery, surroundHalfSize, compactSurroundings, SUR_VERSION } from './scenery.js?v=7227d0de';
+import { getRunways } from './airportdb.js?v=86c2b44d';
+import { WEB_DEMO, assetUrl } from './flavor.js?v=86c2b44d';
+import { DEMO_MAP_WAIT_MS } from './demo.js?v=86c2b44d';
+import { buildLayout, overpassQuery, fetchRadius } from './airport.js?v=86c2b44d';
+import { http, USER_AGENT } from './net.js?v=86c2b44d';
+import { METAR_URL, parseMetarJson } from './metar.js?v=86c2b44d';
+import { parseStates } from './opensky.js?v=86c2b44d';
+import { surroundQuery, surroundHalfSize, compactSurroundings, SUR_VERSION } from './scenery.js?v=86c2b44d';
 
 // Public Overpass servers, in the order the map robot asks them (tools/maps/fetch.mjs): kumi first. overpass.private.coffee is
 // kumi's own machine, so it is not a third server. The phone asks these two only, one request at a time.

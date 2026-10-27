@@ -1,11 +1,11 @@
 // The end card's stats and rank lines (requirements 15, 16 and 19) and the loading card's rank line. The words come from here,
 // so the tests check them without the game; fillEndCard puts them on the card. Demos keep no stats, and a daily challenge
 // has its own board, so their stats line is empty.
-import { endLine } from './stats.js?v=7227d0de';
-import { easiestOf, isRanked, rankingLabel, shouldPostScores, startRanking } from './ranking.js?v=7227d0de';
-import { gameConfig } from './modes.js?v=7227d0de';
-import { LEVEL_NAMES } from './boards.js?v=7227d0de';
-import { countUp, springOut, reducedMotion } from './motion.js?v=7227d0de';
+import { endLine } from './stats.js?v=86c2b44d';
+import { easiestOf, isRanked, rankingLabel, shouldPostScores, startRanking } from './ranking.js?v=86c2b44d';
+import { gameConfig } from './modes.js?v=86c2b44d';
+import { LEVEL_NAMES } from './boards.js?v=86c2b44d';
+import { countUp, springOut, reducedMotion } from './motion.js?v=86c2b44d';
 
 /** The stats line under the score: "DFW on Normal: best 42 · 7 games". Empty for a demo, a daily, or no game yet. */
 export function statsLine(save, { icao, code, levels, demo = false, daily = false }) {

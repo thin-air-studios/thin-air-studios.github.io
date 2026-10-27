@@ -1,7 +1,7 @@
 // All sound is synthesised at runtime with Web Audio: no audio files at all. The music's notes live in the tracks
 // (music.js TRACKS, one module each in tracks/); this file plays them.
-import { DEFAULT_TRACK, trackByKey, flavourOf } from './music.js?v=7227d0de';
-import { mtof } from './tracks/pitch.js?v=7227d0de';
+import { DEFAULT_TRACK, trackByKey, flavourOf } from './music.js?v=86c2b44d';
+import { mtof } from './tracks/pitch.js?v=86c2b44d';
 
 const XFADE = 0.5; // seconds: a Settings track change fades the old track out while the new one fades in
 const LAND_SCALE = [72, 74, 76, 79, 81, 84, 86, 88, 91, 93];

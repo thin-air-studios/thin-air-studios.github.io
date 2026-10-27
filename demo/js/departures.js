@@ -1,10 +1,10 @@
 // Departures: aircraft wait at gates; tap to taxi (along the OSM taxiway network when it connects),
 // tap again to take off, then draw them out through a departure gate on the edge of the screen.
-import { CLASSES, SPRITE_SCALE, TUNING } from './config.js?v=7227d0de';
-import { dist, clamp, turnToward, makeRng, TAU, mapLabel, cssScale, hudScale } from './util.js?v=7227d0de';
-import { polygonCentroid, bearingToCanvas } from './geo.js?v=7227d0de';
-import { fixName } from './stacks.js?v=7227d0de';
-import { takeoffEnd, takeoffGeometry } from './airport.js?v=7227d0de';
+import { CLASSES, SPRITE_SCALE, TUNING } from './config.js?v=86c2b44d';
+import { dist, clamp, turnToward, makeRng, TAU, mapLabel, cssScale, hudScale } from './util.js?v=86c2b44d';
+import { polygonCentroid, bearingToCanvas } from './geo.js?v=86c2b44d';
+import { fixName } from './stacks.js?v=86c2b44d';
+import { takeoffEnd, takeoffGeometry } from './airport.js?v=86c2b44d';
 
 const GROUND_SPEED = 13; // units/s while taxiing
 const PUSHBACK = 2.4; // seconds the tug takes to push an aircraft off the stand

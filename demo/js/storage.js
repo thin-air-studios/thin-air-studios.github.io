@@ -1,14 +1,14 @@
-import { WEB_DEMO } from './flavor.js?v=7227d0de';
-import { migrateStats } from './stats.js?v=7227d0de';
-import { forStorage, hydrateAge } from './profile.js?v=7227d0de';
-import { emptyStreak, sanitizeStreak, seedStreak } from './streak.js?v=7227d0de';
-import { localDay } from './airportdb.js?v=7227d0de';
-import { settingsStore } from './platform.js?v=7227d0de';
-import { DEFAULT_TRACK } from './music.js?v=7227d0de';
-import { emptyReview, sanitizeReview } from './review.js?v=7227d0de';
-import { defaultWorldStats, sanitizeWorldStats } from './worldstats.js?v=7227d0de';
-import { emptyWeekRecap, sanitizeWeekRecap, emptyOffer, sanitizeOffer } from './reminder.js?v=7227d0de';
-import { sanitizeWeekend } from './weekend.js?v=7227d0de';
+import { WEB_DEMO } from './flavor.js?v=86c2b44d';
+import { migrateStats } from './stats.js?v=86c2b44d';
+import { forStorage, hydrateAge } from './profile.js?v=86c2b44d';
+import { emptyStreak, sanitizeStreak, seedStreak } from './streak.js?v=86c2b44d';
+import { localDay } from './airportdb.js?v=86c2b44d';
+import { settingsStore } from './platform.js?v=86c2b44d';
+import { DEFAULT_TRACK } from './music.js?v=86c2b44d';
+import { emptyReview, sanitizeReview } from './review.js?v=86c2b44d';
+import { defaultWorldStats, sanitizeWorldStats } from './worldstats.js?v=86c2b44d';
+import { emptyWeekRecap, sanitizeWeekRecap, emptyOffer, sanitizeOffer } from './reminder.js?v=86c2b44d';
+import { sanitizeWeekend } from './weekend.js?v=86c2b44d';
 
 // the music tracks the game no longer has (2.3): a save that chose one plays Tower Jazz, once (musicRetired1)
 const RETIRED_TRACKS = ['night', 'western'];

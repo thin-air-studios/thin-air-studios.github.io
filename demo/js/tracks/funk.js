@@ -8,7 +8,7 @@
 // through F and C major (Fmaj7, Em7, Dm7, G7, Cmaj7, Am7, Bbmaj7, A7), and the last A7 leads home to the D. Each repeat varies a little (`cycle`):
 // on odd passes the bass pops an octave on bars 4, 8, 12 and 16, and the hook has a different ending in bars 8 and 16.
 // The layers latch on the bar line (latch 'bar'), so each part enters on beat 1.
-import { mtof } from './pitch.js?v=7227d0de';
+import { mtof } from './pitch.js?v=86c2b44d';
 
 // --- the score ---------------------------------------------------------------------------------------------------------
 

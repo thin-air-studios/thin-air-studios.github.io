@@ -45,7 +45,7 @@
 // The step order is simdriver.js; this file holds the format, the Recorder that writes it, and the feed projection both the live
 // game and a replay feed the director with (so a recorded tick and a live tick are the same numbers).
 
-import { WORLD_H } from './config.js?v=7227d0de';
+import { WORLD_H } from './config.js?v=86c2b44d';
 
 export const REPLAY_FORMAT = 'sf-replay';
 export const REPLAY_VERSION = 1;

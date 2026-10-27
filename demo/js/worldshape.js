@@ -3,8 +3,8 @@
 // own (challenge.js, main.js newGame). Every landscape screen gets the height the game has always had, and the width follows its
 // shape. A window taller than wide with a short side of UPRIGHT_MIN_SIDE or more gets an upright airspace (UPRIGHT_W wide, its
 // height from the window's aspect); a phone held upright stays on the landscape world, as it always has.
-import { WORLD_H, WORLD_MIN_W, WORLD_MAX_W, UPRIGHT_MIN_SIDE, UPRIGHT_W, UPRIGHT_H_MAX } from './config.js?v=7227d0de';
-import { clamp } from './util.js?v=7227d0de';
+import { WORLD_H, WORLD_MIN_W, WORLD_MAX_W, UPRIGHT_MIN_SIDE, UPRIGHT_W, UPRIGHT_H_MAX } from './config.js?v=86c2b44d';
+import { clamp } from './util.js?v=86c2b44d';
 
 /** Whether a screen of cssW by cssH CSS px may show an upright airspace: taller than wide, and its short side is large enough. */
 export function uprightAllowed(cssW, cssH) {

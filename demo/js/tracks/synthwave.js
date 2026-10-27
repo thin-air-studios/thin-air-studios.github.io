@@ -10,7 +10,7 @@
 //        on the off-beats
 //   2  + a four-on-the-floor kick, + the soaring lead (a saw through a low-pass, with a little vibrato on the long notes)
 //   3  + the lead doubled an octave down, + an open-hat shimmer on beats 2 and 4, + the pads open a little further
-import { mtof } from './pitch.js?v=7227d0de';
+import { mtof } from './pitch.js?v=86c2b44d';
 
 // --- the score ---------------------------------------------------------------------------------------------------------
 

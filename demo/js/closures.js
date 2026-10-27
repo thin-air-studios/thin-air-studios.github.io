@@ -5,8 +5,8 @@
 // out over REOPEN_S. The marks are drawn after the night tint, so they never dim; the pills go over the map and under the HUD.
 // A wind shift that turns a runway round ('turning') gets the amber strip alone: no X and no pill, since every runway the wind
 // turns would otherwise carry one at once; the banner already says the wind is shifting.
-import { FONT } from './fx.js?v=7227d0de';
-import { TAU, clamp } from './util.js?v=7227d0de';
+import { FONT } from './fx.js?v=86c2b44d';
+import { TAU, clamp } from './util.js?v=86c2b44d';
 
 const REOPEN_S = 1.4; // the X fades out over this long on reopening
 const AMBER = '#ffb02e';

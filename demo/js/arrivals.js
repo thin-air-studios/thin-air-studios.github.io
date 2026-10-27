@@ -2,7 +2,7 @@
 // their callsign). The rule reads the report and the last poll: a steady descent toward the field,
 // from a plausible height and speed, that is not heading for a nearby airport. The thresholds are
 // starting values, kept here and tuned only on a live capture (DECISIONS.md, entry 155).
-import { haversine, bearing, angleDiff, destination } from './geo.js?v=7227d0de';
+import { haversine, bearing, angleDiff, destination } from './geo.js?v=86c2b44d';
 
 export const ARRIVAL = {
   fieldMinKm: 4, maxKm: 40,

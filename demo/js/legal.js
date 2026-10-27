@@ -1,10 +1,10 @@
-import { WEB_DEMO, assetUrl } from './flavor.js?v=7227d0de';
-import { DEMO_LEGAL_URLS } from './demo.js?v=7227d0de';
+import { WEB_DEMO, assetUrl } from './flavor.js?v=86c2b44d';
+import { DEMO_LEGAL_URLS } from './demo.js?v=86c2b44d';
 // The in-app legal pages (requirement 25, screens 8.2): one sheet with three tabs, one iframe per tab. Each page is
 // generated from legal/*.md by tools/build-legal.mjs, so it reads offline. A link out of a page comes up through
 // HP_outbound, which opens the phone's browser or mail app.
-import { openExternal } from './platform.js?v=7227d0de';
-import { register, openScreen } from './screenstack.js?v=7227d0de';
+import { openExternal } from './platform.js?v=86c2b44d';
+import { register, openScreen } from './screenstack.js?v=86c2b44d';
 
 export const LEGAL_PAGES = {
   terms: 'legal/terms.html',

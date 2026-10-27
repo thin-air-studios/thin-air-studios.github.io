@@ -5,8 +5,8 @@
 // when nothing else moved them: no real plane came in, and nothing the link does not carry (DECISIONS 436).
 // The challenger's score sits beside the friend's score on the end card. A challenge game is unranked and goes to no board (ranking.js).
 // No DOM and no storage here: the rules are tested without the game, and main.js builds the game and the share panel.
-import { checkChallenge, challengeLinkFor, cleanName, linkInCaption } from './links.js?v=7227d0de';
-import { VERSION } from './version.js?v=7227d0de';
+import { checkChallenge, challengeLinkFor, cleanName, linkInCaption } from './links.js?v=86c2b44d';
+import { VERSION } from './version.js?v=86c2b44d';
 
 /**
  * The reasons that make a game impossible for a friend to repeat. A game with one of them is not sent as a challenge: a recording,

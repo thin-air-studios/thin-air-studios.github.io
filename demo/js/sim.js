@@ -1,13 +1,13 @@
 // Pure game simulation: no DOM, no drawing. Works in game units on a world built from a real
 // airport (see airport.js). Deterministic for a seed + input stream; snapshot()/restore() power
 // the rewind.
-import { STACK_LEVELS, FIX_RADIUS, FIX_SLACK, makeFixes, holdHit, holdScale } from './stacks.js?v=7227d0de';
-import { CLASSES, TUNING, PAX } from './config.js?v=7227d0de';
-import { clamp, dist, dist2, makeRng, turnToward, wrapAngle, damp, easeOutCubic, TAU } from './util.js?v=7227d0de';
-import { bearingToCanvas } from './geo.js?v=7227d0de';
-import { displayName } from './airlines.js?v=7227d0de';
-import { setActiveEnd, endGeometry } from './airport.js?v=7227d0de';
-import { AIM_STOP, eitherEnd, holdRefusal } from './hazards.js?v=7227d0de';
+import { STACK_LEVELS, FIX_RADIUS, FIX_SLACK, makeFixes, holdHit, holdScale } from './stacks.js?v=86c2b44d';
+import { CLASSES, TUNING, PAX } from './config.js?v=86c2b44d';
+import { clamp, dist, dist2, makeRng, turnToward, wrapAngle, damp, easeOutCubic, TAU } from './util.js?v=86c2b44d';
+import { bearingToCanvas } from './geo.js?v=86c2b44d';
+import { displayName } from './airlines.js?v=86c2b44d';
+import { setActiveEnd, endGeometry } from './airport.js?v=86c2b44d';
+import { AIM_STOP, eitherEnd, holdRefusal } from './hazards.js?v=86c2b44d';
 
 const T = TUNING;
 const STACK_GRACE = 6; // s an aircraft leaving a stack stays separated from its former stack-mates

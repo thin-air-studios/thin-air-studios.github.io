@@ -1,17 +1,17 @@
 // The one step order of the game (T2): the live game (main.js) and the replay runner (the server, and the tests) both build the
 // game with makeGame, apply the recorded inputs with applyInput, and advance one fixed step with stepWorld. Pure: no DOM, no
 // clock, no RNG outside the sim's own. Sky (cloud and precipitation drawing) is visual only and is not stepped here.
-import { Sim } from './sim.js?v=7227d0de';
-import { TrafficDirector, runwayPace } from './director.js?v=7227d0de';
-import { Weather } from './weather.js?v=7227d0de';
-import { Hazards } from './hazards.js?v=7227d0de';
-import { Ops } from './ops.js?v=7227d0de';
-import { RewindBuffer } from './rewind.js?v=7227d0de';
-import { buildWorld, landableClasses, setActiveEnd } from './airport.js?v=7227d0de';
-import { chooseActiveEnds } from './metar.js?v=7227d0de';
-import { SIM_HZ, WORLD_H } from './config.js?v=7227d0de';
-import { OPS_RATE, syncDepartures, applyLevel, applyDepartures, applyRealOnly, applyRewind, revealFixes } from './midgame.js?v=7227d0de';
-import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple, projectFeed } from './replay.js?v=7227d0de';
+import { Sim } from './sim.js?v=86c2b44d';
+import { TrafficDirector, runwayPace } from './director.js?v=86c2b44d';
+import { Weather } from './weather.js?v=86c2b44d';
+import { Hazards } from './hazards.js?v=86c2b44d';
+import { Ops } from './ops.js?v=86c2b44d';
+import { RewindBuffer } from './rewind.js?v=86c2b44d';
+import { buildWorld, landableClasses, setActiveEnd } from './airport.js?v=86c2b44d';
+import { chooseActiveEnds } from './metar.js?v=86c2b44d';
+import { SIM_HZ, WORLD_H } from './config.js?v=86c2b44d';
+import { OPS_RATE, syncDepartures, applyLevel, applyDepartures, applyRealOnly, applyRewind, revealFixes } from './midgame.js?v=86c2b44d';
+import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple, projectFeed } from './replay.js?v=86c2b44d';
 
 export const STEP = 1 / SIM_HZ;
 export const DIRECTOR_EVERY = 0.25; // s of sim time between two director ticks (the golden's liveTimer, T1)

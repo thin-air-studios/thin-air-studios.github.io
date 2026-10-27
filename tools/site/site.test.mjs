@@ -235,7 +235,8 @@ test('legacy pages we did not build are scanned too (reported, not failed)', (t)
     if (!fs.existsSync(path.join(ROOT, rel))) continue;
     const doc = text(rel);
     if (PERSONAL.test(doc)) t.diagnostic(`legacy name found in ${rel} (built by another repository; fix there)`);
-    if (AI_NAMES.test(doc)) t.diagnostic(`AI or model name found in ${rel} (built by another repository; fix there)`);
+    // the terms' prohibited use ("use it to train AI") is the generic word, not a product we name: that phrase is set aside here
+    if (AI_NAMES.test(doc.replace(/\btrain AI\b/g, ' '))) t.diagnostic(`AI or model name found in ${rel} (built by another repository; fix there)`);
   }
   assert.ok(true);
 });

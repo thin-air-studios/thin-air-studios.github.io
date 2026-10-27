@@ -12,7 +12,7 @@
 // Variation: on odd repeats (cycle 1, 3, ...) the stab keeps its place but takes the plain voicing, not the turned one;
 // the A and B phrase ends turn to a different chord tone; and the crackle falls on a new step. The crackle is hashed from
 // the loop count, so it is never the same twice. The levels are in one table, LEVEL, above the chords.
-import { mtof } from './pitch.js?v=7227d0de';
+import { mtof } from './pitch.js?v=86c2b44d';
 
 // --- the score (F major) ---------------------------------------------------------------------------------------------
 // Each chord: the bass note (MIDI, the root) and the keys (MIDI) as a rootless voicing (the bass says what the chord is).

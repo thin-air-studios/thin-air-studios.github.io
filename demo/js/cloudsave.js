@@ -13,10 +13,10 @@
 // that joins the other phone's run (within the streak's gap) counts both; the daily keeps the later day, and the tutorial and the
 // Tour flags stay set once set. The weekend event's record (weekend.js) follows the daily: the later weekend wins, and for the same
 // weekend the larger best and tries.
-import { LEVEL_ORDER } from './ranking.js?v=7227d0de';
-import { ACHIEVEMENTS } from './achievements.js?v=7227d0de';
-import { LARGE_BACK, RUN_GAP, emptyStreak, sanitizeStreak } from './streak.js?v=7227d0de';
-import { WEEKEND_EPOCH } from './weekend.js?v=7227d0de';
+import { LEVEL_ORDER } from './ranking.js?v=86c2b44d';
+import { ACHIEVEMENTS } from './achievements.js?v=86c2b44d';
+import { LARGE_BACK, RUN_GAP, emptyStreak, sanitizeStreak } from './streak.js?v=86c2b44d';
+import { WEEKEND_EPOCH } from './weekend.js?v=86c2b44d';
 
 export const CLOUD_VERSION = 1;
 /** The largest copy sent. Play Games keeps a snapshot up to 3 MB; a bigger copy is not sent, and the sync fails silently. */

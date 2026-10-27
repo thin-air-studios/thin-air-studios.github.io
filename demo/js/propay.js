@@ -1,7 +1,7 @@
 // Short Final Pro in the page (2.7; DECISIONS 280): the purchase state the Android shell reports (Google Play Billing: GameBridge
 // proState, proBuy, proRestore, and window.HP_pro(json) when it changes), the upgrade sheet, and the Settings Pro row. The rules
 // and the words are pro.js. In a browser there is no shell: the game is free with the limit, and Pro is bought in the app.
-import { settingsProWords, restoreWords, upgradeWords, sheetNote } from './pro.js?v=7227d0de';
+import { settingsProWords, restoreWords, upgradeWords, sheetNote } from './pro.js?v=86c2b44d';
 
 const shell = typeof window !== 'undefined' ? window.HPAndroid : undefined;
 const $ = (id) => (typeof document !== 'undefined' ? document.getElementById(id) : null);
