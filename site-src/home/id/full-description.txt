@@ -1,0 +1,54 @@
+Lalu lintas sungguhan. Bandara mana pun.
+
+Gamenya berbahasa Inggris. Halaman ini diterjemahkan.
+
+Short Final™ adalah permainan kontrol lalu lintas udara langsung dengan langit sungguhan. Pilih bandara: pesawat sungguhan yang mendarat di sana muncul di tepi layar beserta nomornya. Tarik jalur ke landasan, jaga tetap berjauhan, dan daratkan sebanyak mungkin.
+
+LANGIT SUNGGUHAN
+• Pesawat sungguhan dengan nomor penerbangan dan titik merah. Pesawat simulasi melengkapi lalu lintas sesuai kesulitan, kecuali "Real planes only" dinyalakan.
+• Arrived from: pesawat sungguhan yang mendarat di sini bisa menyebut kota asalnya.
+• Cuaca sungguhan: angin, landasan, kabut dan badai dari bandara.
+• Cahaya siang sungguhan: mainkan Tokyo saat malam di Tokyo.
+
+TEMPAT SUNGGUHAN
+• Lebih dari 29.000 bandara dengan landasan sungguhannya. Jalur taksi, gerbang, dan daratan dari OpenStreetMap; kebanyakan peta cepat dimuat dari situs ini.
+• Daratan sekitarnya juga sungguhan: Pegunungan Rocky di barat Denver, dan kapal di air.
+• 50 bandara tersibuk di dunia langsung terbuka di aplikasi, bahkan luring. Pencarian menemukan bandara lain.
+
+MUDAH DIPELAJARI, SULIT DITINGGALKAN
+• Seret untuk menggambar jalur dan ekornya untuk melanjutkan. Pesawat penumpang merah ke landasan merah, baling-baling kuning ke kuning, helikopter ke pad.
+• Ketuk untuk berputar, lingkaran untuk menahan, atau kirim ke tumpukan penahanan (holding).
+• Keberangkatan mundur, taksi, lepas landas, dan keluar lewat gerbang di tepi.
+• Mesin mati dan bahan bakar menipis: pesawat berbelok ke landasan terjangkau, dan percepatan berhenti.
+• Turbulensi jejak, pemeriksaan landasan, badai, dan kabut.
+• Landasan tertutup menampilkan tanda X merah, siang atau malam.
+• Mode Bullet memperlambat waktu sebelum tabrakan dan memberi satu putar ulang per permainan.
+
+MAINKAN SESUAI CARAMU
+• Beginner: beberapa pesawat dan langit tenang.
+• Real planes only, di level mana pun, hanya menampilkan pesawat sungguhan dari bandaramu, tanpa mengarang.
+• Tantangan harian: pesawat dan cuaca sama untuk semua, dengan rangkaian hari.
+• Play mengingat bandara terakhir yang dipilih.
+• Percakapan radio dengan frasa ATC sungguhan. Nyalakan di Settings.
+• Tujuh lagu: Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit, dan Funky groove.
+• Bintang di setiap bandara, dan peringkat pengendali.
+• Bagikan kartu hasil, atau skor harian tanpa spoiler.
+• Tour menunjukkan kemampuan game.
+
+BAGIKAN VIDEO
+• Video 20 detik untuk TikTok, YouTube Shorts, atau Instagram Reels, dengan musik permainan dan pesawat sungguhan beserta namanya.
+
+PAPAN PERINGKAT
+• Papan dunia per bandara dan level, dibuka saat game dirilis di Google Play: hari ini, minggu ini, dan sepanjang masa; 10 teratas dan peringkatmu.
+• Google Play Games: 24 pencapaian dan tujuh papan peringkat, termasuk skor terbaik tiap level.
+• Hanya game berperingkat yang dihitung: satu level penuh, Real planes only mati, Departures menyala (kecuali Beginner). Tantangan harian punya papan sendiri.
+• Nama yang melanggar aturan dapat dilaporkan. Kamu memilih apakah namamu muncul.
+
+ADIL DAN PRIBADI
+• Tanpa iklan atau akun. Tantangan harian selalu gratis; setelah 3 hari pertama, 3 game gratis per hari di bandara mana pun. Short Final Pro, sekali bayar di Google Play, memberi game tanpa batas.
+• Skor dan kemajuan tetap di ponsel. Papan daring hanya menyimpan yang dikirim game berperingkat; milikmu bisa dihapus.
+• Simbol untuk buta warna, dan sakelar terpisah untuk suara, musik, radio, getaran.
+
+Short Final adalah permainan, bukan alat pelacak penerbangan atau navigasi. Posisi langsung bersifat perkiraan dan disederhanakan untuk bermain.
+
+Peta, garis pantai, dan puncak © OpenStreetMap contributors (ODbL). Data langsung: The OpenSky Network. Cuaca: aviationweather.gov (NOAA). Bandara: OurAirports. Rute penerbangan: Virtual Radar Server (CC0). Peringkat penumpang: ACI World. Zona waktu: timezone-boundary-builder (ODbL) dan tz-lookup. Kredit lengkap di aplikasi, di About.

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Share images (1200 x 630), one per page family</title>
+<!-- Renders the four share images in site-src/assets/brand/og-*.jpg. Open this file with the variant after the # (home, press,
+     events or guides) in a browser of 1200 x 630 CSS pixels, then save the screenshot as JPEG (quality 88). The fonts and pictures
+     are the site's own files, read from the repository by relative path. -->
+<style>
+@font-face { font-family: "Fredoka"; font-style: normal; font-weight: 600; src: url("../../../site-src/assets/fonts/fredoka-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fredoka"; font-style: normal; font-weight: 700; src: url("../../../site-src/assets/fonts/fredoka-latin-700-normal.woff2") format("woff2"); }
+html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+body { position: relative; background: #0b2026; color: #fff6e3; font-family: "Fredoka", system-ui, sans-serif; }
+.sky { position: absolute; inset: 0; background: radial-gradient(900px 640px at 80% 40%, #1f4650 0%, #16323a 46%, #0b2026 100%); }
+.rings { position: absolute; left: 560px; top: -150px; width: 900px; height: 900px; }
+.copy { position: absolute; left: 72px; top: 132px; width: 560px; }
+.eyebrow { display: inline-block; padding: 9px 18px; border-radius: 999px; background: rgba(239, 138, 47, .24); color: #ffd3a4; font-weight: 600; font-size: 24px; }
+h1 { margin: 26px 0 18px; font-weight: 700; font-size: 66px; line-height: 1.02; letter-spacing: -0.01em; }
+.sub { margin: 0; font-weight: 500; font-size: 26px; line-height: 1.32; color: #b8cacd; max-width: 520px; }
+.pill { display: inline-flex; margin-top: 28px; align-items: center; height: 62px; padding: 0 30px; border-radius: 999px; background: #f2c14e; color: #1d2b30; font-weight: 700; font-size: 26px; box-shadow: 0 6px 0 #c9922a; }
+.brand { position: absolute; left: 72px; top: 46px; display: flex; align-items: center; gap: 16px; }
+.brand img { width: 64px; height: 64px; }
+.brand b { display: block; font-weight: 700; font-size: 30px; line-height: 1; }
+.brand span { display: block; margin-top: 6px; font-weight: 500; font-size: 20px; color: #b8cacd; }
+.phone { position: absolute; left: 668px; top: 176px; width: 470px; padding: 12px; border-radius: 30px; background: #04151b; box-shadow: inset 0 0 0 2px #2c4f58, 0 34px 60px -24px rgba(0, 0, 0, .7); transform: rotate(-3deg); }
+.phone img { display: block; width: 100%; height: auto; border-radius: 20px; }
+</style>
+</head>
+<body>
+<div class="sky"></div>
+<svg class="rings" viewBox="0 0 900 900" aria-hidden="true">
+  <g fill="none" stroke="#8ff0cf" stroke-opacity=".2" stroke-width="2">
+    <circle cx="450" cy="450" r="150"/><circle cx="450" cy="450" r="300"/><circle cx="450" cy="450" r="440"/>
+    <path d="M450 10v880M10 450h880" stroke-opacity=".12"/>
+  </g>
+  <path d="M450 450 L450 10 A440 440 0 0 1 761 139 Z" fill="#8ff0cf" fill-opacity=".08"/>
+  <line x1="450" y1="450" x2="450" y2="10" stroke="#8ff0cf" stroke-opacity=".5" stroke-width="2"/>
+</svg>
+<div class="copy">
+  <span class="eyebrow" id="eyebrow"></span>
+  <h1 id="title"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="pill" id="pill"></div>
+</div>
+<div class="phone"><img id="shot" alt="" width="1280" height="720"></div>
+<div class="brand">
+  <img src="../../../site-src/assets/img/app-icon-512.png" alt="">
+  <div><b>Short Final</b><span>Thin Air Studios</span></div>
+</div>
+<script>
+  var V = {
+    home: {
+      eyebrow: 'Free on Android · Google Play',
+      title: 'Land the real planes at any airport on Earth.',
+      sub: 'Live flights from The OpenSky Network, at more than 29,000 airports. Free to play.',
+      shot: 'shot-arrived-1280.webp',
+      pill: 'Get it on Google Play'
+    },
+    press: {
+      eyebrow: 'Press kit',
+      title: 'Short Final, from Thin Air Studios.',
+      sub: 'Facts, logos, screenshots and the trailer for writers, streamers and creators.',
+      shot: 'shot-home-1280.webp',
+      pill: 'Facts, logos and screenshots'
+    },
+    events: {
+      eyebrow: 'Events',
+      title: 'Weekend events, and holidays ahead.',
+      sub: 'Each weekend one of the 50 busiest airports gets its own twist. Free to play.',
+      shot: 'shot-atl-storm-1280.webp',
+      pill: 'Weekend events from version 3.3'
+    },
+    guides: {
+      eyebrow: 'Guides',
+      title: 'Learn to land real planes.',
+      sub: 'How the game works, from your first landing to the holds and the storms.',
+      shot: 'shot-holding-1280.webp',
+      pill: 'Read the guides'
+    }
+  };
+  var key = (location.hash || '#home').slice(1);
+  var v = V[key] || V.home;
+  document.getElementById('eyebrow').textContent = v.eyebrow;
+  document.getElementById('title').textContent = v.title;
+  document.getElementById('sub').textContent = v.sub;
+  document.getElementById('shot').src = '../../../site-src/assets/img/' + v.shot;
+  document.getElementById('pill').textContent = v.pill;
+</script>
+</body>
+</html>

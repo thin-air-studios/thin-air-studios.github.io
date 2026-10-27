@@ -1,0 +1,256 @@
+{
+ "source": "ACI World, 2025 results, as listed in the game (game/js/airportdb.js BUSIEST)",
+ "unit": "millions of passengers",
+ "rows": [
+  {
+   "rank": 1,
+   "icao": "KATL",
+   "passengersM": 106.3
+  },
+  {
+   "rank": 2,
+   "icao": "OMDB",
+   "passengersM": 95.2
+  },
+  {
+   "rank": 3,
+   "icao": "RJTT",
+   "passengersM": 91.7
+  },
+  {
+   "rank": 4,
+   "icao": "KDFW",
+   "passengersM": 85.7
+  },
+  {
+   "rank": 5,
+   "icao": "ZSPD",
+   "passengersM": 85
+  },
+  {
+   "rank": 6,
+   "icao": "KORD",
+   "passengersM": 84.9
+  },
+  {
+   "rank": 7,
+   "icao": "EGLL",
+   "passengersM": 84.5
+  },
+  {
+   "rank": 8,
+   "icao": "LTFM",
+   "passengersM": 84.4
+  },
+  {
+   "rank": 9,
+   "icao": "ZGGG",
+   "passengersM": 83.6
+  },
+  {
+   "rank": 10,
+   "icao": "KDEN",
+   "passengersM": 82.4
+  },
+  {
+   "rank": 11,
+   "icao": "VIDP",
+   "passengersM": 78.1
+  },
+  {
+   "rank": 12,
+   "icao": "RKSI",
+   "passengersM": 74.1
+  },
+  {
+   "rank": 13,
+   "icao": "KLAX",
+   "passengersM": 73.7
+  },
+  {
+   "rank": 14,
+   "icao": "LFPG",
+   "passengersM": 72
+  },
+  {
+   "rank": 15,
+   "icao": "ZBAA",
+   "passengersM": 70.7
+  },
+  {
+   "rank": 16,
+   "icao": "WSSS",
+   "passengersM": 70
+  },
+  {
+   "rank": 17,
+   "icao": "EHAM",
+   "passengersM": 68.8
+  },
+  {
+   "rank": 18,
+   "icao": "LEMD",
+   "passengersM": 68.1
+  },
+  {
+   "rank": 19,
+   "icao": "ZGSZ",
+   "passengersM": 66.5
+  },
+  {
+   "rank": 20,
+   "icao": "WMKK",
+   "passengersM": 63.4
+  },
+  {
+   "rank": 21,
+   "icao": "EDDF",
+   "passengersM": 63.2
+  },
+  {
+   "rank": 22,
+   "icao": "VTBS",
+   "passengersM": 62.9
+  },
+  {
+   "rank": 23,
+   "icao": "KJFK",
+   "passengersM": 62.6
+  },
+  {
+   "rank": 24,
+   "icao": "VHHH",
+   "passengersM": 61
+  },
+  {
+   "rank": 25,
+   "icao": "KMCO",
+   "passengersM": 57.7
+  },
+  {
+   "rank": 26,
+   "icao": "LEBL",
+   "passengersM": 57.5
+  },
+  {
+   "rank": 27,
+   "icao": "ZUTF",
+   "passengersM": 56.7
+  },
+  {
+   "rank": 28,
+   "icao": "VABB",
+   "passengersM": 55.5
+  },
+  {
+   "rank": 29,
+   "icao": "KMIA",
+   "passengersM": 55.3
+  },
+  {
+   "rank": 30,
+   "icao": "KLAS",
+   "passengersM": 55
+  },
+  {
+   "rank": 31,
+   "icao": "WIII",
+   "passengersM": 55
+  },
+  {
+   "rank": 32,
+   "icao": "KSFO",
+   "passengersM": 54.5
+  },
+  {
+   "rank": 33,
+   "icao": "OTHH",
+   "passengersM": 54.3
+  },
+  {
+   "rank": 34,
+   "icao": "ZBAD",
+   "passengersM": 53.6
+  },
+  {
+   "rank": 35,
+   "icao": "KCLT",
+   "passengersM": 53.6
+  },
+  {
+   "rank": 36,
+   "icao": "OEJN",
+   "passengersM": 53.4
+  },
+  {
+   "rank": 37,
+   "icao": "KSEA",
+   "passengersM": 52.7
+  },
+  {
+   "rank": 38,
+   "icao": "RPLL",
+   "passengersM": 52
+  },
+  {
+   "rank": 39,
+   "icao": "KPHX",
+   "passengersM": 51.6
+  },
+  {
+   "rank": 40,
+   "icao": "LIRF",
+   "passengersM": 50.9
+  },
+  {
+   "rank": 41,
+   "icao": "ZSHC",
+   "passengersM": 50.5
+  },
+  {
+   "rank": 42,
+   "icao": "ZSSS",
+   "passengersM": 50.2
+  },
+  {
+   "rank": 43,
+   "icao": "ZUCK",
+   "passengersM": 50.1
+  },
+  {
+   "rank": 44,
+   "icao": "ZPPP",
+   "passengersM": 49.7
+  },
+  {
+   "rank": 45,
+   "icao": "ZLXY",
+   "passengersM": 48.5
+  },
+  {
+   "rank": 46,
+   "icao": "LTFJ",
+   "passengersM": 48.4
+  },
+  {
+   "rank": 47,
+   "icao": "KIAH",
+   "passengersM": 48.1
+  },
+  {
+   "rank": 48,
+   "icao": "RCTP",
+   "passengersM": 47.8
+  },
+  {
+   "rank": 49,
+   "icao": "CYYZ",
+   "passengersM": 47.3
+  },
+  {
+   "rank": 50,
+   "icao": "SBGR",
+   "passengersM": 47.2
+  }
+ ]
+}

@@ -1,0 +1,183 @@
+{
+  "siteName": "Short Final",
+  "publisher": "Thin Air Studios",
+  "legalName": "Thin Air Studios LLC",
+  "tradeName": "Thin Air Capital",
+  "domain": "https://playshortfinal.com",
+  "email": "thinaircapital@gmail.com",
+  "contentDate": "2026-10-27",
+  "game": {
+    "latestVersion": "3.3",
+    "playVersion": "3.3",
+    "packageId": "com.thinaircapital.holdingpattern"
+  },
+  "play": {
+    "listingUrl": "https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern",
+    "live": true
+  },
+  "trailerUrl": "https://www.youtube.com/watch?v=MQPF7geuSas",
+  "demoPath": "/demo/",
+  "analytics": {
+    "ga4": "",
+    "cfBeacon": ""
+  },
+  "events": {
+    "weekend": {
+      "live": true
+    },
+    "thanksgiving": {
+      "live": false,
+      "name": "Thanksgiving Rush"
+    },
+    "santa": {
+      "live": false,
+      "name": "Santa"
+    }
+  },
+  "features": {
+    "challengeLinks": true,
+    "challengeBoards": false
+  },
+  "languages": [
+    {
+      "code": "en",
+      "path": "/",
+      "htmlLang": "en",
+      "hreflang": "en",
+      "name": "English",
+      "live": true
+    },
+    {
+      "code": "es",
+      "path": "/es/",
+      "htmlLang": "es-ES",
+      "hreflang": "es-ES",
+      "name": "Español (España)",
+      "live": true
+    },
+    {
+      "code": "es-419",
+      "path": "/es-419/",
+      "htmlLang": "es-419",
+      "hreflang": "es-419",
+      "name": "Español (Latinoamérica)",
+      "live": true
+    },
+    {
+      "code": "pt-br",
+      "path": "/pt-br/",
+      "htmlLang": "pt-BR",
+      "hreflang": "pt-BR",
+      "name": "Português (Brasil)",
+      "live": true
+    },
+    {
+      "code": "de",
+      "path": "/de/",
+      "htmlLang": "de-DE",
+      "hreflang": "de-DE",
+      "name": "Deutsch",
+      "live": true
+    },
+    {
+      "code": "fr",
+      "path": "/fr/",
+      "htmlLang": "fr-FR",
+      "hreflang": "fr-FR",
+      "name": "Français",
+      "live": true
+    },
+    {
+      "code": "it",
+      "path": "/it/",
+      "htmlLang": "it-IT",
+      "hreflang": "it-IT",
+      "name": "Italiano",
+      "live": true
+    },
+    {
+      "code": "ja",
+      "path": "/ja/",
+      "htmlLang": "ja-JP",
+      "hreflang": "ja-JP",
+      "name": "日本語",
+      "live": true
+    },
+    {
+      "code": "ko",
+      "path": "/ko/",
+      "htmlLang": "ko-KR",
+      "hreflang": "ko-KR",
+      "name": "한국어",
+      "live": true
+    },
+    {
+      "code": "zh-tw",
+      "path": "/zh-tw/",
+      "htmlLang": "zh-TW",
+      "hreflang": "zh-TW",
+      "name": "繁體中文（台灣）",
+      "live": true
+    },
+    {
+      "code": "tr",
+      "path": "/tr/",
+      "htmlLang": "tr-TR",
+      "hreflang": "tr-TR",
+      "name": "Türkçe",
+      "live": true
+    },
+    {
+      "code": "id",
+      "path": "/id/",
+      "htmlLang": "id-ID",
+      "hreflang": "id-ID",
+      "name": "Bahasa Indonesia",
+      "live": true
+    },
+    {
+      "code": "pl",
+      "path": "/pl/",
+      "htmlLang": "pl-PL",
+      "hreflang": "pl-PL",
+      "name": "Polski",
+      "live": true
+    }
+  ],
+  "defaultImage": "/assets/site/og/default.jpg",
+  "adopt": [
+    "index.html",
+    "404.html",
+    "robots.txt"
+  ],
+  "protectedPrefixes": [
+    "osm/",
+    "routes/",
+    "demo/",
+    "play/",
+    "privacy/",
+    "terms/",
+    "delete/",
+    ".well-known/",
+    "shots/",
+    "tools/maps/",
+    ".github/",
+    "store/",
+    "game/",
+    "app/",
+    "server/",
+    "legal/",
+    "tests/",
+    "site-src/",
+    "tools/site/"
+  ],
+  "googleSiteVerification": "fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU",
+  "sections": {
+    "home": true,
+    "airports": true,
+    "guides": true,
+    "events": true,
+    "press": true,
+    "about": false
+  }
+}

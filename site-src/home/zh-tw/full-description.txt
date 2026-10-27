@@ -1,0 +1,54 @@
+真實交通，任何機場。
+
+遊戲本身是英文版，這段說明已翻譯。
+
+Short Final™ 是一款即時空中交通管制遊戲，以真實的天空來玩。選擇地球上任何一座機場，在那裡降落的真實班機會帶著班號出現在螢幕邊緣。模擬班機沒有班號。從每架飛機畫出一條路線到跑道，讓所有飛機保持距離，盡可能多讓飛機降落。
+
+真實的天空
+• 真實班機都有班號和一個紅點。模擬班機會依難度補足，除非你開啟「Real planes only」。
+• Arrived from：在這裡降落的真實班機，可以說出它是從哪個城市飛來的。
+• 真實天氣：機場的真實天氣決定風向與跑道，真實的霧和暴風會掠過你的畫面。
+• 真實日夜：東京是夜晚時，就能在東京的夜裡遊玩。
+
+真實的地方
+• 超過 29,000 座機場，每座都有真實的跑道。滑行道、登機門與周圍地形來自 OpenStreetMap，多數地圖可從遊戲官網快速載入。
+• 周圍的地形也是真實的：丹佛以西有洛磯山脈，水面上有船隻來往。
+• 全球最繁忙的 50 座機場內建在 App 中，即使離線也能立即開啟。搜尋可找到其他任何機場。
+
+易學難放手
+• 拖曳來畫出路線，拖曳路線尾端即可繼續前進。紅色客機降落在紅色跑道，黃色螺旋槳飛機降落在黃色跑道，直升機降在停機坪。
+• 點一下讓飛機盤旋，畫一個圈來等待，或把班機送進等待航線。
+• 離場班機會推出、滑行、起飛，並從邊緣的登機門離開。
+• 引擎故障與燃油不足：飛機會轉向能抵達的跑道，快轉也會停下，讓你能夠處理。
+• 尾流亂流、跑道檢查、暴風與霧。
+• 關閉的跑道會顯示紅色 X 標記，無論白天或夜晚。
+• 子彈模式會在碰撞前放慢時間，每局可倒轉一次。
+
+依你的方式玩
+• Beginner：幾架飛機與平靜的天空，是溫和的入門方式。
+• Real planes only：任何等級都只顯示你所在機場的真實班機，不會虛構任何東西。
+• 每日挑戰：所有人都是相同的班機與天氣，並有連續遊玩紀錄。
+• Play：會記住你上次選的機場。
+• 使用真實 ATC 用語的無線電對話，可在 Settings 中開啟。
+• 七首曲子：Tower Jazz、Lo-fi chill、Synthwave、Cinematic calm、Bossa nova、Arcade 8-bit 與 Funky groove。
+• 每座機場的星星，以及管制員等級。
+• 分享結果卡，或傳送不劇透的每日分數。
+• Tour 會展示遊戲的功能。
+
+分享影片
+• 為 TikTok、YouTube Shorts 或 Instagram Reels 製作的 20 秒影片，含遊戲音樂，並以名稱顯示真實班機。由你決定要發到哪裡。
+
+排行榜
+• 世界排行榜會在 Google Play 上啟動遊戲時開放，每座機場與每個等級都有：今日、本週與歷來的前 10 名，以及你的排名。
+• Google Play Games：登入即可取得 24 項成就與七個排行榜，包括每個等級的最佳分數。
+• 只有計入排名的遊戲才算：從頭到尾完成一個等級，且 Real planes only 關閉、Departures 開啟（Beginner 除外）。每日挑戰有自己的排行榜。
+• 你可以選擇是否在世界排行榜上顯示名字。玩家可以檢舉違反規則的名字。
+
+公平且私密
+• 沒有廣告，也不需要帳號。免費遊玩：每日挑戰一律免費，首 3 天過後，每天可在任何機場免費玩 3 局。Short Final Pro 是 Google Play 上的一次性購買，可無限次遊玩。
+• 分數與進度留在你的手機上。線上排行榜只保存計入排名的遊戲所送出的資料，你隨時可以移除自己的資料。
+• 色盲用符號，以及音效、音樂、無線電與震動各自獨立的開關。
+
+Short Final 是一款遊戲，不是航班追蹤或導航工具。即時位置為概略值，並為遊玩而簡化。
+
+Airport maps, coastlines and peaks © OpenStreetMap contributors (ODbL). Live feed: The OpenSky Network. Weather: aviationweather.gov (NOAA). Airports: OurAirports. Flight routes: Virtual Radar Server (CC0). Passenger rankings: ACI World. Time zones: timezone-boundary-builder (ODbL) and tz-lookup. Full credits are in the app, under About.

@@ -3,79 +3,296 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU" />
-<title>Short Final: Live Air Traffic</title>
-<meta name="description" content="Short Final is an air traffic game played with the real sky. Pick any airport on Earth and land the real flights arriving there.">
-<link rel="icon" href="assets/app-icon.png" type="image/png">
-<link rel="stylesheet" href="assets/site.css">
-<style>
-  /* the home page's own parts (the rest is the site's style): the pictures from the game, two to a row on a phone */
-  .shots { display: grid; grid-template-columns: 1fr; gap: 22px; margin: 8px 0 0; }
-  @media (min-width: 560px) { .shots { grid-template-columns: 1fr 1fr; } }
-  .shots figure { margin: 0; }
-  .shots img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line); }
-  .shots figcaption { margin-top: 8px; font-size: 15px; line-height: 1.4; color: var(--muted); }
-  .hero .badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
-  .hero .badge[hidden] { display: none; }
-  /* the store badge is the page's one filled button; the demo is the outlined second choice under it */
-  .hero a.badge { text-decoration: none; }
-  .hero .demo-go { display: inline-block; margin-top: 14px; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--accent); color: var(--accent); font-family: "Fredoka", system-ui, sans-serif; font-weight: 600; text-decoration: none; }
-  .hero a.badge:focus-visible, .hero .demo-go:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-</style>
+<title>Short Final: land real flights at any airport</title>
+<meta name="description" content="Short Final is a free air traffic game for Android. Land the real planes from live data at more than 29,000 airports, or try the browser demo.">
+<link rel="canonical" href="https://playshortfinal.com/">
+<link rel="alternate" hreflang="en" href="https://playshortfinal.com/"><link rel="alternate" hreflang="es-ES" href="https://playshortfinal.com/es/"><link rel="alternate" hreflang="es-419" href="https://playshortfinal.com/es-419/"><link rel="alternate" hreflang="pt-BR" href="https://playshortfinal.com/pt-br/"><link rel="alternate" hreflang="de-DE" href="https://playshortfinal.com/de/"><link rel="alternate" hreflang="fr-FR" href="https://playshortfinal.com/fr/"><link rel="alternate" hreflang="it-IT" href="https://playshortfinal.com/it/"><link rel="alternate" hreflang="ja-JP" href="https://playshortfinal.com/ja/"><link rel="alternate" hreflang="ko-KR" href="https://playshortfinal.com/ko/"><link rel="alternate" hreflang="zh-TW" href="https://playshortfinal.com/zh-tw/"><link rel="alternate" hreflang="tr-TR" href="https://playshortfinal.com/tr/"><link rel="alternate" hreflang="id-ID" href="https://playshortfinal.com/id/"><link rel="alternate" hreflang="pl-PL" href="https://playshortfinal.com/pl/"><link rel="alternate" hreflang="x-default" href="https://playshortfinal.com/">
+<meta name="theme-color" content="#16323a">
+<meta property="og:site_name" content="Short Final">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en">
+<meta property="og:title" content="Short Final: land real flights at any airport">
+<meta property="og:description" content="Short Final is a free air traffic game for Android. Land the real planes from live data at more than 29,000 airports, or try the browser demo.">
+<meta property="og:url" content="https://playshortfinal.com/">
+<meta property="og:image" content="https://playshortfinal.com/assets/site/brand/og-home.jpg">
+<meta property="og:image:alt" content="Short Final: a phone showing a real plane landing at Dallas Fort Worth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Short Final: land real flights at any airport">
+<meta name="twitter:description" content="Short Final is a free air traffic game for Android. Land the real planes from live data at more than 29,000 airports, or try the browser demo.">
+<meta name="twitter:image" content="https://playshortfinal.com/assets/site/brand/og-home.jpg">
+<meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
+<link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site/site.css">
+
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Thin Air Studios","legalName":"Thin Air Studios LLC","url":"https://playshortfinal.com/","logo":"https://playshortfinal.com/assets/site/img/app-icon-512.png","email":"thinaircapital@gmail.com"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Short Final","url":"https://playshortfinal.com/","inLanguage":"en","publisher":{"@type":"Organization","name":"Thin Air Studios"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"MobileApplication","name":"Short Final","operatingSystem":"Android","applicationCategory":"GameApplication","description":"Short Final is a free air traffic game for Android. Land the real planes from live data at more than 29,000 airports, or try the browser demo.","url":"https://playshortfinal.com/","inLanguage":"en","installUrl":"https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern","downloadUrl":"https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Organization","name":"Thin Air Studios"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Short Final free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is free on Google Play, with no ads and no account. The daily challenge is always free. Your first 3 days are unlimited; after that you get 3 free games a day at any airport. Short Final Pro is an optional one-time purchase for unlimited games."}},{"@type":"Question","name":"Are the planes real?","acceptedAnswer":{"@type":"Answer","text":"Live flights come from The OpenSky Network, with their real flight numbers. Simulated planes fill in when the sky is quiet, unless you switch on Real planes only. Short Final is a game, not a flight-tracking or navigation tool."}},{"@type":"Question","name":"Which airports can I play?","acceptedAnswer":{"@type":"Answer","text":"Any of more than 29,000 airports, each with its real runways. More than 6,200 also have full layouts from OpenStreetMap, with taxiways and gates, and the 50 busiest airports open offline in the app."}},{"@type":"Question","name":"Can I try it without installing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The free browser demo lets you play one game per visit, with simulated planes."}},{"@type":"Question","name":"Do I need an account?","acceptedAnswer":{"@type":"Answer","text":"Your progress stays on your phone. Ranked scores go to the online boards. If you sign in to Google Play Games, your achievements and best scores sync there. You can remove your board entries at any time."}},{"@type":"Question","name":"Is the game in other languages?","acceptedAnswer":{"@type":"Answer","text":"The game itself is in English. The Google Play page and this website are also available in 12 other languages."}}]}</script>
 </head>
-<body>
-<main>
-  <section class="hero">
-    <img src="assets/app-icon.png" alt="" width="120" height="120">
-    <h1>Short Final<sup>™</sup></h1>
-    <p class="tagline">Real traffic. Any airport.</p>
-    <div class="badges">
-      <span class="badge" id="badge-soon" hidden>Coming soon to Google Play</span>
-      <a class="badge" id="badge-free" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dhome">Free on Google Play</a>
+<body class="page-home">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/"><img src="/assets/site/img/icon.svg" width="40" height="40" alt=""><span class="brand-word">Short Final</span></a>
+    <details class="menu">
+      <summary>Menu</summary>
+      <nav class="nav-links" aria-label="Main">
+        <a class="nav-cta" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dhome%26utm_content%3Dheader" data-event="play_store_click" data-ev-page="home" data-ev-position="menu">Get the game</a>
+        <a href="/airports/">Airports</a><a href="/guides/">Guides</a><a href="/events/">Events</a><a href="/press/">Press</a>
+      </nav>
+    </details>
+    <a class="btn btn--sm header-cta" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dhome%26utm_content%3Dheader" data-event="play_store_click" data-ev-page="home" data-ev-position="header">Get the game</a>
+  </div>
+</header>
+<main id="main">
+
+  <section class="section--hero hero" aria-labelledby="hero-title">
+  <canvas class="hero-canvas" data-hero aria-hidden="true" width="1280" height="720"></canvas>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Free on Android · Google Play</p>
+      <h1 id="hero-title">Land the real planes at any airport on Earth.</h1>
+      <p class="lead">Pick an airport. The real flights landing there arrive at the edge of your screen, under their flight numbers. Draw a path to a runway, keep everyone apart, and land as many as you can.</p>
+      <div class="btn-row">
+        <a class="btn" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dhome%26utm_content%3Dhero" data-event="play_store_click" data-ev-page="home" data-ev-position="hero">Get it on Google Play</a>
+        <a class="btn btn--ghost" href="/demo/" data-event="demo_start">Play free in your browser</a>
+      </div>
+      <p class="free-note">Free to play. The daily challenge is always free.</p>
+      <details class="langs">
+  <summary><span>Read this page in:</span> <b>English</b></summary>
+  <nav class="langs-list" aria-label="Read this page in"><a href="/" hreflang="en" lang="en" data-event="language_change" data-ev-from="en" data-ev-to="en" aria-current="true">English</a><a href="/es/" hreflang="es-ES" lang="es-ES" data-event="language_change" data-ev-from="en" data-ev-to="es">Español (España)</a><a href="/es-419/" hreflang="es-419" lang="es-419" data-event="language_change" data-ev-from="en" data-ev-to="es-419">Español (Latinoamérica)</a><a href="/pt-br/" hreflang="pt-BR" lang="pt-BR" data-event="language_change" data-ev-from="en" data-ev-to="pt-br">Português (Brasil)</a><a href="/de/" hreflang="de-DE" lang="de-DE" data-event="language_change" data-ev-from="en" data-ev-to="de">Deutsch</a><a href="/fr/" hreflang="fr-FR" lang="fr-FR" data-event="language_change" data-ev-from="en" data-ev-to="fr">Français</a><a href="/it/" hreflang="it-IT" lang="it-IT" data-event="language_change" data-ev-from="en" data-ev-to="it">Italiano</a><a href="/ja/" hreflang="ja-JP" lang="ja-JP" data-event="language_change" data-ev-from="en" data-ev-to="ja">日本語</a><a href="/ko/" hreflang="ko-KR" lang="ko-KR" data-event="language_change" data-ev-from="en" data-ev-to="ko">한국어</a><a href="/zh-tw/" hreflang="zh-TW" lang="zh-TW" data-event="language_change" data-ev-from="en" data-ev-to="zh-tw">繁體中文（台灣）</a><a href="/tr/" hreflang="tr-TR" lang="tr-TR" data-event="language_change" data-ev-from="en" data-ev-to="tr">Türkçe</a><a href="/id/" hreflang="id-ID" lang="id-ID" data-event="language_change" data-ev-from="en" data-ev-to="id">Bahasa Indonesia</a><a href="/pl/" hreflang="pl-PL" lang="pl-PL" data-event="language_change" data-ev-from="en" data-ev-to="pl">Polski</a></nav>
+</details>
     </div>
-    <p><a class="demo-go" href="demo/">Try the free demo in your browser</a></p>
+    <figure class="phone">
+  <div class="phone-screen"><img src="/assets/site/img/shot-arrived-1280.webp" srcset="/assets/site/img/shot-arrived-640.webp 640w, /assets/site/img/shot-arrived-1280.webp 1280w" sizes="(min-width: 900px) 520px, 88vw" width="1280" height="720" alt="A real plane has just landed on a runway at Dallas Fort Worth, with the note Arrived from Atlanta beside it." fetchpriority="high" decoding="async"></div>
+</figure>
+  </div>
+</section>
+  <section class="section--tight">
+  <div class="wrap">
+    <ul class="stat-strip">
+      <li><b>29,000+</b><span>airports</span></li>
+      <li><b>6,200</b><span>airports with full maps on this site</span></li>
+      <li><b>50</b><span>busiest airports open offline in the app</span></li>
+      <li><b>7</b><span>original music tracks</span></li>
+    </ul>
+  </div>
+</section>
+  <section class="section--tight">
+    <div class="wrap">
+      <ul class="chips proof">
+        <li><span class="chip">Real flights, live from OpenSky</span></li><li><span class="chip">A daily challenge, always free</span></li><li><span class="chip">Weekend events from version 3.3</span></li><li><span class="chip">World boards and 24 achievements</span></li><li><span class="chip">20-second videos to share</span></li><li><span class="chip">50 busiest airports open offline</span></li>
+      </ul>
+    </div>
   </section>
-  <section class="card">
-    <p>Short Final is an air traffic game played with the real sky. Pick any airport on Earth, and the real flights landing there arrive at the edge of your screen on their real bearing, under their real flight numbers.</p>
-    <p>Draw a path from each one to a runway, keep everyone apart, and land as many as you can, in that airport's real weather and time of day.</p>
-    <p>A real plane that lands says the city it flew in from, as it touches down: <em>Arrived from Atlanta</em>. And you can make a 20-second video of your best moment for TikTok, YouTube Shorts or Instagram Reels, with the game's music and the real flights by name. You choose where it goes.</p>
+  <section class="section" aria-labelledby="features-title">
+    <div class="wrap">
+      <h2 id="features-title">What is in the game</h2>
+      <div class="grid grid--features">
+        <article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11.5 21 4l-6.5 17-3-6.5L3 11.5Z"/><path d="m11.5 14.5 4.5-4.5"/></svg></div>
+          <h3>Real flights</h3>
+          <p>Live flights from The OpenSky Network arrive on their real bearing, with their real flight numbers. Simulated planes fill in when the sky is quiet, unless you switch on Real planes only.</p>
+        </article><article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+          <h3>Any airport</h3>
+          <p>Search more than 29,000 airports by code, name or city. Each has its real runways, and many have taxiways and gates drawn from OpenStreetMap.</p>
+        </article><article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 18h10.5a3.8 3.8 0 0 0 .4-7.6A5.5 5.5 0 0 0 7.2 9.3 4.3 4.3 0 0 0 7 18Z"/></svg></div>
+          <h3>Real weather</h3>
+          <p>The airport&#39;s current weather report sets the wind and the active runway, so the approach you fly is the one the airport is using.</p>
+        </article><article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></div>
+          <h3>A daily challenge</h3>
+          <p>The same traffic and weather for everyone, every day, with a play streak to keep.</p>
+        </article><article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1.5A2.5 2.5 0 0 0 7.5 10M16 6h3v1.5A2.5 2.5 0 0 1 16.5 10M12 13v4M8.5 20h7"/></svg></div>
+          <h3>Boards and achievements</h3>
+          <p>World boards for each airport and level: today, this week and all time. Sign in to Google Play Games for 24 achievements and seven leaderboards.</p>
+        </article><article class="card">
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 8.5h10.5a2.5 2.5 0 1 0-2.5-2.5M3 13h15a2.5 2.5 0 1 1-2.5 2.5M3 17.5h6"/></svg></div>
+          <h3>Weekend events</h3>
+          <p>Each weekend one of the 50 busiest airports gets its own twist: storms, fog, rush hour or strong gusts. From version 3.3.</p>
+        </article>
+      </div>
+    </div>
   </section>
-  <section aria-labelledby="pictures">
-    <h2 id="pictures">In the game</h2>
+  <section class="section" aria-labelledby="how-title">
+  <div class="wrap">
+    <h2 id="how-title">How a game works</h2>
+    <ol class="steps">
+      <li><h3>Pick an airport</h3><p>Search more than 29,000 airports by code, name or city, or start with one of the 50 busiest.</p></li>
+      <li><h3>Draw a path to each runway</h3><p>Drag from each plane to a runway. Drag its tail to carry the path on, tap to circle, or draw a loop to hold.</p></li>
+      <li><h3>Land as many as you can</h3><p>Keep the planes apart and land them on the right runway. Engine failures, low fuel, storms and fog turn up as you play.</p></li>
+    </ol>
+  </div>
+</section>
+  <section class="section section--band" aria-labelledby="pictures-title">
+  <div class="wrap">
+    <h2 id="pictures-title">In the game</h2>
     <div class="shots">
-      <figure>
-        <img src="shots/arrived.jpg" alt="A real plane has just landed on a runway at Dallas Fort Worth, with the note Arrived from Atlanta beside it." width="1280" height="720" loading="lazy">
-        <figcaption>A real plane lands, and says where it flew in from.</figcaption>
-      </figure>
-      <figure>
-        <img src="shots/closed-night.jpg" alt="A runway at night, closed for an inspection: red hatched strip with X marks, and a label naming both ends." width="1280" height="720" loading="lazy">
-        <figcaption>A closed runway shows its red X marks, by day and at night.</figcaption>
-      </figure>
-      <figure>
-        <img src="shots/holding.jpg" alt="A real plane drawn towards a holding racetrack, with the track lit up under the finger." width="1280" height="720" loading="lazy">
-        <figcaption>Draw a plane to a hold: the whole racetrack lights up under your finger.</figcaption>
-      </figure>
-      <figure>
-        <img src="shots/video.jpg" alt="A vertical video frame of the game, with the real flight names and a closing line with the score, beside the words Share a video." width="1280" height="720" loading="lazy">
-        <figcaption>Share a 20-second video for TikTok, YouTube Shorts and Instagram Reels.</figcaption>
-      </figure>
+      <figure class="figure">
+  <img src="/assets/site/img/shot-arrived-1280.webp" srcset="/assets/site/img/shot-arrived-640.webp 640w, /assets/site/img/shot-arrived-1280.webp 1280w" sizes="(min-width: 900px) 560px, 92vw" width="1280" height="720" alt="A real plane has just landed on a runway at Dallas Fort Worth, with the note Arrived from Atlanta beside it." loading="lazy" decoding="async">
+  <figcaption>A real plane lands, and says where it flew in from.</figcaption>
+</figure>
+      <figure class="figure">
+  <img src="/assets/site/img/shot-closed-night-1280.webp" srcset="/assets/site/img/shot-closed-night-640.webp 640w, /assets/site/img/shot-closed-night-1280.webp 1280w" sizes="(min-width: 900px) 560px, 92vw" width="1280" height="720" alt="A runway at night, closed for an inspection: red hatched strip with X marks, and a label naming both ends." loading="lazy" decoding="async">
+  <figcaption>A closed runway shows its red X marks, by day and at night.</figcaption>
+</figure>
+      <figure class="figure">
+  <img src="/assets/site/img/shot-holding-1280.webp" srcset="/assets/site/img/shot-holding-640.webp 640w, /assets/site/img/shot-holding-1280.webp 1280w" sizes="(min-width: 900px) 560px, 92vw" width="1280" height="720" alt="A real plane drawn towards a holding racetrack, with the track lit up under the finger." loading="lazy" decoding="async">
+  <figcaption>Draw a plane to a hold: the whole racetrack lights up under your finger.</figcaption>
+</figure>
+      <figure class="figure">
+  <img src="/assets/site/img/shot-video-1280.webp" srcset="/assets/site/img/shot-video-640.webp 640w, /assets/site/img/shot-video-1280.webp 1280w" sizes="(min-width: 900px) 560px, 92vw" width="1280" height="720" alt="A vertical video frame of the game, with the real flight names and a closing line with the score, beside the words Share a video." loading="lazy" decoding="async">
+  <figcaption>Share a 20-second video for TikTok, YouTube Shorts and Instagram Reels.</figcaption>
+</figure>
+    </div>
+  </div>
+</section>
+  <section class="section" aria-labelledby="trailer-title">
+  <div class="wrap split">
+    <div>
+      <h2 id="trailer-title">Watch the trailer</h2>
+      <p>A short trailer on YouTube. The video loads only when you press play.</p>
+    </div>
+    <div class="trailer" data-trailer="MQPF7geuSas" data-title="Watch the trailer">
+  <a class="trailer-poster" href="https://www.youtube.com/watch?v=MQPF7geuSas" data-trailer-link aria-label="Play the trailer">
+    <img src="/assets/site/brand/trailer-poster-1280.webp" srcset="/assets/site/brand/trailer-poster-640.webp 640w, /assets/site/brand/trailer-poster-1280.webp 1280w" sizes="(min-width: 900px) 720px, 92vw" width="1280" height="720" alt="" loading="lazy" decoding="async">
+    <span class="trailer-play" aria-hidden="true"></span>
+  </a>
+  <p><a class="trailer-label" href="https://www.youtube.com/watch?v=MQPF7geuSas" data-trailer-link>Play the trailer</a></p>
+</div>
+  </div>
+</section>
+  <section class="section section--band" id="pick" aria-labelledby="pick-title">
+  <div class="wrap">
+    <h2 id="pick-title">Pick your airport</h2>
+    <p class="prose">Search more than 29,000 airports by code, name or city. Airports with a map get their own page, with runways, a map and a play button.</p>
+    <div class="pick">
+  <form class="search pick-form" role="search" action="/airports/" method="get" data-pick data-pick-template="/airports/{lower}/" data-no-results="No airport with a map matches. Try a city or a code.">
+    <label for="pick-input">Airport code, name or city</label>
+    <input id="pick-input" name="q" type="search" autocomplete="off" spellcheck="false" placeholder="Try ATL, Heathrow or Denver" aria-controls="pick-results" aria-describedby="pick-status">
+    <p id="pick-status" class="pick-status" role="status" aria-live="polite"></p>
+    <ul class="results" id="pick-results"></ul>
+  </form>
+  <div class="pick-busiest">
+    <h3>The busiest airports</h3>
+    <ul class="chips"><li><a class="chip" href="/airports/katl/"><b>KATL</b>&nbsp;Atlanta</a></li><li><a class="chip" href="/airports/omdb/"><b>OMDB</b>&nbsp;Dubai</a></li><li><a class="chip" href="/airports/rjtt/"><b>RJTT</b>&nbsp;Tokyo</a></li><li><a class="chip" href="/airports/kdfw/"><b>KDFW</b>&nbsp;Dallas-Fort Worth</a></li><li><a class="chip" href="/airports/zspd/"><b>ZSPD</b>&nbsp;Shanghai (Pudong)</a></li><li><a class="chip" href="/airports/kord/"><b>KORD</b>&nbsp;Chicago</a></li><li><a class="chip" href="/airports/egll/"><b>EGLL</b>&nbsp;London</a></li><li><a class="chip" href="/airports/ltfm/"><b>LTFM</b>&nbsp;Istanbul</a></li><li><a class="chip" href="/airports/zggg/"><b>ZGGG</b>&nbsp;Guangzhou (Huadu)</a></li><li><a class="chip" href="/airports/kden/"><b>KDEN</b>&nbsp;Denver</a></li><li><a class="chip" href="/airports/vidp/"><b>VIDP</b>&nbsp;New Delhi</a></li><li><a class="chip" href="/airports/rksi/"><b>RKSI</b>&nbsp;Seoul</a></li></ul>
+    <p class="pick-all"><a href="/airports/">Browse all airports</a></p>
+  </div>
+</div>
+  </div>
+</section>
+  <section class="section section--band" aria-labelledby="av-title">
+  <div class="wrap split">
+    <div>
+      <h2 id="av-title">For aviation fans</h2>
+      <p>Short Final is a game, not a flight tracker, but the airports are real.</p>
+    </div>
+    <ul class="check">
+      <li>Real runways, with the idents each airport uses.</li>
+      <li>Taxiways, gates and terminals from OpenStreetMap at more than 6,200 airports.</li>
+      <li>Radio chatter in real ATC phraseology, if you switch it on in Settings.</li>
+      <li>Closed runways show red X marks, by day and at night. Wake turbulence and runway inspections are part of the play.</li>
+      <li>Real daylight: play Tokyo at night while it is night in Tokyo.</li>
+    </ul>
+  </div>
+</section>
+  <section class="section" aria-labelledby="pricing-title">
+    <div class="wrap prose">
+      <h2 id="pricing-title">Free to play, with one optional upgrade</h2>
+      <p>The daily challenge is always free. Your first 3 days are unlimited; after that you get 3 free games a day at any airport. Short Final Pro is a one-time purchase in Google Play, $2.99 at the price Google Play shows, for unlimited games.</p>
     </div>
   </section>
+  <section class="section" aria-labelledby="faq-title">
+  <div class="wrap prose">
+    <h2 id="faq-title">Questions people ask</h2>
+    <div class="faq"><details>
+        <summary>Is Short Final free?</summary>
+        <p>Yes. It is free on Google Play, with no ads and no account. The daily challenge is always free. Your first 3 days are unlimited; after that you get 3 free games a day at any airport. Short Final Pro is an optional one-time purchase for unlimited games.</p>
+      </details><details>
+        <summary>Are the planes real?</summary>
+        <p>Live flights come from The OpenSky Network, with their real flight numbers. Simulated planes fill in when the sky is quiet, unless you switch on Real planes only. Short Final is a game, not a flight-tracking or navigation tool.</p>
+      </details><details>
+        <summary>Which airports can I play?</summary>
+        <p>Any of more than 29,000 airports, each with its real runways. More than 6,200 also have full layouts from OpenStreetMap, with taxiways and gates, and the 50 busiest airports open offline in the app.</p>
+      </details><details>
+        <summary>Can I try it without installing?</summary>
+        <p>Yes. The free browser demo lets you play one game per visit, with simulated planes.</p>
+      </details><details>
+        <summary>Do I need an account?</summary>
+        <p>Your progress stays on your phone. Ranked scores go to the online boards. If you sign in to Google Play Games, your achievements and best scores sync there. You can remove your board entries at any time.</p>
+      </details><details>
+        <summary>Is the game in other languages?</summary>
+        <p>The game itself is in English. The Google Play page and this website are also available in 12 other languages.</p>
+      </details></div>
+  </div>
+</section>
+  <section class="section" aria-labelledby="creators-title">
+  <div class="wrap">
+    <div class="band">
+      <div>
+        <h2 id="creators-title">Creators and press</h2>
+        <p>Making videos or streams about flying or games? The press kit has the facts, logos, screenshots and the trailer.</p>
+      </div>
+      <a class="btn btn--ghost" href="/press/">Open the press kit</a>
+    </div>
+  </div>
+</section>
+  <section class="section section--hero final" aria-labelledby="final-title">
+  <div class="wrap center">
+    <h2 id="final-title">Your first landing is a tap away.</h2>
+    <p class="lead">Short Final is free on Google Play. No ads and no account.</p>
+    <div class="btn-row center-row">
+      <a class="btn" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dhome%26utm_content%3Dfooter-cta" data-event="play_store_click" data-ev-page="home" data-ev-position="footer-cta">Get it on Google Play</a>
+      <a class="btn btn--ghost" href="/demo/" data-event="demo_start">Play free in your browser</a>
+    </div>
+  </div>
+</section>
+  <script src="/assets/site/brand/home.js" defer></script>
 </main>
-<footer>
-  <nav><a href="play/">Get the game</a><a href="demo/">Try the demo</a><a href="privacy/">Privacy policy</a><a href="terms/">Terms of Use</a><a href="mailto:thinaircapital@gmail.com">Contact</a></nav>
-  <p>© 2026 Thin Air Studios LLC. All rights reserved. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
-  <p class="love">Game designed with love in Colorado, USA <span>♥</span></p>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>Play</h2>
+        <ul>
+          <li><a href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dhome%26utm_content%3Dfooter" data-event="play_store_click" data-ev-page="home" data-ev-position="footer">Get the game</a></li>
+          <li><a href="/demo/" data-event="demo_start">Play free in your browser</a></li>
+          <li><a href="https://www.youtube.com/watch?v=MQPF7geuSas">Watch the trailer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Explore</h2>
+        <ul>
+          <li><a href="/airports/">Airports</a></li><li><a href="/guides/">Guides</a></li><li><a href="/events/">Events</a></li><li><a href="/press/">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>About</h2>
+        <ul>
+          
+          <li><a href="mailto:thinaircapital@gmail.com">Contact</a></li>
+          <li><a href="/privacy/">Privacy policy</a></li>
+          <li><a href="/terms/">Terms of Use</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Languages</h2>
+        <nav class="lang-list" aria-label="Languages">
+          <a href="/" lang="en" data-event="language_change" data-ev-from="en" data-ev-to="en" aria-current="true">English</a><a href="/es/" lang="es-ES" data-event="language_change" data-ev-from="en" data-ev-to="es">Español (España)</a><a href="/es-419/" lang="es-419" data-event="language_change" data-ev-from="en" data-ev-to="es-419">Español (Latinoamérica)</a><a href="/pt-br/" lang="pt-BR" data-event="language_change" data-ev-from="en" data-ev-to="pt-br">Português (Brasil)</a><a href="/de/" lang="de-DE" data-event="language_change" data-ev-from="en" data-ev-to="de">Deutsch</a><a href="/fr/" lang="fr-FR" data-event="language_change" data-ev-from="en" data-ev-to="fr">Français</a><a href="/it/" lang="it-IT" data-event="language_change" data-ev-from="en" data-ev-to="it">Italiano</a><a href="/ja/" lang="ja-JP" data-event="language_change" data-ev-from="en" data-ev-to="ja">日本語</a><a href="/ko/" lang="ko-KR" data-event="language_change" data-ev-from="en" data-ev-to="ko">한국어</a><a href="/zh-tw/" lang="zh-TW" data-event="language_change" data-ev-from="en" data-ev-to="zh-tw">繁體中文（台灣）</a><a href="/tr/" lang="tr-TR" data-event="language_change" data-ev-from="en" data-ev-to="tr">Türkçe</a><a href="/id/" lang="id-ID" data-event="language_change" data-ev-from="en" data-ev-to="id">Bahasa Indonesia</a><a href="/pl/" lang="pl-PL" data-event="language_change" data-ev-from="en" data-ev-to="pl">Polski</a>
+        </nav>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p>© 2026 Thin Air Studios LLC. All rights reserved. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
+      <p>Short Final is a game, not a flight-tracking or navigation tool. Live positions are approximate and simplified for play.</p>
+      <p>Game designed with love in Colorado, USA</p>
+    </div>
+  </div>
 </footer>
-<script>
-  // The Google Play listing is live (21 Oct 2026): the badge links to it, with the website as its install source. Set false only
-  // if the listing comes down (the same switch as play/index.html); "Coming soon" then shows and the link hides.
-  (function () {
-    'use strict';
-    var STORE_LIVE = true;
-    document.getElementById('badge-soon').hidden = STORE_LIVE;
-    document.getElementById('badge-free').hidden = !STORE_LIVE;
-  })();
-</script>
+
+<script src="/assets/site/site.js" defer></script>
 </body>
 </html>

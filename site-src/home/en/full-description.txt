@@ -1,0 +1,52 @@
+Real traffic. Any airport.
+
+Short Final™ is a live air traffic control game played with the real sky. Pick any airport on Earth, and the real planes landing there arrive at the edge of your screen, under their flight numbers. Simulated planes have no flight number. Draw a path from each one to a runway, keep everyone apart, and land as many as you can.
+
+THE REAL SKY
+• Real planes, each with its flight number and a red dot. Simulated planes fill in to match your difficulty, unless you switch on Real planes only.
+• Arrived from: a real plane that lands here can say the city it flew in from.
+• Real weather: the airport's real weather sets the wind and runway, and real fog and storms roll across your scope.
+• Real daylight: play Tokyo at night while it's night in Tokyo.
+
+THE REAL PLACE
+• More than 29,000 airports, each with its real runways. Taxiways, gates and the land around them come from OpenStreetMap, and most maps load fast from the game's own website.
+• The land around it is real too: the Rockies rise west of Denver, and boats work the water.
+• The world's 50 busiest airports ship inside the app and open at once, even offline. Search finds any other airport.
+
+EASY TO LEARN, HARD TO PUT DOWN
+• Drag to draw a path, and drag its tail to carry it on. Red airliners land on red runways, yellow props on yellow ones, helicopters on the pad.
+• Tap to circle, draw a loop to hold, or send traffic to a holding stack.
+• Departures push back, taxi, take off and leave by the gates on the edge.
+• Engine failures and low fuel: a plane turns for a runway it can reach, and fast-forward stops so you can act.
+• Wake turbulence, runway inspections, storms and fog.
+• A runway that closes shows red X marks, day or night.
+• Bullet mode slows time before a collision, and gives one rewind per game.
+
+PLAY YOUR WAY
+• Beginner: a few aircraft and calm skies. A gentle way in.
+• Real planes only, on any level, shows only the real planes from your airport and makes nothing up.
+• Daily challenge: the same planes and weather for everyone, with a play streak.
+• Play keeps your last airport picked.
+• Radio chatter in real ATC phraseology. Turn it on in Settings.
+• Seven tracks: Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit and Funky groove.
+• Stars at every airport, and controller ranks.
+• Share a result card, or send a spoiler-free daily score.
+• A Tour shows what it can do.
+
+SHARE A VIDEO
+• A 20-second video for TikTok, YouTube Shorts or Instagram Reels, with the game's music and the real planes by name. You choose where it goes.
+
+ON THE LEADERBOARDS
+• World boards open when the game launches on Google Play, for each airport and level: today, this week and all time, top 10 and your rank.
+• Google Play Games: sign in for 24 achievements and seven leaderboards, including the best score for each level.
+• Only ranked games count: one level from start to finish, Real planes only off, Departures on (except in Beginner). A daily challenge has its own board.
+• Choose whether your name shows on World boards. Players can report names that break the rules.
+
+FAIR AND PRIVATE
+• No ads or account. Free to play: the daily challenge is always free, and after your first 3 days you get 3 free games a day at any airport. Short Final Pro, a one-time purchase in Google Play, gives unlimited games.
+• Scores and progress stay on your phone. Online boards keep only what ranked play sends; remove yours any time.
+• Colour-blind symbols, and separate switches for sound, music, radio and haptics.
+
+Short Final is a game, not a flight-tracking or navigation tool. Live positions are approximate and simplified for play.
+
+Airport maps, coastlines and peaks © OpenStreetMap contributors (ODbL). Live feed: The OpenSky Network. Weather: aviationweather.gov (NOAA). Airports: OurAirports. Flight routes: Virtual Radar Server (CC0). Passenger rankings: ACI World. Time zones: timezone-boundary-builder (ODbL) and tz-lookup. Full credits are in the app, under About.

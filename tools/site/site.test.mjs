@@ -1,0 +1,241 @@
+// Tests for the website generator and its output. Run: node --test tools/site/site.test.mjs
+// The first test builds the site in place (the build is deterministic); the rest read the result.
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const TOOL = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(TOOL, '..', '..');
+const SRC = path.join(ROOT, 'site-src');
+const FILE_BUDGET = 18000;
+const DOMAIN = 'https://playshortfinal.com';
+const config = JSON.parse(fs.readFileSync(path.join(SRC, 'config.json'), 'utf8'));
+const manifest = JSON.parse(fs.readFileSync(path.join(SRC, '.generated.json'), 'utf8')).files;
+const NOINDEX_ALLOWED = new Set(['404.html']);
+// Thin airport and country pages are noindex on purpose (airports.mjs, rules.json): every page under airports/ may be noindex.
+const NOINDEX_PREFIX_ALLOWED = ['airports/'];
+const ASSET_PREFIX_OK = /^assets\/site\//;
+
+// The owner name is spelled in pieces so that this file never contains it whole.
+const PERSONAL = new RegExp("\\b" + "to" + "dd\\b|" + "wise" + "man", "i");
+// The forbidden words are spelled in pieces so that this file never contains them whole.
+const AI_NAMES = new RegExp('\\b(' + ['cl' + 'aude', 'anth' + 'ropic', 'open' + 'ai', 'chat' + 'gpt', 'g' + 'pt', 'gem' + 'ini', 'll' + 'ama', 'mis' + 'tral', 'cop' + 'ilot', 'assist' + 'ant'].join('|') + ')\\b|\\bAI\\b', 'i');
+const MACHINE_PATH = /(^|[\s"'(=,`])\/(tmp|home|root|Users|var|mnt|private)\//m;
+const TEXT_EXT = /\.(html|xml|txt|css|js|json|md|mjs|svg)$/;
+
+// Airport names, cities and codes are data, not our wording: a place or code that spells a forbidden word (a place name, an airport
+// code or a country code) is not a breach. Those exact words are removed before the name checks run.
+const DATA_WORDS = (() => {
+  const words = new Set();
+  const rows = JSON.parse(fs.readFileSync(path.join(SRC, 'data', 'airports.json'), 'utf8'));
+  for (const r of rows) for (const w of [r[0], r[1], r[2], r[3], r[4]]) if (w && (PERSONAL.test(w) || AI_NAMES.test(w))) words.add(w);
+  return [...words].sort((a, b) => b.length - a.length);
+})();
+const DATA_WORDS_RE = DATA_WORDS.length ? new RegExp(`\\b(?:${DATA_WORDS.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'g') : null;
+const withoutDataWords = (doc) => (DATA_WORDS_RE ? doc.replace(DATA_WORDS_RE, ' ') : doc);
+
+function walkAll(dir, base = dir, out = []) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (e.name === '.git' || e.name === 'node_modules') continue;
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) walkAll(full, base, out);
+    else out.push(path.relative(base, full).split(path.sep).join('/'));
+  }
+  return out;
+}
+
+function text(rel) {
+  return fs.readFileSync(path.join(ROOT, rel), 'utf8');
+}
+
+/** Source files we write: site-src (text only, no data copies or fonts), tools/site and the docs. */
+function ownSourceFiles() {
+  const fromSrc = walkAll(SRC).map((f) => `site-src/${f}`).filter((f) => TEXT_EXT.test(f) && !f.startsWith('site-src/data/') && !f.startsWith('site-src/assets/fonts/'));
+  const fromTool = walkAll(TOOL).map((f) => `tools/site/${f}`).filter((f) => TEXT_EXT.test(f) && f !== "tools/site/site.test.mjs"); // the rules themselves are not scanned
+  return [...fromSrc, ...fromTool];
+}
+
+const ownText = () => manifest.filter((f) => TEXT_EXT.test(f));
+const ownHtml = () => manifest.filter((f) => f.endsWith('.html'));
+
+test('the build runs, and a second run changes nothing', () => {
+  const first = spawnSync(process.execPath, [path.join(TOOL, 'build.mjs')], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(first.status, 0, first.stderr || first.stdout);
+  const check = spawnSync(process.execPath, [path.join(TOOL, 'build.mjs'), '--check'], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(check.status, 0, check.stderr || check.stdout);
+});
+
+test('every file in the manifest exists and is one we make', () => {
+  for (const rel of manifest) {
+    assert.ok(fs.existsSync(path.join(ROOT, rel)), `missing ${rel}`);
+    assert.ok(rel === '404.html' || rel === 'index.html' || rel === 'robots.txt' || rel === '_headers' || rel === '_redirects' || rel.startsWith('sitemap') || rel.startsWith('assets/site/') || rel.endsWith('/index.html'), `unexpected owned path ${rel}`);
+  }
+  assert.ok(manifest.every((f) => ASSET_PREFIX_OK.test(f) || !f.startsWith('assets/')), 'assets are only under assets/site/');
+});
+
+test('no personal name in anything we write', () => {
+  for (const rel of [...ownText(), ...ownSourceFiles()]) {
+    assert.ok(!PERSONAL.test(withoutDataWords(text(rel))), `personal name in ${rel}`);
+    assert.ok(!PERSONAL.test(rel), `personal name in a file name: ${rel}`);
+  }
+});
+
+test('no AI, assistant or model names in anything we write', () => {
+  for (const rel of [...ownText(), ...ownSourceFiles()]) {
+    const found = withoutDataWords(text(rel)).match(AI_NAMES);
+    assert.equal(found, null, `AI or model name "${found && found[0]}" in ${rel}`);
+  }
+});
+
+test('no absolute machine paths in anything we write', () => {
+  for (const rel of [...ownText(), ...ownSourceFiles()]) {
+    assert.ok(!MACHINE_PATH.test(text(rel)), `machine path in ${rel}`);
+  }
+});
+
+test('the total tracked file count stays under the Cloudflare limit', () => {
+  const count = walkAll(ROOT).length;
+  assert.ok(count < FILE_BUDGET, `${count} files, budget ${FILE_BUDGET}`);
+});
+
+test('every page has a title, a description and a canonical on the domain', () => {
+  for (const rel of ownHtml()) {
+    const doc = text(rel);
+    if (/<meta name="robots" content="noindex/.test(doc)) {
+      assert.ok(NOINDEX_ALLOWED.has(rel) || NOINDEX_PREFIX_ALLOWED.some((p) => rel.startsWith(p)), `${rel} is noindex but not on the allowed list`);
+      continue;
+    }
+    const title = doc.match(/<title>([^<]*)<\/title>/);
+    assert.ok(title && title[1].trim().length > 0, `no title in ${rel}`);
+    assert.ok(title[1].length <= 70, `title too long in ${rel} (${title[1].length})`);
+    const desc = doc.match(/<meta name="description" content="([^"]*)"/);
+    assert.ok(desc && desc[1].length >= 50 && desc[1].length <= 170, `description length in ${rel}`);
+    const canon = doc.match(/<link rel="canonical" href="([^"]*)"/);
+    assert.ok(canon && canon[1].startsWith(`${DOMAIN}/`), `canonical missing or off-domain in ${rel}`);
+    const expected = rel === 'index.html' ? `${DOMAIN}/` : `${DOMAIN}/${rel.replace(/index\.html$/, '')}`;
+    assert.equal(canon[1], expected, `canonical does not match the file in ${rel}`);
+  }
+});
+
+test('JSON-LD blocks parse and carry a schema.org context', () => {
+  for (const rel of ownHtml()) {
+    const blocks = [...text(rel).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+    for (const [, body] of blocks) {
+      const obj = JSON.parse(body);
+      assert.equal(obj['@context'], 'https://schema.org', `context in ${rel}`);
+    }
+  }
+});
+
+test('internal links and images resolve to files', () => {
+  for (const rel of ownHtml()) {
+    for (const [, target] of text(rel).matchAll(/\s(?:href|src)="(\/[^"]*)"/g)) {
+      const clean = target.split(/[?#]/)[0];
+      if (clean === '/' || clean === '') continue;
+      const onDisk = path.join(ROOT, clean);
+      const ok = fs.existsSync(onDisk) || (clean.endsWith('/') && fs.existsSync(path.join(onDisk, 'index.html')));
+      assert.ok(ok, `${rel} links to ${target}, which does not exist`);
+    }
+  }
+});
+
+test('every Play link uses the referrer format for the page', () => {
+  const pattern = /^https:\/\/play\.google\.com\/store\/apps\/details\?id=com\.thinaircapital\.holdingpattern&referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3D[a-z0-9-]+(%26utm_content%3D[a-z0-9-]+)?$/;
+  for (const rel of ownHtml()) {
+    for (const [, href] of text(rel).matchAll(/href="(https:\/\/play\.google\.com[^"]*)"/g)) {
+      const unescaped = href.replace(/&amp;/g, '&');
+      assert.ok(pattern.test(unescaped), `bad Play link in ${rel}: ${href}`);
+    }
+  }
+});
+
+test('every page with alternates lists itself and x-default', () => {
+  for (const rel of ownHtml()) {
+    const doc = text(rel);
+    const alts = [...doc.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)];
+    if (!alts.length) continue;
+    const canon = doc.match(/<link rel="canonical" href="([^"]*)"/);
+    assert.ok(alts.some(([, , href]) => href === canon[1]), `${rel} alternates do not include its own URL`);
+    assert.ok(alts.some(([, lang]) => lang === 'x-default'), `${rel} alternates have no x-default`);
+  }
+});
+
+test('the robots file keeps the Perplexity block and names the sitemap', () => {
+  const robots = text('robots.txt');
+  assert.match(robots, /User-agent: PerplexityBot\nUser-agent: Perplexity-User\nDisallow: \/\n/);
+  assert.match(robots, /^Sitemap: https:\/\/playshortfinal\.com\/sitemap\.xml$/m);
+});
+
+test('the sitemap index lists section sitemaps that exist, and every URL is a real page', () => {
+  const index = text('sitemap.xml');
+  for (const [, loc] of index.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+    const rel = loc.replace(DOMAIN + '/', '');
+    assert.ok(fs.existsSync(path.join(ROOT, rel)), `sitemap index lists missing ${rel}`);
+    for (const [, url] of text(rel).matchAll(/<loc>([^<]+)<\/loc>/g)) {
+      const local = url.replace(DOMAIN, '');
+      const file = local.endsWith('/') ? `${local.slice(1)}index.html` : local.slice(1);
+      assert.ok(fs.existsSync(path.join(ROOT, file)), `${rel} lists ${url}, which has no page`);
+    }
+  }
+});
+
+test('colour pairs meet WCAG AA in light and dark', () => {
+  const css = text('site-src/assets/site.css');
+  const block = (selector) => {
+    const start = css.indexOf(selector);
+    assert.ok(start >= 0, `no block ${selector}`);
+    const open = css.indexOf('{', start);
+    return css.slice(open + 1, css.indexOf('}', open));
+  };
+  const read = (body) => Object.fromEntries([...body.matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)].map(([, k, v]) => [k, v.trim()]));
+  const light = read(block(':root {'));
+  const dark = read(block(':root[data-theme="dark"]'));
+  const resolve = (tokens, value) => {
+    let v = value;
+    for (let i = 0; i < 5 && /var\(--/.test(v); i++) v = v.replace(/var\(--([a-z0-9-]+)\)/g, (_, k) => tokens[k] || `var(--${k})`);
+    return v;
+  };
+  const luminance = (hex) => {
+    const n = parseInt(hex.slice(1), 16);
+    const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((x) => { const s = x / 255; return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const ratio = (a, b) => { const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  const pairs = [['text', 'bg', 4.5], ['text-soft', 'bg', 4.5], ['accent', 'bg', 4.5], ['text', 'surface', 4.5], ['text-soft', 'surface', 4.5], ['accent', 'surface', 4.5], ['link', 'bg', 4.5], ['cta-ink', 'cta', 4.5], ['hero-text', 'hero-bg', 4.5], ['focus', 'bg', 3]];
+  for (const [label, tokens] of [['light', light], ['dark', dark]]) {
+    const all = { ...light, ...tokens };
+    for (const [fg, bg, min] of pairs) {
+      const a = resolve(all, all[fg]);
+      const b = resolve(all, all[bg]);
+      if (!/^#[0-9a-f]{6}$/i.test(a) || !/^#[0-9a-f]{6}$/i.test(b)) continue;
+      assert.ok(ratio(a, b) >= min, `${label}: ${fg} ${a} on ${bg} ${b} is ${ratio(a, b).toFixed(2)}, need ${min}`);
+    }
+  }
+});
+
+test('the stylesheet braces balance and no token is left undefined', () => {
+  const css = text('site-src/assets/site.css');
+  assert.equal(css.split('{').length, css.split('}').length, 'unbalanced braces');
+  assert.ok(!/var\(--undefined/.test(css));
+});
+
+test('config flags exist for the events and features the copy depends on', () => {
+  for (const key of ['weekend', 'thanksgiving', 'santa']) assert.equal(typeof config.events[key].live, 'boolean');
+  for (const key of ['challengeLinks', 'challengeBoards']) assert.equal(typeof config.features[key], 'boolean');
+  assert.equal(config.domain, DOMAIN);
+  assert.equal(config.email, 'thinaircapital@gmail.com');
+});
+
+test('legacy pages we did not build are scanned too (reported, not failed)', (t) => {
+  const legacy = ['privacy/index.html', 'terms/index.html', 'play/index.html', 'delete/index.html', 'demo/index.html', 'demo/js/config.js'];
+  for (const rel of legacy) {
+    if (!fs.existsSync(path.join(ROOT, rel))) continue;
+    const doc = text(rel);
+    if (PERSONAL.test(doc)) t.diagnostic(`legacy name found in ${rel} (built by another repository; fix there)`);
+    if (AI_NAMES.test(doc)) t.diagnostic(`AI or model name found in ${rel} (built by another repository; fix there)`);
+  }
+  assert.ok(true);
+});

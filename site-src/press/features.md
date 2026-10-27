@@ -1,0 +1,10 @@
+- Real flights, live from The OpenSky Network, with their flight numbers. Simulated planes fill in unless you switch on Real planes only.
+- More than 29,000 airports, each with its real runways. About 6,200 also have full OpenStreetMap layouts with taxiways and gates.
+- Real weather: the airport's current report sets the wind and the active runway.
+- A daily challenge, the same traffic and weather for everyone, with a play streak.
+- Weekend events from version 3.3: each weekend one of the 50 busiest airports gets its own twist.
+- World boards for each airport and level, and 24 achievements in Google Play Games.
+- Radio chatter in real ATC phraseology, on when you switch it on in Settings.
+- A 20-second video to share to TikTok, YouTube Shorts and Instagram Reels.
+- Seven original music tracks.
+- No ads and no account. Free to play, with an optional one-time upgrade, Short Final Pro.

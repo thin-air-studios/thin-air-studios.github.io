@@ -1,0 +1,73 @@
+name: Website rebuild
+
+# Rebuilds the website's generated pages (tools/site/build.mjs) from the site source and the map folder osm/, which the map robot
+# fills, once a day and when started by hand. Only the files the generator owns are committed, as "Website: rebuild pages". The
+# map folder osm/ is read, never staged: it is excluded from the commit, and any other unexpected path stops the run. The map
+# robot's workflows are never started here.
+#
+# The branch is SITE_BRANCH below: main, the branch both hosts publish.
+#
+# Loops: this workflow starts on its schedule and by hand only. Its own commit does not start it, so a commit cannot start
+# another run. A push refused because the branch moved is retried up to three times: each retry fetches the newest commit, rebuilds
+# there, runs the checks, and commits again.
+
+on:
+  schedule:
+    - cron: '41 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: website-rebuild
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SITE_BRANCH: main
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SITE_BRANCH }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Rebuild the pages, check them, and commit what the generator changed
+        run: |
+          set -uo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            node tools/site/build.mjs || exit 1
+            node --test tools/site/*.test.mjs || exit 1
+            git add -A -- . ':(exclude)osm'
+            if git diff --cached --quiet; then
+              echo "The pages are up to date on the site branch; nothing to commit."
+              exit 0
+            fi
+            # Only generator-owned paths may change: the list kept in site-src/.generated.json (now and in the last commit).
+            node -e '
+              const fs = require("node:fs");
+              const cp = require("node:child_process");
+              const now = new Set(JSON.parse(fs.readFileSync("site-src/.generated.json", "utf8")).files);
+              let before = new Set();
+              try { before = new Set(JSON.parse(cp.execFileSync("git", ["show", "HEAD:site-src/.generated.json"], { encoding: "utf8" })).files); } catch (e) { /* first run */ }
+              const staged = cp.execFileSync("git", ["diff", "--cached", "--name-only", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
+              const bad = staged.filter((p) => p !== "site-src/.generated.json" && !now.has(p) && !before.has(p));
+              if (bad.length) { console.error("Refusing to commit paths the generator does not own:\n" + bad.join("\n")); process.exit(2); }
+            ' || exit 1
+            git commit -q -m "Website: rebuild pages"
+            if git push -q origin "HEAD:$SITE_BRANCH"; then
+              echo "Pushed the rebuilt pages to the site branch (attempt $attempt)."
+              exit 0
+            fi
+            echo "The push was refused (the branch moved on); rebuilding on its newest commit (attempt $attempt)."
+            git fetch -q origin "$SITE_BRANCH"
+            git reset -q --hard "origin/$SITE_BRANCH"
+          done
+          echo "The pages could not be pushed after three attempts."
+          exit 1

@@ -1,0 +1,54 @@
+Gerçek trafik. Herhangi bir havalimanı.
+
+Oyun İngilizce dilindedir. Bu sayfa çevrilmiştir.
+
+Short Final™, gerçek gökyüzüyle oynanan canlı bir hava trafik kontrolü oyunudur. Bir havalimanı seçin: oradaki gerçek uçaklar uçuş numaralarıyla ekranın kenarına gelir. Her uçaktan bir piste rota çizin ve mümkün olduğunca çok uçak indirin.
+
+GERÇEK GÖKYÜZÜ
+• Gerçek uçaklar uçuş numarası ve kırmızı nokta ile gösterilir. Simüle uçakların uçuş numarası yoktur; zorluğa göre eklenir, "Real planes only" açıksa yalnızca gerçekler görünür.
+• Arrived from: Burada inen gerçek bir uçak, nereden geldiğini söyleyebilir.
+• Gerçek hava: rüzgâr, pist, gerçek sis ve fırtınalar havalimanına göre gelir.
+• Gerçek gündüz: Tokyo'da gece olduğunda Tokyo'yu gece oynayın.
+
+GERÇEK YER
+• 29.000'den fazla havalimanı, her biri gerçek pistleriyle. Taksi yolları, kapılar ve arazi OpenStreetMap'ten gelir; çoğu harita web sitesinden hızla yüklenir.
+• Arazi de gerçektir: Denver'ın batısında Rocky Dağları, sularda tekneler.
+• Dünyanın en yoğun 50 havalimanı uygulamanın içindedir ve internet olmadan açılır. Arama diğerlerini bulur.
+
+ÖĞRENMESİ KOLAY, BIRAKMASI ZOR
+• Rota için sürükleyin, ilerletmek için kuyruğunu sürükleyin. Kırmızı yolcu uçakları kırmızı pistlere, sarı pervaneli uçaklar sarı pistlere, helikopterler helikopter pistine iner.
+• Daire için dokunun, beklemek için halka çizin ya da trafiği bekleme dizisine gönderin.
+• Kalkışlar geri itilir, taksi yapar, kalkar ve kenardaki kapılardan çıkar.
+• Motor arızası ve az yakıt: uçak ulaşabileceği bir piste döner, hızlı ilerleme durur.
+• Türbülans izi, pist kontrolleri, fırtınalar ve sis.
+• Kapalı pistte gündüz ya da gece kırmızı X işaretleri görünür.
+• Bullet modu çarpışmadan önce zamanı yavaşlatır, oyun başına bir geri sarma hakkı verir.
+
+KENDİ TARZINIZDA OYNAYIN
+• Beginner: birkaç uçak ve sakin gökyüzü.
+• Real planes only her seviyede yalnızca havalimanınızdaki gerçek uçakları gösterir, hiçbir şey uydurmaz.
+• Günlük meydan okuma: herkes için aynı uçaklar ve hava, oyun serisiyle.
+• Play son seçtiğiniz havalimanını hatırlar.
+• Gerçek ATC terimleriyle telsiz konuşmaları. Settings'ten açın.
+• Yedi parça: Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit ve Funky groove.
+• Her havalimanında yıldızlar ve kontrolör rütbeleri.
+• Sonuç kartı ya da spoiler içermeyen günlük skor paylaşın.
+• Tour, oyunun neler yapabildiğini gösterir.
+
+VİDEO PAYLAŞ
+• TikTok, YouTube Shorts ya da Instagram Reels için 20 saniyelik video; oyun müziği ve gerçek uçaklar adlarıyla.
+
+LİDER TABLOLARI
+• Dünya tabloları, oyun Google Play'de açıldığında her havalimanı ve seviye için: bugün, bu hafta, tüm zamanlar; ilk 10 ve sıranız.
+• Google Play Games: 24 başarım ve yedi lider tablosu; her seviyenin en iyi skoru dahil.
+• Yalnızca dereceli oyunlar sayılır: bir seviye baştan sona, Real planes only kapalı, Departures açık (Beginner hariç). Günlük meydan okumanın ayrı tablosu vardır.
+• Adınızın görünüp görünmeyeceğini seçersiniz. Kurallara aykırı adlar bildirilebilir.
+
+ADİL VE ÖZEL
+• Reklam ve hesap yok. Günlük meydan okuma her zaman ücretsiz; ilk 3 günün ardından her havalimanında günde 3 ücretsiz oyun. Google Play'den tek seferlik Short Final Pro sınırsız oyun sağlar.
+• Skorlar ve ilerleme telefonda kalır. Çevrimiçi tablolar yalnızca dereceli oyunların gönderdiklerini saklar; sizinkini kaldırabilirsiniz.
+• Renk körlüğü için semboller; ses, müzik, radyo ve titreşim için ayrı anahtarlar.
+
+Short Final bir oyundur; uçuş izleme veya navigasyon aracı değildir. Canlı konumlar yaklaşıktır ve oyun için basitleştirilmiştir.
+
+Airport maps, coastlines and peaks © OpenStreetMap contributors (ODbL). Live feed: The OpenSky Network. Weather: aviationweather.gov (NOAA). Airports: OurAirports. Flight routes: Virtual Radar Server (CC0). Passenger rankings: ACI World. Time zones: timezone-boundary-builder (ODbL) and tz-lookup. Full credits are in the app, under About.

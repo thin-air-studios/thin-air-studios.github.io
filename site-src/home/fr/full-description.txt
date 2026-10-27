@@ -1,0 +1,54 @@
+Trafic réel. N'importe quel aéroport.
+
+Le jeu est en anglais. Cette page est traduite.
+
+Short Final™ est un jeu de contrôle aérien en direct, avec le vrai ciel. Choisissez un aéroport : ses vrais avions arrivent au bord de l'écran avec leur numéro de vol. Tracez une trajectoire de chacun vers une piste et posez un maximum d'appareils.
+
+LE VRAI CIEL
+• Vrais avions, avec numéro de vol et point rouge. Les simulés complètent selon la difficulté, sauf avec « Real planes only ».
+• Arrived from : un vrai avion qui atterrit ici peut dire de quelle ville il vient.
+• Météo réelle : vent, piste, brouillard et orages de l'aéroport.
+• Lumière du jour réelle : jouez Tokyo la nuit, quand il y fait nuit.
+
+LE VRAI LIEU
+• Plus de 29 000 aéroports avec leurs vraies pistes. Voies de circulation, portes et terrains viennent d'OpenStreetMap ; la plupart se chargent vite depuis le site.
+• Le paysage est réel : les Rocheuses à l'ouest de Denver, des bateaux sur l'eau.
+• Les 50 aéroports les plus fréquentés s'ouvrent aussitôt, même hors ligne. La recherche trouve les autres.
+
+FACILE À APPRENDRE, DIFFICILE À LÂCHER
+• Glissez pour tracer une trajectoire, et sa queue pour la prolonger. Avions de ligne rouges sur pistes rouges, hélices jaunes sur jaunes, hélicoptères sur l'héliport.
+• Touchez pour tourner, tracez une boucle pour attendre, ou envoyez le trafic en attente (holding).
+• Les départs reculent, roulent, décollent et sortent par les portes.
+• Pannes moteur et carburant bas : l'avion vire vers une piste accessible, et l'accéléré s'arrête.
+• Turbulences de sillage, inspections de piste, orages et brouillard.
+• Une piste fermée affiche des croix rouges, de jour comme de nuit.
+• Le mode Bullet ralentit le temps avant une collision, avec un retour en arrière par partie.
+
+JOUEZ À VOTRE FAÇON
+• Beginner : quelques avions et un ciel calme.
+• Real planes only, à tout niveau : seulement les vrais avions de votre aéroport, rien d'inventé.
+• Défi du jour : mêmes avions et météo pour tous, en série de jours.
+• Play retient le dernier aéroport choisi.
+• Radio en phraséologie ATC réelle, à activer dans Settings.
+• Sept morceaux : Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit et Funky groove.
+• Étoiles par aéroport et grades de contrôleur.
+• Partagez une carte de résultat ou votre score du jour sans spoiler.
+• Un Tour montre ce que le jeu sait faire.
+
+PARTAGEZ UNE VIDÉO
+• Vidéo de 20 secondes pour TikTok, YouTube Shorts ou Instagram Reels : musique du jeu et vrais avions par leur nom.
+
+AU CLASSEMENT
+• Classements mondiaux par aéroport et niveau, ouverts au lancement sur Google Play : aujourd'hui, cette semaine et toujours, top 10 et votre rang.
+• Google Play Games : 24 succès et sept classements, avec le meilleur score par niveau.
+• Seules les parties classées comptent : un niveau complet, Real planes only désactivé, Departures activé (sauf Beginner). Le défi du jour a son classement.
+• Vous choisissez d'afficher votre nom. Les noms contraires aux règles peuvent être signalés.
+
+JUSTE ET PRIVÉ
+• Ni publicité ni compte. Défi du jour toujours gratuit ; après 3 jours, 3 parties gratuites par jour à tout aéroport. Short Final Pro, achat unique sur Google Play, débloque les parties illimitées.
+• Scores et progression restent sur votre téléphone. Les classements en ligne ne gardent que ce qu'envoient les parties classées ; vous pouvez supprimer le vôtre.
+• Symboles pour le daltonisme et interrupteurs séparés pour son, musique, radio et vibrations.
+
+Short Final est un jeu, pas un outil de suivi de vols ni de navigation. Les positions en direct sont approximatives et simplifiées pour jouer.
+
+Cartes, côtes et sommets © OpenStreetMap contributors (ODbL). Données en direct : The OpenSky Network. Météo : aviationweather.gov (NOAA). Aéroports : OurAirports. Routes de vol : Virtual Radar Server (CC0). Classements de passagers : ACI World. Fuseaux horaires : timezone-boundary-builder (ODbL) et tz-lookup. Crédits complets dans l'app, sous About.

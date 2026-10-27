@@ -1,0 +1,9 @@
+{
+  "_about": "Rules for the airport pages (read by tools/site/lib/airportdata.mjs). thinBelow: an airport page with fewer substantive facts (city, IATA code, scheduled routes, ACI rank, two or more runways, map detail beyond the runways) is noindex,follow: it still links and is still built. countryMinIndexed: a country hub with fewer mapped airports is noindex,follow.",
+  "thinBelow": 1,
+  "countryMinIndexed": 2,
+  "nearby": 8,
+  "routeTop": 15,
+  "countryListCap": 120,
+  "hubBusiestCount": 50
+}

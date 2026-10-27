@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How live flight tracking works | Short Final guide</title>
+<meta name="description" content="How flight trackers show planes: ADS-B, radar, multilateration and OpenSky, the limits of live maps, and how Short Final uses real flight data.">
+<link rel="canonical" href="https://playshortfinal.com/guides/how-live-flight-tracking-works/">
+
+<meta name="theme-color" content="#16323a">
+<meta property="og:site_name" content="Short Final">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:title" content="How live flight tracking works | Short Final guide">
+<meta property="og:description" content="How flight trackers show planes: ADS-B, radar, multilateration and OpenSky, the limits of live maps, and how Short Final uses real flight data.">
+<meta property="og:url" content="https://playshortfinal.com/guides/how-live-flight-tracking-works/">
+<meta property="og:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
+<meta property="og:image:alt" content="Short Final: real flights at any airport">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How live flight tracking works | Short Final guide">
+<meta name="twitter:description" content="How flight trackers show planes: ADS-B, radar, multilateration and OpenSky, the limits of live maps, and how Short Final uses real flight data.">
+<meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
+<meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
+<link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site/site.css">
+
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How live flight tracking works","description":"How flight trackers show planes: ADS-B, radar, multilateration and OpenSky, the limits of live maps, and how Short Final uses real flight data.","url":"https://playshortfinal.com/guides/how-live-flight-tracking-works/","mainEntityOfPage":"https://playshortfinal.com/guides/how-live-flight-tracking-works/","datePublished":"2026-10-27","dateModified":"2026-10-27","inLanguage":"en","wordCount":1339,"image":"https://playshortfinal.com/assets/site/og/default.jpg","author":{"@type":"Organization","name":"Thin Air Studios","url":"https://playshortfinal.com/"},"publisher":{"@type":"Organization","name":"Thin Air Studios","url":"https://playshortfinal.com/","logo":{"@type":"ImageObject","url":"https://playshortfinal.com/assets/site/img/app-icon-512.png"}}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://playshortfinal.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://playshortfinal.com/guides/"},{"@type":"ListItem","position":3,"name":"How live flight tracking works","item":"https://playshortfinal.com/guides/how-live-flight-tracking-works/"}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/"><img src="/assets/site/img/icon.svg" width="40" height="40" alt=""><span class="brand-word">Short Final</span></a>
+    <details class="menu">
+      <summary>Menu</summary>
+      <nav class="nav-links" aria-label="Main">
+        <a class="nav-cta" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dguide-how-live-flight-tracking-works%26utm_content%3Dheader" data-event="play_store_click" data-ev-page="guide-how-live-flight-tracking-works" data-ev-position="menu">Get the game</a>
+        <a href="/airports/">Airports</a><a href="/guides/" aria-current="page">Guides</a><a href="/events/">Events</a><a href="/press/">Press</a>
+      </nav>
+    </details>
+    <a class="btn btn--sm header-cta" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dguide-how-live-flight-tracking-works%26utm_content%3Dheader" data-event="play_store_click" data-ev-page="guide-how-live-flight-tracking-works" data-ev-position="header">Get the game</a>
+  </div>
+</header>
+<main id="main">
+<div class="wrap">
+  <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/guides/">Guides</a></li><li aria-current="page">How live flight tracking works</li></ol></nav>
+  <header class="page-head">
+    <p class="eyebrow">Flight data</p>
+    <h1>How live flight tracking works</h1>
+    <p>Live flight maps show planes because the planes broadcast their own position. Here is how ADS-B, radar and the OpenSky network work, where the data falls short, and how the game uses it.</p>
+    <p class="guide-meta">By Thin Air Studios · Published 27 October 2026 · 6 min read</p>
+  </header>
+  <article class="prose guide" data-guide="how-live-flight-tracking-works">
+    <nav class="card guide-toc" aria-label="In this guide"><p><strong>In this guide</strong></p><ol><li><a href="#radar-was-the-old-way">Radar was the old way</a></li><li><a href="#ads-b-planes-that-report-themselves">ADS-B: planes that report themselves</a></li><li><a href="#multilateration-working-it-out-from-the-outside">Multilateration: working it out from the outside</a></li><li><a href="#opensky-a-network-of-receivers">OpenSky: a network of receivers</a></li><li><a href="#what-the-map-can-and-cannot-tell-you">What the map can and cannot tell you</a></li><li><a href="#how-short-final-uses-real-planes">How Short Final uses real planes</a></li><li><a href="#what-the-game-does-not-claim">What the game does not claim</a></li><li><a href="#what-to-remember">What to remember</a></li></ol></nav>
+    <p>Open a flight-tracking app over a busy airport and you see dozens of small aircraft symbols, each with a flight number and a height. The map looks like a live feed from the sky, and in a sense it is. Each plane is reporting where it is, and a network of receivers on the ground picks up those reports and passes them on.</p>
+<p>This guide explains how that works, what the map can and cannot tell you, and how Short Final uses real planes in its game. The short answer is that the map is useful and approximate. It is not a tool for navigation, and it is not an official view of the air traffic system.</p>
+<h2 id="radar-was-the-old-way">Radar was the old way</h2>
+<p>For most of aviation&#39;s history, controllers tracked planes with radar. A ground radar sends out a pulse and measures what comes back, and a secondary radar asks the plane&#39;s transponder to reply with its height and identity. Radar is still the main tool of air traffic control, and it gives the controller a precise view of the traffic around the airport.</p>
+<p>Radar is expensive to build and sits in fixed places, so its coverage is limited to what the antennas can see. Over oceans and remote mountains, controllers rely on other methods.</p>
+<h2 id="ads-b-planes-that-report-themselves">ADS-B: planes that report themselves</h2>
+<p>The newer method is called ADS-B, which stands for Automatic Dependent Surveillance-Broadcast. The name describes what the aircraft does. It works out its own position, usually from satellite navigation, and it broadcasts that position along with its altitude, speed, identity and other data. It does this automatically, several times a second, and it does not wait to be asked.</p>
+<p>In the United States, the FAA requires ADS-B Out in most controlled airspace, under a rule that took effect on 1 January 2020. Aircraft that do not have the equipment may be kept out of that airspace unless the controller allows them in. Two radio frequencies are used. Most airliners use the 1090 megahertz Mode S signal, and many light aircraft below 18,000 feet in the United States use a 978 megahertz signal called UAT. <a href="https://www.faa.gov/air_traffic/technology/equipadsb/resources/faq">FAA: ADS-B frequently asked questions</a></p>
+<p>Because the broadcast is one-way, anyone with a suitable receiver can listen to it. That is why flight trackers can show planes that the trackers&#39; own owners have never met. The data is public in its basic form, though the networks that collect it set their own rules for use.</p>
+<h2 id="multilateration-working-it-out-from-the-outside">Multilateration: working it out from the outside</h2>
+<p>Not every aircraft broadcasts ADS-B. Some older aircraft carry only a transponder, which answers radar questioning but does not announce its position. For those, a system called multilateration works out the position from the outside.</p>
+<p>Several ground receivers pick up the same transponder reply. Each receiver notes when it heard the signal. Because the signal travels at a known speed, the small differences in arrival time between the receivers give the distance differences, and from those the system can calculate the aircraft&#39;s position. The result is less frequent than a self-reported ADS-B position, but it covers aircraft that would otherwise be invisible. <a href="https://skybrary.aero/">SKYbrary: the aviation safety knowledge base</a></p>
+<h2 id="opensky-a-network-of-receivers">OpenSky: a network of receivers</h2>
+<p>The OpenSky Network is one of the best-known public sources of this data. It is a non-profit association based in Switzerland, set up as a research project by several universities and government bodies. It collects ADS-B, Mode S and FLARM data from a large network of receivers. Those receivers are run by volunteers, companies, universities and public agencies, and the data is used for research and shared under its own terms. <a href="https://essd.copernicus.org/articles/13/357/2021/">Copernicus: the OpenSky Network data set (ESSD, 2021)</a></p>
+<p>OpenSky also offers a public interface that software can ask for the current state of aircraft in an area. Anonymous requests are limited, so an app has to ask no more often than the limit allows. Short Final uses that interface, and it credits The OpenSky Network in the app and in its store listing.</p>
+<h2 id="what-the-map-can-and-cannot-tell-you">What the map can and cannot tell you</h2>
+<p>A live map is a snapshot of reports, and every report has a delay. A plane&#39;s position may be a few seconds old, or older when the receiver network is thin. The map may show a plane&#39;s last known position for a short time after it stops reporting, and it can jump when a new report arrives.</p>
+<p>Coverage has holes. A plane over the middle of the ocean, a remote area with no receivers or a low aircraft behind hills may not appear at all. Some aircraft do not broadcast, and some broadcast without a flight number. A map that shows no plane in an area is not proof that no plane is there.</p>
+<p>The map also does not show what the controller sees. It does not show clearances, instructions or the plan the crew is following. A plane heading toward an airport on a map may be in a holding pattern, on a short final or about to go around, and the map cannot tell you which.</p>
+<p>That is why the game&#39;s store listing says plainly that Short Final is a game, not a flight-tracking or navigation tool, and that live positions are approximate and simplified for play.</p>
+<h2 id="how-short-final-uses-real-planes">How Short Final uses real planes</h2>
+<p><a href="/">Short Final</a> uses the same kind of live data, in a simplified way. When you pick an airport, the game asks the feed for planes around it. The game does not show every plane in the sky. It counts a real plane as landing at your airport only when several signs agree.</p>
+<p>A plane must show a steady descent toward the airport, from a height that fits an approach there. Its reports must be seen on two separate checks, and its track must pass within a few kilometres of the airport, so a plane flying over without landing does not count. The plane needs a flight number or a registration. And it must not be heading for a nearby airport. Until a plane meets all of those tests, it is a real plane in the area, marked with the same red dot, and the game does not bring it in to land.</p>
+<p>That is why some airports go a while without a real landing from the feed, even busy ones such as <a href="/airports/klax/">Los Angeles</a>. Real traffic depends on what is in the air at the moment, and the game waits for a plane that really is approaching your airport.</p>
+<p>The game polls the feed about once a minute during a live game. Each phone has its own daily allowance for those requests, and the home screen checks the feed at other times, such as when you open the app. Players on one internet connection share an allowance.</p>
+<h2 id="what-the-game-does-not-claim">What the game does not claim</h2>
+<p>The routes the game shows for a real plane&#39;s origin come from a separate file of published airline schedules, the Virtual Radar Server standing data. That data is a snapshot of schedules, not a live record of today&#39;s flights. When the game says a plane arrived from a city, it is using that snapshot, not confirmed live information.</p>
+<p>The game also has a separate mode, Real planes only, which uses only the real planes from the feed and makes nothing up. Turning it on shows the real traffic and nothing else. Without it, the game fills the sky with simulated planes to match your difficulty level, and those planes have no flight number.</p>
+<h2 id="what-to-remember">What to remember</h2>
+<ul><li>Modern trackers mostly use ADS-B, in which planes report their own position several times a second.</li><li>Multilateration works out the position of older transponders from several receivers&#39; timing.</li><li>OpenSky is a non-profit network of receivers, and its data is approximate and delayed.</li><li>Short Final is a game, not a flight-tracking or navigation tool, and it counts a real landing only when the data agrees.</li></ul>
+<aside class="card guide-cta" aria-labelledby="demo-klax">
+  <h2 id="demo-klax">Try it yourself</h2>
+  <p>The free browser demo opens Los Angeles International Airport with simulated planes. It runs one game per visit and needs no install.</p>
+  <p><a class="btn btn--ghost" href="/demo/?a=KLAX" data-event="demo_start" data-ev-airport="KLAX">Open KLAX in the browser demo</a></p>
+</aside>
+<aside class="card guide-cta" aria-labelledby="play-how-live-flight-tracking-works">
+  <h2 id="play-how-live-flight-tracking-works">Play Short Final on Android</h2>
+  <p>Short Final is free on Google Play. Pick any of more than 29,000 airports, and real planes from live flight data come in when the feed has them. The 50 busiest airports ship inside the app, so they open even offline.</p>
+  <p><a class="btn" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dguide-how-live-flight-tracking-works%26utm_content%3Dguide-cta" data-event="play_store_click" data-ev-page="guide-how-live-flight-tracking-works" data-ev-position="guide-cta">Get Short Final on Google Play</a></p>
+</aside>
+<h2 id="sources">Sources</h2>
+<ul><li><a href="https://www.faa.gov/air_traffic/technology/equipadsb/resources/faq">FAA: ADS-B frequently asked questions</a></li><li><a href="https://www.law.cornell.edu/cfr/text/14/91.225">Cornell Legal Information Institute: 14 CFR 91.225, ADS-B Out</a></li><li><a href="https://essd.copernicus.org/articles/13/357/2021/">Copernicus ESSD: the OpenSky Network data set, 2021</a></li><li><a href="https://opensky-network.org/">OpenSky Network</a></li><li><a href="https://skybrary.aero/">SKYbrary: the aviation safety knowledge base</a></li></ul>
+    <section class="guide-more" aria-labelledby="more-title">
+      <h2 id="more-title">Keep reading</h2>
+      <ul><li><a href="/guides/iata-vs-icao-airport-codes/">IATA vs ICAO airport codes, explained</a>: Most airports have a three-letter code for tickets and bags and a four-letter code for pilots and controllers. Here is what each one is for, how they differ, and how to read them.</li><li><a href="/guides/weather-and-runway-choice/">How weather changes the runway in use</a>: The runway an airport uses depends mostly on the wind. Here is how wind, gusts, fog and storms change which way planes land, and how to read the weather report that controllers use.</li><li><a href="/guides/how-air-traffic-control-works/">How air traffic control works</a>: From pushback to touchdown, a flight passes through several controllers. Here is who they are, what each one does, and how they keep aircraft apart.</li>
+        <li><a href="/guides/">All guides</a></li></ul>
+    </section>
+  </article>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>Play</h2>
+        <ul>
+          <li><a href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dguide-how-live-flight-tracking-works%26utm_content%3Dfooter" data-event="play_store_click" data-ev-page="guide-how-live-flight-tracking-works" data-ev-position="footer">Get the game</a></li>
+          <li><a href="/demo/" data-event="demo_start">Play free in your browser</a></li>
+          <li><a href="https://www.youtube.com/watch?v=MQPF7geuSas">Watch the trailer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Explore</h2>
+        <ul>
+          <li><a href="/airports/">Airports</a></li><li><a href="/guides/">Guides</a></li><li><a href="/events/">Events</a></li><li><a href="/press/">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>About</h2>
+        <ul>
+          
+          <li><a href="mailto:thinaircapital@gmail.com">Contact</a></li>
+          <li><a href="/privacy/">Privacy policy</a></li>
+          <li><a href="/terms/">Terms of Use</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Languages</h2>
+        <nav class="lang-list" aria-label="Languages">
+          <a href="/" lang="en" data-event="language_change" data-ev-from="en" data-ev-to="en" aria-current="true">English</a><a href="/es/" lang="es-ES" data-event="language_change" data-ev-from="en" data-ev-to="es">Español (España)</a><a href="/es-419/" lang="es-419" data-event="language_change" data-ev-from="en" data-ev-to="es-419">Español (Latinoamérica)</a><a href="/pt-br/" lang="pt-BR" data-event="language_change" data-ev-from="en" data-ev-to="pt-br">Português (Brasil)</a><a href="/de/" lang="de-DE" data-event="language_change" data-ev-from="en" data-ev-to="de">Deutsch</a><a href="/fr/" lang="fr-FR" data-event="language_change" data-ev-from="en" data-ev-to="fr">Français</a><a href="/it/" lang="it-IT" data-event="language_change" data-ev-from="en" data-ev-to="it">Italiano</a><a href="/ja/" lang="ja-JP" data-event="language_change" data-ev-from="en" data-ev-to="ja">日本語</a><a href="/ko/" lang="ko-KR" data-event="language_change" data-ev-from="en" data-ev-to="ko">한국어</a><a href="/zh-tw/" lang="zh-TW" data-event="language_change" data-ev-from="en" data-ev-to="zh-tw">繁體中文（台灣）</a><a href="/tr/" lang="tr-TR" data-event="language_change" data-ev-from="en" data-ev-to="tr">Türkçe</a><a href="/id/" lang="id-ID" data-event="language_change" data-ev-from="en" data-ev-to="id">Bahasa Indonesia</a><a href="/pl/" lang="pl-PL" data-event="language_change" data-ev-from="en" data-ev-to="pl">Polski</a>
+        </nav>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p>© 2026 Thin Air Studios LLC. All rights reserved. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
+      <p>Short Final is a game, not a flight-tracking or navigation tool. Live positions are approximate and simplified for play.</p>
+      <p>Game designed with love in Colorado, USA</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/site/site.js" defer></script>
+</body>
+</html>

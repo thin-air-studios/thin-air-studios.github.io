@@ -1,0 +1,49 @@
+/* Airport pages, the airports hub and the country pages (served at /assets/site/airports.css). Uses the tokens of site.css. */
+.airport-head { padding: 12px 0 8px; }
+.airport-head h1 { margin: .12em 0 .3em; }
+.airport-head .lead { color: var(--text-soft); font-size: 1.12rem; max-width: 62ch; margin: 0 0 18px; }
+.airport-head .free-note { margin-top: 12px; color: var(--text-soft); font-size: .95rem; }
+.airport-grid { display: grid; gap: clamp(18px, 3vw, 32px); grid-template-columns: minmax(0, 1fr); margin: 18px 0 8px; }
+@media (min-width: 900px) { .airport-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
+.airport-map-wrap { margin: 0; background: #0f2a31; color: #fff6e3; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); min-width: 0; }
+.airport-map-wrap svg { display: block; width: 100%; height: auto; }
+.airport-map-wrap figcaption { font-size: .85rem; line-height: 1.45; color: #b8cacd; padding: 10px 14px 12px; background: #0b2026; }
+.airport-map .m-apron { fill: #1f4650; }
+.airport-map .m-term { fill: #2d5d66; stroke: #8fb7bd; stroke-width: 1.2; }
+.airport-map .m-taxi { fill: none; stroke: #5f8c93; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.airport-map .m-run { fill: none; stroke: #e5533d; stroke-width: 7; }
+.airport-map .m-gate { fill: none; stroke: #8ff0cf; stroke-width: 3; stroke-linecap: round; }
+.airport-map .m-id { fill: #fff6e3; font: 600 24px var(--font); paint-order: stroke; stroke: #0f2a31; stroke-width: 6px; stroke-linejoin: round; }
+.airport-page .facts { margin-top: 0; }
+.airport-page .facts dd { overflow-wrap: anywhere; }
+.page-head .lead { color: var(--text-soft); max-width: 62ch; }
+.sources { color: var(--text-soft); font-size: .88rem; line-height: 1.5; margin: 14px 0 0; max-width: 80ch; }
+.rows { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+.rows li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 14px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-s); min-width: 0; }
+.rows li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.rows a { color: var(--text); font-weight: 600; text-decoration: none; }
+.rows a:hover { color: var(--link); text-decoration: underline; }
+.rows small { color: var(--text-soft); }
+.rows li > span:last-child { color: var(--text-soft); white-space: nowrap; font-size: .95rem; }
+.ranked { counter-reset: none; }
+.ranked li { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr) auto; align-items: baseline; }
+.ranked li > .rank { font-weight: 700; color: var(--accent); }
+@media (max-width: 480px) { .ranked li { grid-template-columns: 2.2rem minmax(0, 1fr); } .ranked li > span:last-child { grid-column: 2; } }
+.split { display: grid; gap: clamp(18px, 3vw, 32px); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.split h3 { margin: 0; }
+.btn-row.is-center { justify-content: center; }
+.chips li { list-style: none; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.country-chips small { color: var(--text-soft); font-weight: 500; }
+.search .hint { margin-top: 8px; }
+.search #airport-status { min-height: 1.4em; margin: 10px 0 0; color: var(--text-soft); font-weight: 600; }
+.hits li small { color: var(--text-soft); text-align: right; }
+.results li { list-style: none; }
+.results li > span, .results li > a { min-width: 0; }
+.results li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding: 12px 16px; border-radius: var(--radius-s); background: var(--surface); border: 1px solid var(--line); }
+.results li > a { text-decoration: none; color: var(--text); font-weight: 600; padding: 0; background: none; border: 0; }
+.results li > a:hover { text-decoration: underline; color: var(--link); }
+.js-only[hidden] { display: none; }
+/* The shared eyebrow is tuned for the dark hero band; on these light pages it takes the accent token instead. */
+.airport-head .eyebrow, .page-head .eyebrow { color: var(--accent); }
+.airport-page .table-wrap td, .airport-page .table-wrap th { white-space: nowrap; }

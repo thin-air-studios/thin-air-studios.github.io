@@ -1,0 +1,54 @@
+Prawdziwy ruch. Dowolne lotnisko.
+
+Gra jest po angielsku. Ta strona jest przetłumaczona.
+
+Short Final™ to gra w kontrolę ruchu lotniczego na żywo, z prawdziwym niebem. Wybierz lotnisko: jego prawdziwe samoloty pojawiają się na krawędzi ekranu z numerami lotów. Poprowadź każdy samolot do pasa, utrzymaj je w bezpiecznej odległości i pozwól wylądować jak najwięcej.
+
+PRAWDZIWE NIEBO
+• Prawdziwe samoloty z numerem lotu i czerwoną kropką. Samoloty symulowane nie mają numeru i uzupełniają ruch zgodnie z trudnością, chyba że włączysz „Real planes only”.
+• Arrived from: prawdziwy samolot, który tu ląduje, może podać miasto, z którego przyleciał.
+• Prawdziwa pogoda: wiatr, pas, mgła i burze z lotniska.
+• Prawdziwa pora dnia: graj w Tokio nocą, gdy w Tokio jest noc.
+
+PRAWDZIWE MIEJSCE
+• Ponad 29 000 lotnisk z prawdziwymi pasami. Drogi kołowania, bramki i teren pochodzą z OpenStreetMap; większość map szybko ładuje się ze strony gry.
+• Teren też jest prawdziwy: Góry Skaliste na zachód od Denver, łodzie na wodzie.
+• 50 najruchliwszych lotnisk świata otwiera się od razu w aplikacji, nawet offline. Wyszukiwarka znajdzie każde inne.
+
+ŁATWA DO NAUCZENIA, TRUDNA DO ODŁOŻENIA
+• Przeciągnij, by narysować trasę, a jej ogon, by ją kontynuować. Czerwone samoloty pasażerskie na czerwonych pasach, żółte samoloty śmigłowe na żółtych, helikoptery na lądowisku.
+• Dotknij, by zakręcić, narysuj pętlę, by czekać, albo wyślij ruch na stos oczekiwania (holding).
+• Odloty cofają się, kołują, startują i odlatują bramkami na krawędzi.
+• Awarie silników i mało paliwa: samolot skręca w stronę osiągalnego pasa, a szybkie przewijanie się zatrzymuje.
+• Turbulencje za samolotem, kontrole pasa, burze i mgła.
+• Zamknięty pas pokazuje czerwone znaki X, dniem i nocą.
+• Tryb Bullet spowalnia czas przed zderzeniem i daje jedno cofnięcie na grę.
+
+GRAJ PO SWOJEMU
+• Beginner: kilka samolotów i spokojne niebo.
+• Real planes only, na każdym poziomie, pokazuje tylko prawdziwe samoloty z twojego lotniska i niczego nie zmyśla.
+• Wyzwanie dnia: te same samoloty i pogoda dla wszystkich, z serią dni.
+• Play pamięta ostatnio wybrane lotnisko.
+• Rozmowy radiowe w prawdziwej frazeologii ATC. Włącz je w Settings.
+• Siedem utworów: Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit i Funky groove.
+• Gwiazdki na każdym lotnisku i rangi kontrolera.
+• Udostępnij kartę wyniku albo wynik dnia bez spojlerów.
+• Tour pokazuje, co potrafi gra.
+
+UDOSTĘPNIJ FILM
+• Film 20-sekundowy dla TikToka, YouTube Shorts lub Instagram Reels, z muzyką z gry i prawdziwymi samolotami z nazwy.
+
+TABELE WYNIKÓW
+• Światowe tabele dla każdego lotniska i poziomu otwierają się po uruchomieniu gry w Google Play: dziś, w tym tygodniu i od zawsze, top 10 i twoja pozycja.
+• Google Play Games: 24 osiągnięcia i siedem tabel, w tym najlepszy wynik każdego poziomu.
+• Liczą się tylko gry rankingowe: jeden poziom od początku do końca, Real planes only wyłączone, Departures włączone (poza Beginner). Wyzwanie dnia ma własną tabelę.
+• Ty wybierasz, czy imię się pojawia. Gracze mogą zgłaszać nazwy łamiące zasady.
+
+UCZCIWIE I PRYWATNIE
+• Bez reklam i konta. Wyzwanie dnia zawsze bezpłatne, a po 3 dniach 3 darmowe gry dziennie na dowolnym lotnisku. Short Final Pro, jednorazowy zakup w Google Play, daje nieograniczoną liczbę gier.
+• Wyniki i postęp zostają w telefonie. Tabele online przechowują tylko to, co wysyłają gry rankingowe; swoje możesz usunąć.
+• Symbole dla daltonistów oraz osobne przełączniki dla dźwięku, muzyki, radia i wibracji.
+
+Short Final to gra, a nie narzędzie do śledzenia lotów ani nawigacji. Pozycje na żywo są przybliżone i uproszczone na potrzeby gry.
+
+Airport maps, coastlines and peaks © OpenStreetMap contributors (ODbL). Live feed: The OpenSky Network. Weather: aviationweather.gov (NOAA). Airports: OurAirports. Flight routes: Virtual Radar Server (CC0). Passenger rankings: ACI World. Time zones: timezone-boundary-builder (ODbL) and tz-lookup. Full credits are in the app, under About.
