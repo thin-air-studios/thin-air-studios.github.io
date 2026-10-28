@@ -1,0 +1,33 @@
+{
+  "_about": "English words for the challenge board page (tools/site/pages/challenge.mjs, served at /c/<id>/). Placeholders: {n} (a count), {airport} (the airport code, in the tab title). The page is English only.",
+  "title": "Challenge board | Short Final",
+  "description": "The top scores on one Short Final challenge board: each player's best score, with the airport and the level.",
+  "eyebrow": "Challenge board",
+  "titleDefault": "Challenge board",
+  "titleAirport": "{airport} challenge | Short Final",
+  "leadLink": "A friend set a score on this challenge. Play the same planes and see if you can beat the top of the board.",
+  "leadNoLink": "Each player's best score on one challenge. Short Final is a free air traffic game for Android.",
+  "levelLabel": "Level",
+  "levels": {
+    "beginner": "Beginner",
+    "easy": "Easy",
+    "normal": "Normal",
+    "hard": "Hard",
+    "chaos": "Chaos"
+  },
+  "totalOne": "1 player on this board",
+  "totalMany": "{n} players on this board",
+  "scoresTitle": "Top ten",
+  "scoresRank": "Rank",
+  "loading": "Loading the board",
+  "empty": "No one has posted a score on this challenge yet. Be the first to play it in Short Final.",
+  "error": "We could not load this board right now. Check your connection, then try again.",
+  "retry": "Try again",
+  "invalid": "This address is not a challenge board. Check the link you were sent, or play a new challenge in Short Final.",
+  "noscript": "Turn on JavaScript to see this challenge board. The Play button above works without it.",
+  "playChallenge": "Play this challenge",
+  "getGame": "Get the game",
+  "playNote": "Short Final is free on Google Play. A challenge link opens straight in the game on a phone that has it installed.",
+  "names": "Names show only where a player has chosen to show them. Everyone else appears as Pilot and four digits. Scores come from ranked games.",
+  "back": "What is Short Final?"
+}

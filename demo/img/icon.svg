@@ -1,15 +1,71 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108"><defs><radialGradient id="sky" cx="38%" cy="32%" r="85%">
-<stop offset="0" stop-color="#2E9AA2"/><stop offset=".55" stop-color="#1F6F78"/><stop offset="1" stop-color="#123C44"/></radialGradient></defs>
-<rect width="108" height="108" fill="url(#sky)"/>
-<path d="M65.49,52.27 L69.55,77.7 L64.56,82.2 L55.09,61.63 L50.29,56.31 L30.83,44.74 L35.83,40.24 L60.7,46.94 Z M48.51,66.05 L49.11,77.26 L46.28,79.81 L42.6,71.37 L39.31,67.71 L31.3,63.16 L34.13,60.62 L45.21,62.39 Z M38.86,65.54 L71.49,36.17 A4.37,4.37 0 0,1 77.34,42.66 L44.71,72.03 A4.37,4.37 0 0,1 38.86,65.54 Z" fill="#06262C" fill-opacity="0.42"/>
-<path d="M61.89,47.67 L65.95,73.1 L60.96,77.6 L51.49,57.03 L46.69,51.71 L27.23,40.14 L32.23,35.64 L57.1,42.34 Z" fill="#EF8A2F" stroke="#A85A12" stroke-width="1.3" stroke-linejoin="round"/>
-<path d="M65.95,73.1 L60.96,77.6 L60.28,75.34 L64.2,71.82 Z M32.23,35.64 L27.23,40.14 L29.41,41.05 L33.32,37.53 Z" fill="#FFC186"/>
-<path d="M60.4,59.56 A3.7,1.79 -42 1,1 65.89,54.62 A3.7,1.79 -42 1,1 60.4,59.56 Z M45.11,42.58 A3.7,1.79 -42 1,1 50.6,37.64 A3.7,1.79 -42 1,1 45.11,42.58 Z" fill="#DCD5C6" stroke="#8C6A45" stroke-width="0.7" stroke-linejoin="round"/>
-<path d="M44.91,61.45 L45.51,72.66 L42.68,75.21 L39,66.77 L35.71,63.11 L27.7,58.56 L30.53,56.02 L41.61,57.79 Z" fill="#EF8A2F" stroke="#A85A12" stroke-width="1.3" stroke-linejoin="round"/>
-<path d="M35.26,60.94 L67.89,31.57 A4.37,4.37 0 0,1 73.74,38.06 L41.11,67.43 A4.37,4.37 0 0,1 35.26,60.94 Z" fill="#FBF5E8" stroke="#A85A12" stroke-width="1.3" stroke-linejoin="round"/>
-<path d="M36.58,63.91 L67.79,35.8 L69.51,37.72 L38.3,65.82 Z" fill="#EF8A2F"/>
-<path d="M34.52,66.14 L40.92,60.37 L42.27,61.87 L35.86,67.64 Z" fill="#A85A12"/>
-<path d="M68.61,33.03 A2.13,2.8 -42 0,1 72.35,37.19 Z" fill="#2B4458"/>
-<path d="M41,58 H71 A8,8 0 0 1 71,74 H41 A8,8 0 0 1 41,58 Z" fill="#CC3B2A" stroke="#16323A" stroke-width="1.2" stroke-linejoin="round"/>
-<path d="M65.03,68.47 Q65.05,68.5 65.07,68.55 L65.07,63.79 L63.52,63.79 Q63.33,63.79 63.13,63.76 Q62.93,63.72 62.8,63.54 Q62.68,63.36 62.68,62.93 Q62.68,62.5 62.8,62.32 Q62.93,62.15 63.14,62.11 Q63.34,62.08 63.53,62.08 L68.62,62.08 Q68.83,62.08 69.02,62.11 Q69.22,62.15 69.35,62.32 Q69.47,62.5 69.47,62.94 Q69.47,63.19 69.42,63.36 Q69.44,63.34 69.45,63.33 Q69.89,62.87 70.43,62.58 Q70.97,62.29 71.52,62.16 Q72.06,62.01 72.52,62.01 Q73.09,62.01 73.52,62.16 Q73.96,62.29 74.23,62.44 Q74.5,62.59 74.57,62.63 Q74.79,62.78 74.99,62.96 Q75.18,63.12 75.18,63.42 Q75.18,63.56 75.12,63.72 Q75.06,63.87 74.94,64.04 Q74.71,64.35 74.52,64.49 Q74.32,64.64 74.13,64.64 Q73.99,64.64 73.85,64.57 Q73.73,64.5 73.53,64.38 Q73.46,64.33 73.33,64.25 Q73.21,64.18 73,64.12 Q72.79,64.06 72.44,64.06 Q72.15,64.06 71.81,64.17 Q71.47,64.27 71.18,64.5 Q70.87,64.73 70.68,65.1 Q70.5,65.48 70.5,66 Q70.5,66.53 70.69,66.9 Q70.88,67.27 71.19,67.49 Q71.48,67.72 71.82,67.83 Q72.16,67.93 72.44,67.93 Q72.73,67.93 72.93,67.89 Q73.14,67.83 73.29,67.75 Q73.46,67.66 73.59,67.56 Q73.71,67.48 73.85,67.41 Q74,67.34 74.15,67.34 Q74.33,67.34 74.53,67.5 Q74.71,67.66 74.92,67.98 Q75.05,68.17 75.11,68.33 Q75.17,68.49 75.17,68.62 Q75.17,68.9 74.98,69.07 Q74.78,69.24 74.55,69.37 Q74.48,69.41 74.22,69.57 Q73.96,69.73 73.53,69.86 Q73.1,69.99 72.48,69.99 Q72.05,69.99 71.52,69.86 Q70.98,69.72 70.44,69.41 Q69.91,69.11 69.46,68.63 Q69.01,68.15 68.73,67.49 Q68.45,66.82 68.45,65.95 Q68.45,65.1 68.73,64.45 Q68.9,64.05 69.13,63.73 Q69.07,63.75 69.01,63.76 Q68.82,63.79 68.61,63.79 L67.07,63.79 L67.07,68.89 Q67.07,69.14 67.03,69.37 Q66.99,69.59 66.78,69.74 Q66.58,69.88 66.06,69.88 Q65.57,69.88 65.36,69.74 Q65.16,69.59 65.11,69.37 Q65.1,69.41 65.06,69.45 Q64.9,69.63 64.56,69.8 Q64.03,70.06 63.73,69.97 Q63.45,69.87 63.19,69.32 L62.68,68.26 L59.94,68.26 L59.43,69.34 Q59.16,69.86 58.88,69.96 Q58.58,70.05 58.06,69.79 Q57.72,69.63 57.55,69.45 Q57.4,69.27 57.4,69.04 Q57.41,68.81 57.58,68.47 L60.38,62.68 Q60.5,62.41 60.77,62.25 Q61.03,62.09 61.31,62.09 Q61.51,62.09 61.68,62.16 Q61.86,62.24 62,62.37 Q62.14,62.5 62.23,62.69 Z M37.84,69.88 Q37.33,69.88 37.12,69.74 Q36.91,69.58 36.86,69.34 Q36.81,69.1 36.81,68.86 L36.81,63.1 Q36.81,62.85 36.86,62.62 Q36.91,62.39 37.12,62.24 Q37.33,62.09 37.85,62.09 Q38.35,62.09 38.56,62.24 Q38.77,62.39 38.81,62.62 Q38.86,62.85 38.86,63.11 L38.86,68.14 L41.57,68.14 Q41.78,68.14 41.98,68.18 Q42.13,68.2 42.24,68.32 L42.24,63.1 Q42.24,62.85 42.29,62.62 Q42.33,62.39 42.54,62.24 Q42.75,62.09 43.26,62.09 Q43.36,62.09 43.43,62.09 Q43.64,62.01 43.81,62.01 Q44.06,62 44.23,62.16 Q44.41,62.34 44.54,62.68 L46.3,67.01 L48.07,62.68 Q48.2,62.34 48.39,62.16 Q48.56,62 48.82,62.01 Q49.08,62.03 49.41,62.21 Q49.97,62.48 50.05,62.75 Q50.15,63.03 49.92,63.52 L47.28,69.31 Q47.17,69.56 46.91,69.72 Q46.65,69.87 46.33,69.87 Q45.96,69.87 45.7,69.74 Q45.44,69.59 45.32,69.31 L44.28,67.01 L44.28,68.87 Q44.28,69.11 44.23,69.35 Q44.19,69.58 43.98,69.74 Q43.77,69.88 43.25,69.88 Q42.75,69.88 42.54,69.74 Q42.41,69.64 42.35,69.52 Q42.33,69.58 42.3,69.62 Q42.16,69.8 41.97,69.85 Q41.77,69.88 41.56,69.88 Z M51.12,69.88 Q50.62,69.88 50.41,69.74 Q50.2,69.58 50.15,69.34 Q50.11,69.1 50.11,68.86 L50.11,63.1 Q50.11,62.52 50.34,62.3 Q50.57,62.09 51.16,62.09 L55.23,62.09 Q55.49,62.09 55.71,62.14 Q55.94,62.18 56.1,62.39 Q56.25,62.61 56.25,63.11 Q56.25,63.62 56.1,63.83 Q55.94,64.04 55.71,64.08 Q55.47,64.12 55.22,64.12 L52.15,64.12 L52.15,65.12 L54.21,65.12 Q54.46,65.12 54.66,65.15 Q54.87,65.19 54.98,65.38 Q55.11,65.55 55.11,66 Q55.11,66.42 54.98,66.61 Q54.87,66.79 54.65,66.82 Q54.44,66.86 54.18,66.86 L52.15,66.86 L52.15,67.84 L55.23,67.84 Q55.49,67.84 55.71,67.89 Q55.94,67.93 56.1,68.14 Q56.25,68.36 56.25,68.87 Q56.25,69.37 56.1,69.58 Q55.94,69.79 55.71,69.84 Q55.47,69.88 55.22,69.88 Z M61.83,66.53 L61.3,65.45 L60.77,66.53 L61.83,66.53 Z" fill="#FFF6E3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+<defs>
+  <radialGradient id="ai-discGrad" gradientUnits="userSpaceOnUse" cx="215.04" cy="163.84" r="409.6"><stop offset="0" stop-color="#6fe6d6"/><stop offset="0.4" stop-color="#2fc2bf"/><stop offset="0.75" stop-color="#138c9b"/><stop offset="1" stop-color="#0b5566"/></radialGradient>
+  <radialGradient id="ai-shadeGrad" gradientUnits="userSpaceOnUse" cx="256" cy="0" r="368.64"><stop offset="0.62" stop-color="#03243a" stop-opacity="0"/><stop offset="0.9" stop-color="#03243a" stop-opacity="0.32"/><stop offset="1" stop-color="#03243a" stop-opacity="0.42"/></radialGradient>
+  <linearGradient id="ai-shineGrad" gradientUnits="userSpaceOnUse" x1="0" y1="-64" x2="0" y2="256"><stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/><stop offset="0.55" stop-color="#ffffff" stop-opacity="0.14"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+  <clipPath id="ai-discClip"><circle cx="256" cy="256" r="256"/></clipPath>
+  <linearGradient id="ai-gBody" gradientUnits="userSpaceOnUse" x1="-50" y1="0" x2="50" y2="0"><stop offset="0" stop-color="#7d8f9a"/><stop offset="0.2" stop-color="#dde6ec"/><stop offset="0.4" stop-color="#ffffff"/><stop offset="0.6" stop-color="#f1f6f9"/><stop offset="0.84" stop-color="#b7c5cd"/><stop offset="1" stop-color="#6b7e89"/></linearGradient>
+  <linearGradient id="ai-gWing" gradientUnits="userSpaceOnUse" x1="0" y1="-50" x2="0" y2="80"><stop offset="0" stop-color="#ffffff"/><stop offset="0.45" stop-color="#dfe8ee"/><stop offset="0.8" stop-color="#aabcc6"/><stop offset="1" stop-color="#7d93a0"/></linearGradient>
+  <linearGradient id="ai-gTail" gradientUnits="userSpaceOnUse" x1="0" y1="126" x2="0" y2="188"><stop offset="0" stop-color="#ffb36b"/><stop offset="0.35" stop-color="#f7903c"/><stop offset="0.6" stop-color="#f28c38"/><stop offset="1" stop-color="#b8500b"/></linearGradient>
+  <linearGradient id="ai-gPod" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7b8c97"/><stop offset="0.28" stop-color="#eef4f7"/><stop offset="0.46" stop-color="#ffffff"/><stop offset="0.75" stop-color="#cdd8df"/><stop offset="1" stop-color="#66788a"/></linearGradient>
+  <linearGradient id="ai-gAcc" gradientUnits="userSpaceOnUse" x1="-50" y1="0" x2="50" y2="0"><stop offset="0" stop-color="#ffb36b"/><stop offset="0.35" stop-color="#f7903c"/><stop offset="0.6" stop-color="#f28c38"/><stop offset="1" stop-color="#b8500b"/></linearGradient>
+  <linearGradient id="ai-gAccW" gradientUnits="userSpaceOnUse" x1="0" y1="-50" x2="0" y2="60"><stop offset="0" stop-color="#ffb36b"/><stop offset="0.35" stop-color="#f7903c"/><stop offset="0.6" stop-color="#f28c38"/><stop offset="1" stop-color="#b8500b"/></linearGradient>
+  <clipPath id="ai-fusClip"><use href="#ai-fus"/></clipPath>
+  <clipPath id="ai-wingClip"><use href="#ai-wing"/><use href="#ai-wing" transform="scale(-1 1)"/></clipPath>
+  <filter id="ai-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8"/></filter>
+  <filter id="ai-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter>
+  <filter id="ai-b4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+  <path id="ai-fus" d="M0 -196 C30 -196 50 -170 50 -132 L50 118 C50 146 30 172 18 190 Q0 206 -18 190 C-30 172 -50 146 -50 118 L-50 -132 C-50 -170 -30 -196 0 -196 Z"/>
+  <path id="ai-wing" d="M46 -40 L200 28 Q218 37 215 58 Q212 80 194 82 L46 66 Z"/>
+  <path id="ai-tail" d="M46 118 L108 150 Q120 156 116 172 Q112 184 98 182 L46 166 Z"/>
+  <rect id="ai-pod" x="66" y="-86" width="54" height="108" rx="27"/>
+  <path id="ai-accw" d="M30 -52 L226 40 L226 62 L30 -28 Z"/>
+  <g id="ai-sil"><use href="#ai-fus"/><use href="#ai-wing"/><use href="#ai-wing" transform="scale(-1 1)"/><use href="#ai-tail"/><use href="#ai-tail" transform="scale(-1 1)"/><use href="#ai-pod"/><use href="#ai-pod" transform="scale(-1 1)"/></g></defs>
+  <rect width="108" height="108" fill="#0b4f5a"/>
+  <g transform="translate(18 18) scale(0.140625)">
+  <circle cx="256" cy="256" r="256" fill="url(#ai-discGrad)"/>
+  <circle cx="256" cy="256" r="256" fill="url(#ai-shadeGrad)"/>
+  <g clip-path="url(#ai-discClip)"><ellipse cx="256" cy="96" rx="236" ry="160" fill="url(#ai-shineGrad)"/></g>
+  <circle cx="256" cy="256" r="250" fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="8"/>
+  <circle cx="256" cy="256" r="240" fill="none" stroke="#03303a" stroke-opacity="0.3" stroke-width="4"/>
+  <g filter="url(#ai-soft)" opacity="0.6"><use href="#ai-sil" transform="translate(270 276) scale(0.95)" fill="#04262e"/></g>
+  <g id="ai-plane" transform="translate(256 254) scale(0.95)" stroke="#0a2730" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">
+    <use href="#ai-tail" fill="url(#ai-gTail)"/>
+    <use href="#ai-tail" transform="scale(-1 1)" fill="url(#ai-gTail)"/>
+    <use href="#ai-pod" fill="url(#ai-gPod)"/>
+    <use href="#ai-pod" transform="scale(-1 1)" fill="url(#ai-gPod)"/>
+    <g stroke="none">
+      <ellipse cx="93" cy="-72" rx="14" ry="6" fill="#1b2c34"/>
+      <ellipse cx="-93" cy="-72" rx="14" ry="6" fill="#1b2c34"/>
+      <rect x="78" y="-58" width="6" height="76" rx="3" fill="#ffffff" opacity="0.9" filter="url(#ai-b1)"/>
+      <rect x="-84" y="-58" width="6" height="76" rx="3" fill="#ffffff" opacity="0.9" filter="url(#ai-b1)"/>
+    </g>
+    <use href="#ai-wing" fill="url(#ai-gWing)"/>
+    <use href="#ai-wing" transform="scale(-1 1)" fill="url(#ai-gWing)"/>
+    <g clip-path="url(#ai-wingClip)">
+      <use href="#ai-accw" fill="url(#ai-gAccW)" stroke="none"/>
+      <use href="#ai-accw" transform="scale(-1 1)" fill="url(#ai-gAccW)" stroke="none"/>
+      <ellipse cx="50" cy="0" rx="26" ry="90" fill="#0a2730" opacity="0.22" stroke="none" filter="url(#ai-b4)"/>
+      <ellipse cx="-50" cy="0" rx="26" ry="90" fill="#0a2730" opacity="0.22" stroke="none" filter="url(#ai-b4)"/>
+      <g stroke="none" fill="none">
+        <path d="M74 -6 L200 34" stroke="#ffffff" stroke-opacity="0.6" stroke-width="6" filter="url(#ai-b1)"/>
+        <path d="M-74 -6 L-200 34" stroke="#ffffff" stroke-opacity="0.6" stroke-width="6" filter="url(#ai-b1)"/>
+      </g>
+    </g>
+    <use href="#ai-wing" fill="none"/>
+    <use href="#ai-wing" transform="scale(-1 1)" fill="none"/>
+    <use href="#ai-fus" fill="url(#ai-gBody)"/>
+    <g clip-path="url(#ai-fusClip)" stroke="none">
+      <rect x="-60" y="-240" width="120" height="115" fill="url(#ai-gAcc)"/>
+      <rect x="-60" y="142" width="120" height="84" fill="url(#ai-gAcc)"/>
+      <path d="M-54 -124 Q0 -108 54 -124" fill="none" stroke="#0a2730" stroke-width="5"/>
+      <path d="M-54 142 Q0 152 54 142" fill="none" stroke="#0a2730" stroke-width="5"/>
+      <rect x="-30" y="-160" width="12" height="280" rx="6" fill="#ffffff" opacity="0.45" filter="url(#ai-b4)"/>
+      <rect x="-19" y="-166" width="6" height="250" rx="3" fill="#ffffff" opacity="0.95" filter="url(#ai-b1)"/>
+      <ellipse cx="-12" cy="-138" rx="5" ry="11" fill="#ffffff" opacity="0.95" filter="url(#ai-b1)"/>
+      <path d="M-21,-172 Q0,-188 21,-172 Q0,-164 -21,-172 Z" fill="#14303a"/>
+    </g>
+    <use href="#ai-fus" fill="none"/>
+  </g>
+  </g>
 </svg>

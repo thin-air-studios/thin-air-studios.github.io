@@ -1,1 +1,1 @@
-LIVE ATC: land the real planes arriving at any airport on Earth, from live data.
+Air traffic control game with real live flights: land planes at any airport.

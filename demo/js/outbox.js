@@ -15,10 +15,10 @@
 // resets on a UTC day or month, so it can wait longer than a week. Its retryAt is the Worker's Retry-After, and no request is
 // sent before it. A 429 (the Worker's rate limit: one layout a second, six scores a minute) waits for its window the same way,
 // and onRetry says when the queue should be looked at again.
-import { boardsLive, makeApi } from './boards.js?v=86c2b44d';
-import { canPlayGames, clockNow } from './profile.js?v=86c2b44d';
-import { playGames } from './platform.js?v=86c2b44d';
-import { writeSave } from './storage.js?v=86c2b44d';
+import { boardsLive, makeApi } from './boards.js?v=2f66fd5f';
+import { canPlayGames, clockNow } from './profile.js?v=2f66fd5f';
+import { playGames } from './platform.js?v=2f66fd5f';
+import { writeSave } from './storage.js?v=2f66fd5f';
 
 export const OUTBOX_DAYS = 7;
 export const OUTBOX_MAX = 20; // the games in the queue; the oldest go past it
@@ -124,8 +124,19 @@ export async function sweepReplays(save, store) {
 export function pruneOutbox(save, now) {
   if (!Array.isArray(save.outbox)) save.outbox = [];
   const before = save.outbox.length;
-  save.outbox = save.outbox.filter((e) => e && typeof e === 'object' && (e.held === 'cap' || now - (Number(e.at) || 0) <= OUTBOX_DAYS * DAY_MS));
+  save.outbox = save.outbox.filter((e) => e && typeof e === 'object' && keepsEntry(e, now));
   return before - save.outbox.length;
+}
+
+/**
+ * Whether a queued game stays: within seven days of its game, or held for a cap (its wait does not count against it). A challenge
+ * board's copy held for its board's room stays too, until it posts or the player resets (fixer, 3.4 review): the end card and the privacy
+ * page say the score "stays on your phone and is posted when the board has room", so it is not dropped after seven days. Its room comes
+ * back each UTC day, and the queue's own limits (OUTBOX_MAX, trimOutbox) still apply to the other games.
+ */
+function keepsEntry(e, now) {
+  if (now - (Number(e.at) || 0) <= OUTBOX_DAYS * DAY_MS) return true;
+  return e.held === 'cap';
 }
 
 /**
@@ -371,6 +382,8 @@ async function run(save, deps) {
     if (!save.outbox.includes(entry) || entry.pending) continue; // taken out meanwhile (Remove my scores, a prune), or still being kept
     if (entry.retryAt && now < entry.retryAt) {
       // the server said when its limit or cap resets: no request before then (the rest wait behind it)
+      // a challenge board's copy (3.4) waits for its own day: the games behind it are not held up by it
+      if (entry.board === 'challenge') continue;
       stop = 'later';
       break;
     }
@@ -445,6 +458,8 @@ async function run(save, deps) {
     if (r.status === 503 && r.json && r.json.reason === 'cap') {
       holdForCap(entry, r.json, now);
       if (deps.onHeld) deps.onHeld(entry);
+      // a challenge board's room is its own (3.4): the games behind this copy still go
+      if (entry.board === 'challenge') continue;
     } else {
       clearHold(entry);
       if (r.status === 429) holdForRate(entry, r.json, now, SCORE_WINDOW_MS);

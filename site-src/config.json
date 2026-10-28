@@ -36,8 +36,9 @@
   },
   "features": {
     "challengeLinks": true,
-    "challengeBoards": false,
-    "airportBoards": false
+    "challengeBoards": true,
+    "airportBoards": true,
+    "liveFlights": true
   },
   "languages": [
     {

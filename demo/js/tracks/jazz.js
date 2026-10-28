@@ -2,7 +2,7 @@
 // tests/golden/jazz-events.json. Its flavour is the same at every airport (96 BPM, swing 0.18, no transpose).
 // Layers: 0 pads-and-comping with the melody, 1 adds the brushed hats, 2 adds the rim, 3 adds the melody's upper voice.
 // (The melody is in layers 0 and 3 only: it drops out at 1 and 2. That is how the game plays it; keep it when porting.)
-import { mtof } from './pitch.js?v=86c2b44d';
+import { mtof } from './pitch.js?v=2f66fd5f';
 
 // --- the score ---------------------------------------------------------------------------------------------------
 const CHORDS = {

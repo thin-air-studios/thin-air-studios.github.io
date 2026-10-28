@@ -21,7 +21,7 @@ Names are lowercase snake_case (GA4 limits: 40 characters, values up to 100). Pa
 
 | Event | Fired when | Parameters | Markup |
 | --- | --- | --- | --- |
-| `play_store_click` | A Google Play link is clicked | `page` (page key), `position` (`hero`, `header`, `menu`, `footer`, `footer-cta`, `board` on the airport top-controllers panel, `classroom-cta` on the classroom page, or the airport and guide positions) | `<a data-event="play_store_click" data-ev-page="airport-kden" data-ev-position="card">` |
+| `play_store_click` | A Google Play link is clicked | `page` (page key), `position` (`hero`, `header`, `menu`, `footer`, `footer-cta`, `board` on the airport top-controllers panel, `flights` on the airport live-flights panel, `classroom-cta` on the classroom page, or the airport and guide positions) | `<a data-event="play_store_click" data-ev-page="airport-kden" data-ev-position="card">` |
 | `demo_start` | The browser demo link is clicked | `airport` (ICAO, when the link names one), `page` if given | `<a data-event="demo_start" data-ev-airport="KDEN">` |
 | `language_change` | A language link in the footer is clicked | `from` (current language code), `to` (target code) | Set by the layout on every language link |
 | `outbound_click` | Any link to another host is clicked (set by `site.js`) | `url_host` (host only, no path) | Automatic |
@@ -52,6 +52,8 @@ window.sfTrack('play_store_click', { page: 'airport-kden', position: 'card' });
 | Press kit (`/press/`) | `play_store_click` (`position` = `press-cta`); `press_download` with `file` = `press-kit-zip`, `icon-512`, `feature-graphic` or `logo-svg` |
 | Events (`/events/`, `/events/weekend/`, `/events/<holiday>/`) | `play_store_click` with `page` = `events-hub`, `events-weekend`, `events-thanksgiving-rush` or `events-santa`, and `position` = `event`; `demo_start` |
 | 404 page | `play_store_click` (`page` = `notfound`) from the header and footer only |
+| Airport live-flights panel (3.4, on the airport pages with the feature on) | `play_store_click` with `page` = `airport-<icao>` (or `airport-<icao>-<lang>` on a local page), `position` = `flights`, and `airport` = the ICAO code. The panel sends no other events. |
+| Challenge board (`/c/<id>/`, 3.4, noindex) | No page events of its own (decision D12). Its own Play buttons (`challenge-cta`) send nothing, so they are not counted. The site-wide header and footer do send `play_store_click` with `page` = `challenge`, and `position` = `header` or `footer`. |
 
 
 GA4 key events (mark these as conversions in the GA4 admin): `play_store_click`, `demo_start`.
@@ -66,8 +68,8 @@ https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&
 
 - `utm_source` is always `site`, and `utm_medium` is always `web`.
 - `utm_campaign` is the page key: the page's own short name, lowercase, letters, digits and hyphens only, unique for each page. Examples: `home`, `home-es-419`, `airport-kden`, `airport-lemd-es` (an airport's page in a local language: the ICAO code, then the language code), `board-kden` (the panel's Play button on the same airport), `classroom`, `guide-how-to-play`, `press`, `events-weekend`, `about`.
-- `utm_content` is the position on the page: `hero`, `header`, `menu`, `footer`, `footer-cta`, `board` (the top-controllers panel on an airport page), `classroom-cta` (the closing button on the classroom page), and on the brand pages also `press-cta` and `event`.
-- The keys in use for the brand pages: `home`, `home-es`, `home-es-419`, `home-pt-br`, `home-de`, `home-fr`, `home-it`, `home-ja`, `home-ko`, `home-zh-tw`, `home-tr`, `home-id`, `home-pl`, `press`, `events-hub`, `events-weekend`, `events-thanksgiving-rush`, `events-santa`, `notfound`.
+- `utm_content` is the position on the page: `hero`, `header`, `menu`, `footer`, `footer-cta`, `board` (the top-controllers panel on an airport page), `flights` (the live-flights panel on an airport page), `classroom-cta` (the closing button on the classroom page), and on the brand pages also `press-cta` and `event`.
+- The keys in use for the brand pages: `home`, `home-es`, `home-es-419`, `home-pt-br`, `home-de`, `home-fr`, `home-it`, `home-ja`, `home-ko`, `home-zh-tw`, `home-tr`, `home-id`, `home-pl`, `press`, `events-hub`, `events-weekend`, `events-thanksgiving-rush`, `events-santa`, `notfound`, and `challenge` (the board page's header and footer only, see above).
 - A new page key is chosen when a page is added; keys are never reused for another page.
 - The game's browser demo uses its own source, `web-demo`, for its links to Google Play (set in the game repository). Do not change that here.
 - Play Console reports installs by these values under acquisition; GA4 reports `play_store_click` by the same `page` value, so the two can be compared.
@@ -88,6 +90,6 @@ No names, no email addresses, no account IDs, no free-text fields, no search tex
 
 - `page`: the page key in the Play link's campaign: `home`, `press`, `events`, `classroom`, `airport-<icao>` (airport pages), `airport-<icao>-<lang>` (an airport's page in a local language, such as `airport-lemd-es`), `country-<slug>` (country hubs), `guide-<slug>` (guides), or another section key.
 - `airport`: the ICAO code, upper case, on airport pages only (hero and footer buttons).
-- `position`: where the button sits: `hero`, `header`, `menu`, `footer`, `footer-cta`, `board`, `classroom-cta` or `event`.
+- `position`: where the button sits: `hero`, `header`, `menu`, `footer`, `footer-cta`, `board`, `flights`, `classroom-cta`, `event`, or `challenge-cta` (the board page's own button, which sends no event: see the table above).
 
 The Play link's `utm_campaign` is the same `page` value, so Play Console can split installs per page.

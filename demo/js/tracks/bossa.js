@@ -3,7 +3,7 @@
 // 2 adds a breezy flute-like melody (a sine with a little vibrato); 3 adds a lighter shaker on the sixteenths and the
 // flute's octave, quietly. The loop is 16 bars: A (bars 1 to 8) and B (bars 9 to 16). Every other pass (cycle 1, 3, ...)
 // the phrase ends of bars 4, 8, 12 and 16 turn, and bars 4 and 12 anticipate the next chord, so the loop returns changed.
-import { mtof } from './pitch.js?v=86c2b44d';
+import { mtof } from './pitch.js?v=2f66fd5f';
 
 // --- the score (C major; the game moves every pitch by f.transpose) ------------------------------------------------
 // Per bar: the chord (for the reader), the bass on step 0 (beat 1) and step 3 (the "and" of 2), the comping voicing

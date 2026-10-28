@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -97,7 +97,33 @@
       <ul class="chips"><li><a class="chip" href="/airports/wahh/">Adisutjipto International Airport (JOG)</a> <small>47 km (29 mi)</small></li><li><a class="chip" href="/id/airports/wahs/">Jenderal Ahmad Yani Airport (SRG)</a> <small>74 km (46 mi)</small></li><li><a class="chip" href="/airports/wari/">Iswahjudi Air Base (WARI)</a> <small>75 km (47 mi)</small></li><li><a class="chip" href="/id/airports/wahi/">Yogyakarta International Airport (YIA)</a> <small>88 km (55 mi)</small></li><li><a class="chip" href="/id/airports/ward/">Dhoho International Airport (DHX)</a> <small>134 km (83 mi)</small></li><li><a class="chip" href="/airports/wahp/">Jenderal Besar Soedirman Airport (PWL)</a> <small>148 km (92 mi)</small></li><li><a class="chip" href="/airports/wara/">Abdul Rachman Saleh Airport (MLG)</a> <small>220 km (137 mi)</small></li><li><a class="chip" href="/id/airports/warr/">Juanda International Airport (SUB)</a> <small>224 km (139 mi)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="WAHQ" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">Langsung</p>
+          <h2 id="flights-title">Sedang terbang di dekat Surakarta sekarang</h2>
+          <p class="flights-lead">Pesawat sungguhan, dari siaran publik. Daftar diperbarui setiap menit selama halaman ini terbuka.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>Pesawat dalam 40 nm</dt><dd data-flights-within>0</dd></div>
+          <div><dt>Di udara</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>Data langsung sedang tertunda untuk bandara ini, jadi daftar mungkin beberapa menit lalu.</p>
+        <ol class="flights-list" data-flights-list aria-label="Sedang terbang di dekat Surakarta sekarang" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>Saat ini tidak ada pesawat dalam 40 nm.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-wahq-id%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-wahq-id" data-ev-position="flights" data-ev-airport="WAHQ">Main di bandara ini secara langsung</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"Mendarat","unknown":"Tidak diketahui","ground":"Di darat","feet":"{n} ft","knots":"{n} kn","nm":"{n} nm","liveData":"Data langsung:","updated":"Diperbarui {when}","updatedNow":"Diperbarui baru saja","showing":"Menampilkan {shown} dari {n}, yang sedang terbang lebih dulu."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Mendaratlah di SOC di Short Final</h2>
       <p class="lead">Short Final gratis di Google Play. Pilih bandara, gambar jalur untuk setiap pesawat, dan daratkan di landasan yang tepat.</p>

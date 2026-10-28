@@ -2,46 +2,44 @@ Tráfego real. Qualquer aeroporto.
 
 O jogo está em inglês. Esta página está traduzida.
 
-Short Final™ é um jogo de controle de tráfego aéreo ao vivo, com o céu real. Escolha um aeroporto: seus aviões reais chegam à borda da tela com o número do voo. Trace uma rota de cada avião até uma pista e pouse o máximo que conseguir.
+Short Final™ é um jogo de controle de tráfego aéreo ao vivo, com o céu real. Escolha qualquer aeroporto: os voos reais ao vivo que pousam nele chegam à borda da tela com o número do voo. Leve cada avião por sua aproximação até uma pista, mantenha todos separados e pouse o máximo que conseguir.
 
 O CÉU REAL
-• Aviões reais, com número de voo e ponto vermelho. Os simulados completam o tráfego conforme a dificuldade, salvo com «Real planes only».
+• Aviões reais, com número de voo e ponto vermelho. Os simulados completam conforme a dificuldade, salvo com «Real planes only».
 • Arrived from: um avião real que pousa aqui pode dizer de qual cidade voou.
-• Clima real: vento, pista, neblina e tempestades reais do aeroporto.
+• Clima real: define o vento e a pista, e neblina e tempestades reais cruzam o seu radar.
 • Luz do dia real: jogue Tóquio à noite, quando é noite em Tóquio.
 
 O LUGAR REAL
-• Mais de 29.000 aeroportos com suas pistas reais. Taxiways, portões e terreno vêm do OpenStreetMap; a maioria carrega rápido pelo site do jogo.
-• O terreno também é real: as Montanhas Rochosas a oeste de Denver, e barcos na água.
-• Os 50 aeroportos mais movimentados abrem na hora, mesmo sem internet. A busca encontra qualquer outro.
+• Mais de 29.000 aeroportos com suas pistas reais. Taxiways e portões vêm do OpenStreetMap; a maioria dos mapas carrega rápido pelo nosso site.
+• Os 50 aeroportos mais movimentados abrem na hora, mesmo sem internet.
 
 FÁCIL DE APRENDER, DIFÍCIL DE LARGAR
-• Arraste para traçar uma rota e a cauda para levá-la adiante. Aviões de linha vermelhos em pistas vermelhas, hélices amarelos em amarelas e helicópteros na plataforma.
-• Toque para girar, desenhe um laço para esperar ou mande o tráfego para um circuito de espera.
-• As partidas recuam, rodam, decolam e saem pelos portões da borda.
-• Falhas de motor e pouco combustível: o avião vira para uma pista que alcança, e o avanço rápido para.
+• Arraste para traçar uma rota e a cauda para levá-la adiante. Vermelhos em pistas vermelhas, hélices em amarelas, helicópteros na plataforma.
+• Toque para girar, desenhe um laço para esperar ou mande o tráfego a um circuito de espera.
+• As partidas recuam, rodam, decolam e saem pelos portões.
+• Falhas de motor e pouco combustível: o avião vira para uma pista que alcança.
 • Esteira de turbulência, inspeções de pista, tempestades e neblina.
 • Pista fechada mostra X vermelhos, de dia ou de noite.
-• O modo Bullet desacelera o tempo antes de uma colisão e dá um retorno no tempo por jogo.
+• O modo Bullet desacelera o tempo antes de uma colisão, com um retorno no tempo por jogo.
 
 JOGUE DO SEU JEITO
 • Beginner: poucos aviões e céu calmo.
-• Real planes only, em qualquer nível, mostra só os aviões reais do seu aeroporto e não inventa nada.
+• Real planes only, em qualquer nível: só os aviões reais do seu aeroporto, sem inventar nada.
 • Desafio diário: os mesmos aviões e clima para todos, com sequência de dias.
-• Play guarda o último aeroporto escolhido.
+• Eventos: Thanksgiving Rush são cinco dias de tráfego festivo no fim de novembro, grátis e com funcionamento offline. Em 24 de dezembro, o trenó fictício do Papai Noel entra no tráfego.
+• Desafie um amigo com um link.
 • Conversa de rádio com fraseologia real do ATC. Ative em Settings.
 • Sete faixas: Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit e Funky groove.
-• Estrelas em cada aeroporto e graus de controlador.
-• Compartilhe um cartão de resultado ou sua pontuação diária sem spoilers.
-• Um Tour mostra o que o jogo faz.
+• O Tour mostra o que pode fazer.
 
 COMPARTILHE UM VÍDEO
 • Vídeo de 20 segundos para TikTok, YouTube Shorts ou Instagram Reels, com a música do jogo e os aviões reais pelo nome.
 
 NOS PLACARES
-• Placares mundiais por aeroporto e nível, abertos ao lançar o jogo no Google Play: hoje, esta semana e de sempre, top 10 e sua posição.
-• Google Play Games: 24 conquistas e sete placares, com a melhor pontuação de cada nível.
-• Só contam os jogos ranqueados: um nível inteiro, com Real planes only desligado e Departures ligado (exceto em Beginner). O desafio diário tem placar próprio.
+• Placares mundiais por aeroporto e nível: hoje, esta semana e de sempre, top 10 e sua posição.
+• Google Play Games: 24 conquistas e sete placares.
+• Só contam os jogos ranqueados: um nível inteiro, com Real planes only desligado e Departures ligado (exceto em Beginner).
 • Você escolhe se seu nome aparece. Nomes que quebram as regras podem ser denunciados.
 
 JUSTO E PRIVADO
@@ -49,6 +47,6 @@ JUSTO E PRIVADO
 • Pontuações e progresso ficam no celular. Os placares online guardam só o que os jogos ranqueados enviam; você pode remover o seu.
 • Símbolos para daltonismo e chaves separadas para som, música, rádio e vibração.
 
-Short Final é um jogo, não uma ferramenta de rastreamento de voos nem de navegação. As posições ao vivo são aproximadas e simplificadas para jogar.
+Para fãs de rastreadores de voos: Short Final é um jogo, não uma ferramenta de rastreamento de voos nem de navegação. As posições ao vivo são aproximadas e simplificadas para jogar.
 
-Airport maps, coastlines and peaks © OpenStreetMap contributors (ODbL). Live feed: The OpenSky Network. Weather: aviationweather.gov (NOAA). Airports: OurAirports. Flight routes: Virtual Radar Server (CC0). Passenger rankings: ACI World. Time zones: timezone-boundary-builder (ODbL) and tz-lookup. Full credits are in the app, under About.
+Mapas de aeroportos, litorais e picos © OpenStreetMap contributors (ODbL). Dados ao vivo: adsb.lol, com The OpenSky Network como alternativa. Clima: aviationweather.gov (NOAA). Aeroportos: OurAirports. Rotas de voo: Virtual Radar Server (CC0). Rankings de passageiros: ACI World. Fusos horários: timezone-boundary-builder (ODbL) e tz-lookup. A lista completa de créditos está no app, em About.

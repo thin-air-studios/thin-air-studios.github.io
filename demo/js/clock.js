@@ -1,9 +1,9 @@
-import { WEB_DEMO } from './flavor.js?v=86c2b44d';
+import { WEB_DEMO } from './flavor.js?v=2f66fd5f';
 // The Pro day's clock (2.8; DECISIONS 331): the trusted time from the replies' Date headers, kept with the phone's elapsed real time
 // (trusttime.js). net.js calls noteDate for every reply that carries a Date header. The anchor is kept in localStorage, so a restart
 // of the app keeps it (a per-phone convenience: without it the clock starts from the phone's time again, which is the offline rule).
 // makeClock takes its readers, so the tests drive the time; the page uses the default clock below.
-import { capNow, dateMs, nextAnchor } from './trusttime.js?v=86c2b44d';
+import { capNow, dateMs, nextAnchor } from './trusttime.js?v=2f66fd5f';
 
 export const CLOCK_KEY = 'holdingpattern.clock.v1';
 

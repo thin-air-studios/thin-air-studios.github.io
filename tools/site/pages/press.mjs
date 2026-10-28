@@ -44,6 +44,7 @@ export async function pages(ctx) {
   const kitMB = (kitBytes / 1048576).toFixed(1);
   const enShort = read('site-src/home/en/short-description.txt').trim();
   const enFull = read('site-src/home/en/full-description.txt');
+  const storeTitle = read('site-src/home/en/title.txt').trim();
   const logoSvg = read('site-src/assets/img/logo.svg');
   const view = (logoSvg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/) || []).slice(1).map(Number);
   const [logoW, logoH] = view.length === 2 ? view : [400, 120];
@@ -73,6 +74,7 @@ export async function pages(ctx) {
       <h2 id="facts-title">${L('press.factsTitle')}</h2>
       <dl class="facts press-facts">
         ${factRows}
+        <div><dt>${L('press.factStoreTitle')}</dt><dd>${storeTitle}</dd></div>
         ${config.game.playVersion ? html`<div><dt>${L('press.factVersion')}</dt><dd>${config.game.playVersion}</dd></div>` : ''}
         <div><dt>${L('press.factWebsite')}</dt><dd><a href="${config.domain}/">playshortfinal.com</a></dd></div>
         <div><dt>${L('press.factContact')}</dt><dd><a href="${mail}">${config.email}</a></dd></div>

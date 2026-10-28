@@ -1,8 +1,9 @@
 // Radio chatter: short, realistic tower/pilot exchanges for what's happening on screen, shown in a
 // ticker at the bottom of the screen with a squelch click. Purely flavour: it never blocks play.
-import { displayName } from './airlines.js?v=86c2b44d';
-import { CLASSES } from './config.js?v=86c2b44d';
-import { takeoffIdent } from './airport.js?v=86c2b44d';
+import { displayName } from './airlines.js?v=2f66fd5f';
+import { CLASSES } from './config.js?v=2f66fd5f';
+import { takeoffIdent } from './airport.js?v=2f66fd5f';
+import { isSleigh } from './santa.js?v=2f66fd5f';
 
 const PHONETIC = {
   A: 'Alpha', B: 'Bravo', C: 'Charlie', D: 'Delta', E: 'Echo', F: 'Foxtrot', G: 'Golf', H: 'Hotel', I: 'India', J: 'Juliett',
@@ -38,6 +39,7 @@ export const callTypeTag = (cls) => callTypeWord(cls).toUpperCase();
 
 /** How a flight is called mid-sentence: the flight number as said (real), or its type word (simulated). */
 export function spokenCallsign(a) {
+  if (isSleigh(a)) return 'Santa One'; // santa.js: the sleigh's callsign is said this way
   if (!a.live) return callTypeWord(a.cls);
   const cs = (a.callsign || '').toUpperCase();
   const name = displayName(cs);
@@ -168,8 +170,9 @@ export class Radio {
     // (simulated flights of one type must still sound like different pilots)
     let key = null;
     if (pilot && typeof who === 'object') {
-      key = who.live ? who.callsign || '' : `#${who.id}`;
-      who = who.live ? who.callsign || '' : callTypeTag(who.cls);
+      const named = who.live || isSleigh(who); // a real flight, or the sleigh, is tagged by its callsign
+      key = named ? who.callsign || '' : `#${who.id}`;
+      who = named ? who.callsign || '' : callTypeTag(who.cls);
     }
     const item = { who, msg, prio, pilot, key };
     if (prio >= 3) {
@@ -300,6 +303,7 @@ export class Radio {
   touchdown(a, z, k) {
     if (z.kind !== 'runway') return;
     const cs = spokenCallsignStart(a);
+    if (isSleigh(a)) return this.say('TWR', pick([`${cs}, welcome to ${this.facility}. Merry Christmas. Reindeer may taxi to the gate.`, `${cs}, nice landing. Contact ground, and mind the reindeer.`], k), 2);
     this.say('TWR', pick([`${cs}, turn off when able, contact ground point niner.`, `${cs}, welcome to ${this.facility}. Exit left when able.`, `${cs}, nice landing, contact ground.`], k), 1);
   }
 
@@ -374,6 +378,12 @@ export class Radio {
 
   windShift(ident) {
     this.say('TWR', `Attention all aircraft, wind shift. Runway ${sayRunway(ident)} closing, expect a runway change.`, 3);
+  }
+
+  /** Santa's sleigh, five seconds before it comes in (santa.js SANTA_SOON_S): the approach's heads-up, an urgent call (priority 3) so it
+   *  is said before the sleigh enters, as goAround and windShift are. */
+  santaSoon() {
+    this.say('APP', pick([`All stations, ${this.facility} Approach, Santa One inbound from the north with reindeer. Give him room.`, `${this.facility} Approach, Santa One, sleigh and reindeer on the north approach. All traffic keep wide.`], this.n), 3);
   }
 
   /** The hub's arrival bank arriving, or the lull after it. */

@@ -14,6 +14,7 @@ import { playLink } from './play.mjs';
 import { layout } from './layout.mjs';
 import { buildAirportData } from './airportdata.mjs';
 import { airportPath } from './slug.mjs';
+import { flightsPanel } from './flightspanel.mjs';
 
 /** The languages and how many airports each gets. Country codes are ISO 3166 alpha-2; the list order is the build order. */
 export const LOCAL_PLAN = [
@@ -426,7 +427,7 @@ function localAirportPage(ctx, lang, m) {
       <ul class="chips">${nearby}</ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  ${flightsPanel({ config, t, icao: m.icao, where: m.city || m.name, playKey: key })}<section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">${t('airport.finalTitle', { code: short })}</h2>
       <p class="lead">${t('airport.finalBody')}</p>

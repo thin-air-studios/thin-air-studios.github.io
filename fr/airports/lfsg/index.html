@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -97,7 +97,33 @@
       <ul class="chips"><li><a class="chip" href="/airports/lfso/">Nancy-Ochey (BA 133) Air Base (LFSO)</a> <small>30 km (19 mi)</small></li><li><a class="chip" href="/airports/lfsn/">Nancy-Essey Airport (ENC)</a> <small>42 km (26 mi)</small></li><li><a class="chip" href="/airports/lfsx/">Luxeuil-Saint-Sauveur (BA 116) Air Base (LFSX)</a> <small>63 km (39 mi)</small></li><li><a class="chip" href="/airports/lfjl/">Metz-Nancy-Lorraine Airport (ETZ)</a> <small>74 km (46 mi)</small></li><li><a class="chip" href="/airports/lfjy/">Chambley airfield (LFJY)</a> <small>79 km (49 mi)</small></li><li><a class="chip" href="/airports/lfja/">Chaumont-Semoutiers Airfield (LFJA)</a> <small>80 km (50 mi)</small></li><li><a class="chip" href="/airports/lfsi/">Saint-Dizier – Robinson Air Base (LFSI)</a> <small>93 km (58 mi)</small></li><li><a class="chip" href="/airports/lfqp/">Phalsbourg-Bourscheid Air Base (LFQP)</a> <small>97 km (60 mi)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="LFSG" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">En direct</p>
+          <h2 id="flights-title">Vols autour de Épinal en ce moment</h2>
+          <p class="flights-lead">Avions réels, issus de diffusions publiques. La liste se met à jour chaque minute tant que la page est ouverte.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>Avions à moins de 40 nm</dt><dd data-flights-within>0</dd></div>
+          <div><dt>En vol</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>Les données en direct ont du retard pour cet aéroport en ce moment : la liste peut dater de quelques minutes.</p>
+        <ol class="flights-list" data-flights-list aria-label="Vols autour de Épinal en ce moment" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>Aucun avion à moins de 40 nm en ce moment.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-lfsg-fr%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-lfsg-fr" data-ev-position="flights" data-ev-airport="LFSG">Jouer cet aéroport en direct</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"Atterrissage","unknown":"Inconnu","ground":"Au sol","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"Données en direct :","updated":"Mis à jour {when}","updatedNow":"Mis à jour à l’instant","showing":"Affichage de {shown} sur {n}, les avions en vol d’abord."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Posez-vous à EPL dans Short Final</h2>
       <p class="lead">Short Final est gratuit sur Google Play. Choisissez l&#39;aéroport, tracez une trajectoire pour chaque avion et faites-le atterrir sur la bonne piste.</p>

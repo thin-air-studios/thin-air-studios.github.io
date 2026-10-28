@@ -1,8 +1,8 @@
-// The browser demo's rules and words (DECISIONS 445 to 454). No DOM, no network, and no storage of its own: the tests can read them.
+// The browser demo's rules and words (DECISIONS 445 to 449, and 462). No DOM, no network, and no storage of its own: the tests can read them.
 // The demo is the game built with WEB_DEMO true (flavor.js); the app never reaches the demo's branches, and these rules are only asked
 // from them. The words are in the game's own voice and are the demo's only words on its screens.
 
-import { STORE_URL } from './links.js?v=86c2b44d';
+import { STORE_URL } from './links.js?v=2f66fd5f';
 
 // the game-time cap, in the sim's seconds: ten minutes. Paused time is not counted (the sim does not step while paused).
 export const DEMO_GAME_S = 600;
@@ -10,7 +10,7 @@ export const DEMO_GAME_S = 600;
 export const DEMO_MAP_WAIT_MS = 8000;
 // the install referrer's source for every link the demo makes (links.js shareLinkFor)
 export const DEMO_SOURCE = 'web-demo';
-// the free games a day in this browser (DECISIONS 454; the same number as the app's free games, pro.js FREE_GAMES)
+// the free games a day in this browser (DECISIONS 462; the same number as the app's free games, pro.js FREE_GAMES)
 export const DEMO_FREE_GAMES = 3;
 // the browser storage key of the day's record: one small object, { day, n } (see demoDayCount)
 export const DEMO_STORAGE_KEY = 'short-final-demo';
@@ -113,7 +113,7 @@ export function demoBrowserSupport({ decompression = false } = {}) {
   return decompression ? 'ok' : 'unsupported';
 }
 
-// ------------------------------------------------------------------ the free games (DECISIONS 454)
+// ------------------------------------------------------------------ the free games (DECISIONS 462)
 // The count is one record in the browser's storage: { day, n }, the local day (airportdb.js localDay, a whole number) and the games
 // counted on it. Nothing else is stored. A game counts once its map has loaded (main.js). The functions take a storage-like object
 // (getItem and setItem: the browser's own store, which main.js passes in), or null when the browser has none. A storage that throws (private mode, blocked

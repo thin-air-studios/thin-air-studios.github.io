@@ -10,6 +10,7 @@ import { buildAirportData, sizeThenName } from '../lib/airportdata.mjs';
 import { makeCopy, group, oneDecimal, paragraphFor, descriptionFor, titleFor } from '../lib/airportcopy.mjs';
 import { airportPath } from '../lib/slug.mjs';
 import { boardPanel } from '../lib/boardpanel.mjs';
+import { flightsPanel } from '../lib/flightspanel.mjs';
 import { englishAlternates } from '../lib/localairports.mjs';
 
 export const order = 60;
@@ -147,7 +148,7 @@ function airportPage(ctx, A, m, t, rules) {
       <ul class="chips">${nearby}</ul>
     </div>
   </section>
-  ${boardPanel(ctx, m)}
+  ${flightsPanel({ config, t, icao: m.icao, where: m.city || m.name, playKey: key })}${boardPanel(ctx, m)}
   <section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">${t('airport.finalTitle', { code: short })}</h2>

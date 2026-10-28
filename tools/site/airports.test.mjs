@@ -148,10 +148,12 @@ test('nearby links: 5 to 8 per airport page, each to another airport page, by di
 
 test('every Play link on an airport page carries its own campaign and a known position', () => {
   for (const f of airportPageFiles) {
-    const key = `airport-${f.split('/')[1]}`;
+    const code = f.split('/')[1];
     for (const [, href] of read(f).matchAll(/href="(https:\/\/play\.google\.com[^"]*)"/g)) {
+      // the top-controllers panel (features.airportBoards) has its own campaign, board-<code> (ANALYTICS.md); every other link airport-<code>
+      const key = href.endsWith('utm_content%3Dboard') ? `board-${code}` : `airport-${code}`;
       assert.ok(href.includes(`utm_campaign%3D${key}%26`) || href.endsWith(`utm_campaign%3D${key}`), `${f} campaign in ${href}`);
-      assert.match(href, /utm_content%3D(hero|footer-cta|header|menu|footer)$/, `${f} position`);
+      assert.match(href, /utm_content%3D(hero|footer-cta|header|menu|footer|board|flights)$/, `${f} position`);
     }
   }
 });

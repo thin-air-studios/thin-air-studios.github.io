@@ -72,11 +72,12 @@ export function countGame(state, { daily = false } = {}) {
  * The Play button's free-games line (its own line in the pill). Shown only from day 4 and never to Pro: "2 free games left
  * today", "No free games left today", or, on the daily row, "Daily is always free". Empty when nothing is said.
  */
-export function playLeftWords({ pro, today, daily = false, weekend = false, isPro = false } = {}) {
+export function playLeftWords({ pro, today, daily = false, weekend = false, rush = false, isPro = false } = {}) {
   const state = advancePro(pro, today);
   if (isPro || inTrial(state)) return '';
   if (daily) return 'Daily is always free';
   if (weekend) return 'Weekend event is always free';
+  if (rush) return 'Thanksgiving Rush is always free';
   const left = freeLeft(state);
   if (left === 0) return 'No free games left today';
   return `${left} free game${left === 1 ? '' : 's'} left today`;

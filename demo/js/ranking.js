@@ -1,7 +1,7 @@
 // Ranked or unranked, decided in one place. No DOM, no storage: gameplay, stats, the boards and the end card all read
 // the same game.ranking (ranking.js is the only module that knows the rules).
 //
-// A game is ranked when it has a board (the level board, the daily one or the weekend event's) and no reasons. Reasons are permanent: a
+// A game is ranked when it has a board (the level board, the daily one, the weekend event's or the Thanksgiving Rush's) and no reasons. Reasons are permanent: a
 // change made during a game never comes back off, and "back to the same level" does not undo it (requirement 19).
 
 export const LEVEL_ORDER = ['beginner', 'easy', 'normal', 'hard', 'chaos'];
@@ -16,10 +16,12 @@ export const REASONS = {
   levelChanged: 'level changed',
   departuresChanged: 'departures changed',
   departuresOff: 'departures off',
+  rushSettings: 'not on the rush’s settings',
+  santaWindow: 'outside Santa’s dates',
 };
 
 /** Display order of the reasons in the label; also the list of reasons noteRanking accepts. */
-export const REASON_ORDER = ['demo', 'challenge', 'noMap', 'simOverride', 'realOnly', 'levelChanged', 'departuresChanged', 'departuresOff'];
+export const REASON_ORDER = ['demo', 'challenge', 'noMap', 'simOverride', 'realOnly', 'levelChanged', 'departuresChanged', 'departuresOff', 'santaWindow', 'rushSettings'];
 
 /** The short labels on the loading card and the end card. */
 export const REASON_LABELS = {
@@ -31,11 +33,14 @@ export const REASON_LABELS = {
   levelChanged: 'level changed',
   departuresChanged: 'departures changed',
   departuresOff: 'departures off',
+  rushSettings: 'not on the rush’s settings',
+  santaWindow: 'outside Santa’s dates',
 };
 
 const RANKED = 'Ranked';
 const DAILY = 'Daily challenge · its own board';
 const WEEKEND = 'Weekend event · its own board';
+const RUSH = 'Thanksgiving Rush · its own board';
 
 /**
  * The ranking of a game, from how it starts. demo: the practice game with recorded traffic (no board). daily: the daily board; the real
@@ -45,7 +50,7 @@ const WEEKEND = 'Weekend event · its own board';
  * noMap: the airport's layout is the runways alone (no full map saved yet, DECISIONS 372): its field has no taxiways, gates or
  * terminals, so it is not compared with the full-map games on the same board.
  */
-export function startRanking({ demo = false, daily = false, weekend = false, challenge = false, diff = 'normal', departures = true, realPlanesOnly = false, simOverride = false, noMap = false } = {}) {
+export function startRanking({ demo = false, daily = false, weekend = false, rush = false, challenge = false, diff = 'normal', departures = true, realPlanesOnly = false, simOverride = false, noMap = false } = {}) {
   const rk = { board: null, levels: [diff], reasons: [] };
   if (demo) {
     rk.reasons.push('demo');
@@ -67,6 +72,15 @@ export function startRanking({ demo = false, daily = false, weekend = false, cha
   if (weekend) {
     rk.board = 'weekend';
     if (noMap) rk.reasons.push('noMap');
+    return rk;
+  }
+  // the Thanksgiving Rush (3.4): its own board, Normal with departures on and all planes simulated, the Rush's bank. Any other setting is
+  // unranked (rushSettings), so the Beginner game, the other levels and a real-planes switch are played but not posted. The Rush's
+  // planes are the simulated ones, so the real-planes and simulated-planes switches count as settings here.
+  if (rush) {
+    rk.board = 'rush';
+    if (noMap) rk.reasons.push('noMap');
+    if (diff !== 'normal' || !departures || realPlanesOnly || simOverride) rk.reasons.push('rushSettings');
     return rk;
   }
   rk.board = 'level';
@@ -107,12 +121,12 @@ export function isRanked(rk) {
 
 /** Only ranked games post anywhere (the online boards and Play Games). */
 export function shouldPostScores(rk) {
-  return isRanked(rk) && (rk.board === 'level' || rk.board === 'daily' || rk.board === 'weekend');
+  return isRanked(rk) && (rk.board === 'level' || rk.board === 'daily' || rk.board === 'weekend' || rk.board === 'rush');
 }
 
 /** "Ranked", "Daily challenge · its own board", "Weekend event · its own board", or "Unranked · " with the reasons in display order. */
 export function rankingLabel(rk) {
-  if (isRanked(rk)) return rk.board === 'daily' ? DAILY : rk.board === 'weekend' ? WEEKEND : RANKED;
+  if (isRanked(rk)) return rk.board === 'daily' ? DAILY : rk.board === 'weekend' ? WEEKEND : rk.board === 'rush' ? RUSH : RANKED;
   // the override replaces the switch in the label: the game is simulated, so "real planes only" is not what it is
   const shown = REASON_ORDER.filter((r) => rk.reasons.includes(r) && !(r === 'realOnly' && rk.reasons.includes('simOverride')));
   if (!shown.length) return 'Unranked';

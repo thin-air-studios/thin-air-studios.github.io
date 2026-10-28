@@ -3,9 +3,9 @@
 // function takes nowMs). main.js makes the request and saves the record (runFeedCheck). The check spends one credit of the
 // day's free allowance, so the rules keep the game's credits: it never sends while OpenSky asked us to wait, never within a
 // minute of the last request it sent, and a tap or a return to the app leaves the last 150 credits of the day to games.
-import { sameDay, waitWords } from './feedstate.js?v=86c2b44d';
+import { sameDay, waitWords } from './feedstate.js?v=2f66fd5f';
 
-export { ON_MS, OLD_MS } from './feedstate.js?v=86c2b44d';
+export { ON_MS, OLD_MS } from './feedstate.js?v=2f66fd5f';
 
 export const CHECK_GAP_MS = 60e3; // between two requests the check sends
 export const AWAY_MS = 600e3; // away this long before a return checks
@@ -45,7 +45,8 @@ export function checkRecord(result, nowMs, realCount = 0, online = true) {
   const base = { state: 'offline', reason: 'no-internet', httpStatus: null, remaining: null, real: 0, at: nowMs, retryAt: null };
   if (result.offline) return base;
   const remaining = Number.isFinite(result.remaining) ? result.remaining : null;
-  const daily = remaining !== null && remaining <= 3; // the day's credits are spent (as LiveFeed.onResult says)
+  // the day's credits are spent (as LiveFeed.onResult says), or adsb.lol says its day's allowance is (result.daily, adsblol.js)
+  const daily = result.daily === true || (remaining !== null && remaining <= 3);
   if (result.ok) {
     return daily
       ? { ...base, state: 'paused', reason: 'daily', remaining, real: realCount, at: nowMs }

@@ -1,14 +1,15 @@
-import { WEB_DEMO } from './flavor.js?v=86c2b44d';
-import { migrateStats } from './stats.js?v=86c2b44d';
-import { forStorage, hydrateAge } from './profile.js?v=86c2b44d';
-import { emptyStreak, sanitizeStreak, seedStreak } from './streak.js?v=86c2b44d';
-import { localDay } from './airportdb.js?v=86c2b44d';
-import { settingsStore } from './platform.js?v=86c2b44d';
-import { DEFAULT_TRACK } from './music.js?v=86c2b44d';
-import { emptyReview, sanitizeReview } from './review.js?v=86c2b44d';
-import { defaultWorldStats, sanitizeWorldStats } from './worldstats.js?v=86c2b44d';
-import { emptyWeekRecap, sanitizeWeekRecap, emptyOffer, sanitizeOffer } from './reminder.js?v=86c2b44d';
-import { sanitizeWeekend } from './weekend.js?v=86c2b44d';
+import { WEB_DEMO } from './flavor.js?v=2f66fd5f';
+import { migrateStats } from './stats.js?v=2f66fd5f';
+import { forStorage, hydrateAge } from './profile.js?v=2f66fd5f';
+import { emptyStreak, sanitizeStreak, seedStreak } from './streak.js?v=2f66fd5f';
+import { localDay } from './airportdb.js?v=2f66fd5f';
+import { settingsStore } from './platform.js?v=2f66fd5f';
+import { DEFAULT_TRACK } from './music.js?v=2f66fd5f';
+import { emptyReview, sanitizeReview } from './review.js?v=2f66fd5f';
+import { defaultWorldStats, sanitizeWorldStats } from './worldstats.js?v=2f66fd5f';
+import { emptyWeekRecap, sanitizeWeekRecap, emptyOffer, sanitizeOffer } from './reminder.js?v=2f66fd5f';
+import { sanitizeWeekend } from './weekend.js?v=2f66fd5f';
+import { sanitizeRush, sanitizeRushDays } from './rush.js?v=2f66fd5f';
 
 // the music tracks the game no longer has (2.3): a save that chose one plays Tower Jazz, once (musicRetired1)
 const RETIRED_TRACKS = ['night', 'western'];
@@ -59,6 +60,8 @@ const DEFAULTS = {
   weekRecap: emptyWeekRecap(), // this week's planes landed, the best game and its airport, for the Sunday recap (reminder.js, DECISIONS 392)
   reminderOffer: emptyOffer(), // the one-time reminder card: how many times shown, and the day of the last one (reminder.js, DECISIONS 392)
   weekend: null, // the weekend event: { w, best, tries } for the weekend w (weekend.js; the game's own record, as the daily's)
+  rush: null, // the Thanksgiving Rush (3.4): { day, best, tries } for the Rush's day (rush.js), as the weekend's record
+  rushDays: [], // the Rush's days flown, for the badge Five airports, five days (rush.js)
 };
 
 const fresh = () => JSON.parse(JSON.stringify(DEFAULTS));
@@ -149,6 +152,7 @@ export function sanitizeLastPlayed(v) {
   if (!v || typeof v !== 'object' || typeof v.icao !== 'string' || !v.icao.trim()) return null;
   const out = { icao: v.icao.trim().toUpperCase(), daily: Number.isInteger(v.daily) && v.daily > 0 ? v.daily : 0 };
   if (Number.isInteger(v.weekend) && v.weekend > 0) out.weekend = v.weekend; // the weekend event's Saturday (3.3)
+  if (Number.isInteger(v.rush) && v.rush > 0) out.rush = v.rush; // the Thanksgiving Rush's day (3.4)
   return out;
 }
 
@@ -168,6 +172,8 @@ export function sanitizeSave(save) {
   save.weekRecap = sanitizeWeekRecap(save.weekRecap);
   save.reminderOffer = sanitizeOffer(save.reminderOffer);
   save.weekend = sanitizeWeekend(save.weekend);
+  save.rush = sanitizeRush(save.rush);
+  save.rushDays = sanitizeRushDays(save.rushDays);
   return save;
 }
 

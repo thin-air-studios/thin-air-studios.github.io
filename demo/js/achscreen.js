@@ -1,8 +1,8 @@
 // The Achievements screen's numbers, pure: the controller's rank and its bar, the lifetime totals, each badge's progress
 // and the date it was earned. The "in one game" badges read save.gameBest (the most in any one game), not lifetime totals,
 // so a badge is never met by adding up several games.
-import { ACHIEVEMENTS, RANKS, rankFor } from './achievements.js?v=86c2b44d';
-import { visitedBusiest } from './stats.js?v=86c2b44d';
+import { ACHIEVEMENTS, RANKS, rankFor } from './achievements.js?v=2f66fd5f';
+import { visitedBusiest } from './stats.js?v=2f66fd5f';
 
 const num = (v) => (Number.isFinite(v) ? v : 0);
 const groups = (n) => String(Math.floor(num(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ',');

@@ -1,8 +1,8 @@
 // Sky: what the real weather looks like from above. Cloud shadows drifting across the airport with
 // the wind (density from the METAR's cloud cover) and falling rain, drizzle or snow. Purely visual:
 // nothing here touches the simulation, so it needs no rewind state.
-import { makeRng, TAU } from './util.js?v=86c2b44d';
-import { WORLD_H } from './config.js?v=86c2b44d';
+import { makeRng, TAU } from './util.js?v=2f66fd5f';
+import { WORLD_H } from './config.js?v=2f66fd5f';
 
 let blob = null;
 /** Soft round shadow sprite, drawn once and stretched. */

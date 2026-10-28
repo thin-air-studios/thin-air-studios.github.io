@@ -1,25 +1,30 @@
-import { WEB_DEMO } from './flavor.js?v=86c2b44d';
+import { WEB_DEMO } from './flavor.js?v=2f66fd5f';
 // Draws a frame: the real airport, paths, aircraft, effects and the HUD. Owns the camera
 // (fit-to-airspace, pinch zoom, pan).
-import { WORLD_H, ZONE_COLORS, CLASSES, TUNING, SPRITE_SCALE } from './config.js?v=86c2b44d';
-import { clamp, TAU, cssScale, collectMapLabels } from './util.js?v=86c2b44d';
-import { worldShape } from './worldshape.js?v=86c2b44d';
-import { drawAircraftShape, drawSpinners, spriteBitmap } from './sprites.js?v=86c2b44d';
-import { FONT } from './fx.js?v=86c2b44d';
-import { paintAirport, paintActiveEnds, groundTheme } from './airportpaint.js?v=86c2b44d';
-import { tailColor } from './airlines.js?v=86c2b44d';
-import { drawFixes } from './stacks.js?v=86c2b44d';
-import { STACK_FUEL, eitherEnd } from './hazards.js?v=86c2b44d';
-import { uiScales } from './uiscale.js?v=86c2b44d';
-import { reducedMotion, pulse as pulseAt, springOut, smooth, flashGate, speedStreaks, approach } from './motion.js?v=86c2b44d';
-import { ClosureMarks, drawClosureMarks, drawClosurePills } from './closures.js?v=86c2b44d';
+import { WORLD_H, ZONE_COLORS, CLASSES, TUNING, SPRITE_SCALE } from './config.js?v=2f66fd5f';
+import { clamp, TAU, cssScale, collectMapLabels } from './util.js?v=2f66fd5f';
+import { worldShape } from './worldshape.js?v=2f66fd5f';
+import { drawAircraftShape, drawSpinners, spriteBitmap } from './sprites.js?v=2f66fd5f';
+import { isSleigh } from './santa.js?v=2f66fd5f';
+import { FONT } from './fx.js?v=2f66fd5f';
+import { paintAirport, paintActiveEnds, groundTheme } from './airportpaint.js?v=2f66fd5f';
+import { tailColor } from './airlines.js?v=2f66fd5f';
+import { drawFixes } from './stacks.js?v=2f66fd5f';
+import { STACK_FUEL, eitherEnd } from './hazards.js?v=2f66fd5f';
+import { uiScales } from './uiscale.js?v=2f66fd5f';
+import { reducedMotion, pulse as pulseAt, springOut, smooth, flashGate, speedStreaks, approach } from './motion.js?v=2f66fd5f';
+import { ClosureMarks, drawClosureMarks, drawClosurePills } from './closures.js?v=2f66fd5f';
 
 const BG_MARGIN = 80; // world units of ground painted beyond the airspace edge
 const NO_INSETS = { l: 0, r: 0, t: 0, b: 0 }; // a screen without a camera cutout (hudRectsWorld)
 // the HUD's margin from the side edges, in units (2.0: from 14, so curved phone edges keep the score, buttons and compass in)
 const HUD_EDGE = 23;
+// Santa's sleigh is drawn with its own sprite (sprites.js 'sleigh'); in the sim it is a light plane, so its class is light
+const SLEIGH_DEF = Object.freeze({ ...CLASSES.light, sprite: 'sleigh' });
+const defOf = (a) => (isSleigh(a) ? SLEIGH_DEF : CLASSES[a.cls]);
 const MAX_TEX = 4096;
-const NAV_TIPS = { heavy: [-12, 27, 29], liner: [-9, 22, 23], regional: [1, 20, 17], prop: [1.5, 17.5, 13], heli: [-19, 4.5, 10] };
+// the sleigh's lamps sit at its runners' front corners, and its lantern beam leaves the nose (tips[2])
+const NAV_TIPS = { heavy: [-12, 27, 29], liner: [-9, 22, 23], regional: [1, 20, 17], prop: [1.5, 17.5, 13], heli: [-19, 4.5, 10], sleigh: [4, 8, 10] };
 
 // tail-fin stripe per sprite: [from x, to x, half width] in sprite units
 const FIN = { liner: [-23.4, -14.5, 1.15], regional: [-20.2, -13.5, 1.0], heavy: [-29.4, -18.5, 1.4] };
@@ -985,7 +990,7 @@ export class Renderer {
   }
 
   drawShadow(ctx, a, t, alt) {
-    const def = CLASSES[a.cls];
+    const def = defOf(a);
     ctx.save();
     ctx.globalAlpha = a.alpha;
     ctx.translate(a.x + 7 * alt, a.y + 9 * alt);
@@ -998,7 +1003,7 @@ export class Renderer {
   }
 
   drawBody(ctx, a, t) {
-    const def = CLASSES[a.cls];
+    const def = defOf(a);
     const bank = this.bankOf(a);
     ctx.save();
     ctx.globalAlpha = a.alpha;
@@ -1051,7 +1056,7 @@ export class Renderer {
   }
 
   drawWreck(ctx, a) {
-    const def = CLASSES[a.cls];
+    const def = defOf(a);
     ctx.save();
     ctx.translate(a.x, a.y);
     ctx.rotate(a.visHeading + a.landT * 0.6 * (a.id % 2 ? 1 : -1));
@@ -1062,7 +1067,7 @@ export class Renderer {
   }
 
   drawNavLights(ctx, a, t, night) {
-    const def = CLASSES[a.cls];
+    const def = defOf(a);
     const tips = NAV_TIPS[def.sprite] || NAV_TIPS.liner;
     const k = a.scale * SPRITE_SCALE;
     const c = Math.cos(a.visHeading), s = Math.sin(a.visHeading);
@@ -1144,7 +1149,7 @@ export class Renderer {
   }
 
   drawWarning(ctx, w, t) {
-    const def = CLASSES[w.cls];
+    const def = defOf(w);
     const c = ZONE_COLORS[def.color];
     const k = 1 - w.timer / w.total;
     const blink = 0.55 + 0.45 * Math.sin(t * 12);

@@ -1,12 +1,16 @@
-// Cloudflare Pages' /_headers and /_redirects (at the repository root, where the host reads them). Generated from the pages the
-// other modules made, so the list of sections follows the site as it grows.
+// The _headers and _redirects files at the repository root, generated from the pages the other modules made (do not edit by hand).
+// What they WRITE (the lines below):
 //   - Security headers on every path: HSTS, nosniff, Referrer-Policy.
 //   - A Content-Security-Policy only on the website's own pages (the home, and every section the build makes). The browser demo,
 //     the legal pages, the play page and the map and route folders are not under it: they are built elsewhere and call services
 //     this policy does not list. Script hashes come from the inline scripts the layout writes (the Google Analytics bootstrap).
-//   - Long cache for /assets/site/fonts, img and og (1 year); a day, with a week of stale-while-revalidate, for css, js and json,
-//     so a stylesheet change reaches returning visitors within a day.
-// Redirects: the old sitemap name, kept for links and Search Console.
+//   - Long cache for /assets/site/fonts, img and og (1 year); a day, with a week of stale-while-revalidate, for css, js and json.
+// What is SENT: nothing from this file today. GitHub Pages does not read _headers or _redirects, and the edge Worker
+// (tools/edge/worker.js) copies the origin's headers and adds only its own: HSTS, nosniff, Referrer-Policy and Permissions-Policy.
+// So playshortfinal.com sends no Content-Security-Policy, and the connect-src line for the API (3.4) is not enforced. Enforcing the
+// policy would mean the Worker sending it per page, with the same script hashes, and checking every page in a browser first. That is
+// an open owner decision (site-src/DESIGN.md section 15), not something 3.4 switches on.
+// Redirects: the old sitemap name, kept for links and Search Console (also not read by the host or the Worker today).
 import crypto from 'node:crypto';
 
 
@@ -25,7 +29,15 @@ function inlineScriptHashes(outputs) {
   return [...hashes].sort();
 }
 
-function policy(config, hashes, { boards = false } = {}) {
+/** Whether a page pattern's policy lists the online API: the airport pages (their top-controllers panel or their live-flights panel,
+ *  when either flag is on) and the challenge board page (features.challengeBoards). */
+function needsApi(config, pattern) {
+  if (pattern === '/airports/*') return config.features?.airportBoards === true || config.features?.liveFlights === true;
+  if (pattern === '/c/*') return config.features?.challengeBoards === true;
+  return false;
+}
+
+function policy(config, hashes, { api = false } = {}) {
   const ga = Boolean(config.analytics?.ga4);
   const cf = Boolean(config.analytics?.cfBeacon);
   const script = ["'self'", ...hashes];
@@ -34,8 +46,8 @@ function policy(config, hashes, { boards = false } = {}) {
   const connect = ["'self'"];
   if (ga) connect.push('https://www.google-analytics.com', 'https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://www.googletagmanager.com');
   if (cf) connect.push('https://cloudflareinsights.com');
-  // The airport top-controllers panel (English airport pages only) reads the online boards: features.airportBoards, boards-core.mjs.
-  if (boards && config.features?.airportBoards === true) connect.push('https://api.playshortfinal.com');
+  // The online API: the airport panels (boards-core.mjs, flights-core.mjs) and the challenge board (challenge/board-core.mjs). A GET only.
+  if (api) connect.push('https://api.playshortfinal.com');
   const img = ["'self'"];
   if (ga) img.push('https://www.google-analytics.com', 'https://www.googletagmanager.com');
   return [
@@ -81,7 +93,7 @@ export async function pages(ctx) {
     '',
   ];
   for (const pattern of sitePatterns(outputs)) {
-    lines.push(pattern, `  Content-Security-Policy: ${policy(config, hashes, { boards: pattern === '/airports/*' })}`, '');
+    lines.push(pattern, `  Content-Security-Policy: ${policy(config, hashes, { api: needsApi(config, pattern) })}`, '');
   }
   lines.push(
     '/assets/site/fonts/*',

@@ -1,1 +1,1 @@
-CANLI ATC: gerçek uçakları her havalimanının pistine kondur, canlı veriyle.
+Gerçek canlı uçuşlarla ATC oyunu: her havalimanında uçak kondur.

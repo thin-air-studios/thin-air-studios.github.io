@@ -23,7 +23,7 @@ Non-goals: no account, no ads, no cookies before consent, no framework, no track
 | --- | --- | --- | --- | --- |
 | Home | `/` | 1 | `pages/home.mjs` | English |
 | Localized homes | `/es/`, `/es-419/`, `/pt-br/`, `/de/`, `/fr/`, `/it/`, `/ja/`, `/ko/`, `/zh-tw/`, `/tr/`, `/id/`, `/pl/` | 0 now, 12 later | config `languages[].live` | Same template, own dictionary |
-| Airports hub | `/airports/` | 1 | `pages/airports.mjs` | Client-side search over `/assets/site/data/airports-index.json` (all 29,164 rows, about 1 MB, loaded on first focus) |
+| Airports hub | `/airports/` | 1 | `pages/airports.mjs` | Client-side search over `/assets/site/airports-index.json` (all 29,164 rows, 1.66 MB raw, about 474 KB gzipped, loaded on first focus; the board page does not load it) |
 | Country hubs | `/airports/<country-slug>/` | up to 230 | one per country with a mapped airport | Collision with an ICAO code gets `-country` (Niue: `/airports/niue-country/`) |
 | Airport pages | `/airports/<icao-lower>/` | 6,238 (6,239 maps, SD24 excluded) | one per airport with an OSM map | Grows as the map robot adds maps |
 | Guides | `/guides/`, `/guides/<slug>/` | 1 hub + 12 | `pages/guides.mjs` | English at launch |
@@ -31,7 +31,8 @@ Non-goals: no account, no ads, no cookies before consent, no framework, no track
 | Features | `/features/` | 1 (optional) | | Anchors per feature |
 | Press | `/press/` | 1 | | Fact sheet, logos, screenshots, trailer link |
 | About | `/about/` | 1 | | Studio, contact, data credits |
-| Kept as they are | `/demo/`, `/play/`, `/privacy/`, `/terms/`, `/delete/`, `/osm/`, `/routes/`, `/shots/`, `/assets/site.css`, `/assets/logo.svg`, `/.well-known/`, `/tools/maps/` | | built elsewhere | Never edited here |
+| Kept as they are | `/demo/`, `/play/`, `/privacy/`, `/terms/`, `/delete/`, `/osm/`, `/routes/`, `/shots/`, `/assets/site.css`, `/.well-known/`, `/tools/maps/` | | built elsewhere | Never edited here |
+| Root icon files | `/assets/logo.svg` (the plane alone; the legal and play pages link it), `/assets/app-icon.png` (the touch icon, same as `/assets/site/img/apple-touch-icon.png`) | | copied by hand | Copies of `site-src/assets/img/logo.svg` and `apple-touch-icon.png`. Replace both together with the site icon |
 | Generated | `/404.html`, `/robots.txt`, `/sitemap.xml`, `/sitemap-<section>.xml`, `/assets/site/**` | | `pages/notfound.mjs`, `robots.mjs`, `sitemap.mjs`, `site-src/assets/` | |
 
 Navigation: the header shows Airports, Guides, Events, Press, About and a "Get the game" button. The footer has Play, Explore, About and a language list. A section's links appear only when `config.sections.<key>` is true, so no link points at a page that is not built.
@@ -84,6 +85,7 @@ Header with menu (`details`, no script), footer, skip link, `.btn` (primary gold
 
 - Game pictures: the four existing pictures in `/shots/` (JPG, 1280x720), with the alt text and captions in `en.json`. Builders may convert to WebP with ImageMagick (installed in the build environment) and keep the JPG fallback.
 - Store art copied into `site-src/assets/img/` (icon, feature graphic) for the press page.
+- The app icon: `site-src/assets/img/icon.svg` is the disc icon as-is (header, favicon, press, the organization logo). `apple-touch-icon.png` is the same art full-bleed, without the rim rings, for the iOS mask. `logo.svg` is the plane alone (press page, legal pages). The rasters (`app-icon-512.png`, the press icon, the feature graphic and `default.jpg`, which embed the icon) are rendered from the SVG in a browser and the tile is composited; the four share images re-render with `tools/site/art/og.html`.
 - Share images (Open Graph and Twitter): `/assets/site/og/default.jpg` (1200x630, the feature graphic on night teal) for every page, except the four pages below, which get their own 1200x630 image made from the same art (ImageMagick): home, press, events hub, guides hub.
 - No per-airport images. Airport maps are inline SVG generated at build time (section 6.3).
 
@@ -160,7 +162,7 @@ https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&
 
 | Page type | Title | Description pattern |
 | --- | --- | --- |
-| Home | Short Final: land real flights at any airport | "Short Final is a free air traffic game for Android. Land the real planes from live data at more than 29,000 airports, or try the browser demo." |
+| Home | Short Final ATC: Live Flights, the air traffic control game | "Short Final ATC is a free air traffic control game for Android with real live flights. Land the real planes at more than 29,000 airports, or try the browser demo." |
 | Localized home | Translated equivalent of the home title, same claims | Translated equivalent |
 | Airports hub | Airport maps and runways \| Short Final | Search more than 29,000 airports by code, name or city, with runways and maps where we have them. |
 | Country hub | Airports in {Country} with maps \| Short Final | {n} airports in {Country} with OpenStreetMap layouts, runways and lengths. Play any of them in Short Final. |
@@ -370,8 +372,11 @@ Accessibility: WCAG 2.2 AA. Skip link, one `h1` per page, landmarks, visible foc
 - `demo/js/config.js` (built by the game repository's `tools/build-demo.mjs`) contains a worker address that includes the owner's name. It must change in the game repository, and the demo rebuilt. The site's tests report it.
 - `privacy/index.html` (built from the game's legal text) names one model provider as a service provider for the name check. The rules for this repository forbid such names in its pages. This is a legal disclosure question for the lead: the text is built elsewhere and is not edited here. The test reports it.
 - `terms/index.html` is reported by the same test for the same reason; check it in the same pass.
+- The browser demo at `/demo/` still shows the old art: the plane mark in its menu (`demo/img/logo.svg`, fill #06262C, linked from `demo/index.html`) and the old app icon in the top band of its video (`demo/img/icon.svg`, sky #2E9AA2, loaded by `demo/js/videorender.js`). `demo/` is built elsewhere and is not edited here, so the new icon does not reach it. Owner decision: copy the two SVGs from `site-src/assets/img/` in the game repository's demo build, or accept these as known residuals.
 - The Cloudflare Pages deployment uploads the whole repository root, so `site-src/` (about 5 MB, mostly data) and `tools/site/` are published as static files too. They count toward the 20,000 file limit (about 40 files). Acceptable, or the lead can add a mirrored output folder later.
 - No GitHub Action is added here (the maps workflows must not change). A workflow that runs `node tools/site/build.mjs --check` and the tests on pull requests is recommended and is a separate decision.
 - Commit attribution: the session's attribution rule and the workflow's text name different model versions for the co-author line. The commit follows the session rule.
 - The weekend event and the friend challenge links are in the code, not yet in the Play listing text. The copy says so.
+- **Content-Security-Policy (3.4): written, not sent.** `tools/site/pages/headers.mjs` writes a `_headers` policy whose `connect-src` lists `api.playshortfinal.com` on the airport and board pages. Nothing sends it: GitHub Pages does not read `_headers`, and the edge Worker (`tools/edge/worker.js`) copies the origin's headers and adds no policy. Open owner decision: enforce it (the Worker sends a policy per page, with the script hashes from the built pages, checked in a browser first), or drop the policy. Until then no page or note says the policy is enforced.
+- **Board Play button is not counted (3.4, D12).** The board page's own Play buttons send no `play_store_click`; the site-wide header and footer do (`page` = `challenge`). Open owner decision: keep D12 as built (the test forbids `data-event` on the board's content), or count the board's button too.
 - Total file count: 9,220 tracked now; about 6,240 airport pages and about 300 other pages and assets add to about 15,800 (limit 18,000). If the map robot finishes (about 6,500 maps), the count stays under the limit.

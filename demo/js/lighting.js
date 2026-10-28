@@ -1,7 +1,7 @@
 // Day/night: real sun position at the airport (or forced day/night), dusk tint, darkness, and
 // night lighting — runway edge + threshold lights, sequenced approach strobes, terminal glow.
-import { sunElevation, nightFactor, polygonCentroid, polygonArea } from './geo.js?v=86c2b44d';
-import { TAU } from './util.js?v=86c2b44d';
+import { sunElevation, nightFactor, polygonCentroid, polygonArea } from './geo.js?v=2f66fd5f';
+import { TAU } from './util.js?v=2f66fd5f';
 
 export class Lighting {
   // night: a fixed level (0 to 1) held for every frame, whatever the clock says (a video of a game keeps the light it ended with);

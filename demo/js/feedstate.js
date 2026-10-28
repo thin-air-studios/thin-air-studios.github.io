@@ -59,10 +59,11 @@ const NONE = 'No real planes right now';
  *  - practice: "3 real planes" / "No real planes right now". The title already says "Practice: ATL", so the line does not;
  *  - daily: "Same planes for everyone today". The title already says "Daily #3", so the line does not repeat it.
  *  - weekend: "Weekend event: the same airport and weather for everyone." (weekend.js: the planes are the same only in the weather and the airport)
+ *  - rush: "Thanksgiving Rush: the same airport and weather for everyone." (rush.js: the same, in waves)
  * The quiet sky and a feed that cannot be reached read the same ("No real planes right now"): the player is not told how
  * the sky is made. `real` is the real planes in the game (landing here and in the area, one count).
  * @param v     the feed's view (feedState)
- * @param mode  'normal' | 'realOnly' | 'practice' | 'daily' | 'weekend' | 'challenge' (a friend's challenge: challenge.js)
+ * @param mode  'normal' | 'realOnly' | 'practice' | 'daily' | 'weekend' | 'rush' | 'challenge' (a friend's challenge: challenge.js)
  * @param real  the real planes in the game
  * @param same  a challenge only: its planes are the challenger's; else similar (challenge.js challengeSamePlanes, never in 3.2, DECISIONS 421)
  */
@@ -71,6 +72,7 @@ export function mixLine(v, { mode = 'normal', real = 0, same = false, web = null
   if (web) return line(web.full, web.short); // the browser demo's words (demo.js), passed in: this module imports nothing
   if (mode === 'daily') return line('Same planes for everyone today');
   if (mode === 'weekend') return line('Weekend event: the same airport and weather for everyone.');
+  if (mode === 'rush') return line('Thanksgiving Rush: the same airport and weather for everyone.', 'Thanksgiving Rush: the same for everyone');
   if (mode === 'challenge') return same ? line('Same planes as your friend’s game', 'Same as your friend’s game') : line('Similar planes to your friend’s game', 'Like your friend’s game');
   if (v.state === 'connecting') return line('Connecting to the live feed…', 'Connecting…');
   if (mode === 'normal' && noInternet(v)) return line('No internet · no real planes');

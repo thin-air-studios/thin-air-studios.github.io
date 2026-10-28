@@ -2,10 +2,10 @@
 // Ranked or Unranked rule for the settings as they are now, and the one reason a game is unranked. No DOM, so the words are
 // tested without the game; main.js syncPlayButton puts them on the button. The rules are ranking.js's (startRanking) and
 // modes.js's (gameConfig), read the way endcard.js loadingRankLine reads them.
-import { gameConfig } from './modes.js?v=86c2b44d';
-import { cityName } from './airportdb.js?v=86c2b44d';
-import { REASON_ORDER, isRanked, startRanking } from './ranking.js?v=86c2b44d';
-import { themeOf } from './weekend.js?v=86c2b44d';
+import { gameConfig } from './modes.js?v=2f66fd5f';
+import { cityName } from './airportdb.js?v=2f66fd5f';
+import { REASON_ORDER, isRanked, startRanking } from './ranking.js?v=2f66fd5f';
+import { themeOf } from './weekend.js?v=2f66fd5f';
 
 /** The words for the reasons a player's own settings can cause on the home screen (ranking.js reasons). */
 export const PLAY_REASON_WORDS = {
@@ -14,24 +14,25 @@ export const PLAY_REASON_WORDS = {
   simOverride: 'Simulated planes allowed',
   realOnly: 'Real planes only',
   departuresOff: 'Departures off',
+  rushSettings: 'Not on the Rush’s settings',
 };
 
 /**
  * The reasons a game gets while it is played: a change made in a game (noteRanking), and noMap, the map the airport has when the game
  * starts (DECISIONS 372). The home screen never has them, so the Play button says Ranked for an airport whose map it cannot see.
  */
-export const GAME_ONLY_REASONS = ['levelChanged', 'departuresChanged', 'noMap'];
+export const GAME_ONLY_REASONS = ['levelChanged', 'departuresChanged', 'noMap', 'santaWindow'];
 
 /**
  * The rank word on the Play button: "Ranked", or "Unranked · <reason>" with one reason. When two apply, the first in ranking.js's
  * display order is named: the recorded game's "No internet", then the simulated-planes override, then Real planes only (it greys
  * the Departures switch, so the player can see it), then Departures off. The daily ignores the settings (gameConfig).
  */
-export function playRankWord({ demo = false, daily = false, weekend = false, challenge = false, settings = {}, nowMs = Date.now() } = {}) {
+export function playRankWord({ demo = false, daily = false, weekend = false, rush = false, challenge = false, settings = {}, nowMs = Date.now() } = {}) {
   const s = settings || {};
   const cfg = gameConfig({ daily: !!daily || !!weekend, settings: s, nowMs });
   const rk = startRanking({
-    demo: !!demo, daily: !!daily, weekend: !!weekend, challenge: !!challenge, diff: cfg.diff, departures: daily || weekend ? true : !!s.departures,
+    demo: !!demo, daily: !!daily, weekend: !!weekend, rush: !!rush, challenge: !!challenge, diff: cfg.diff, departures: daily || weekend || rush ? true : !!s.departures,
     realPlanesOnly: !!s.realPlanesOnly, simOverride: cfg.simOverride,
   });
   if (isRanked(rk)) return 'Ranked';
@@ -44,6 +45,7 @@ export function pickKey(pick) {
   if (!pick || !pick.info) return '';
   if (pick.challenge) return `challenge:${pick.info.icao}:${pick.challenge.seed}`;
   if (pick.weekend) return `weekend:${pick.info.icao}`;
+  if (pick.rush) return `rush:${pick.info.icao}`;
   return pick.daily ? `daily:${pick.info.icao}` : pick.info.icao;
 }
 
@@ -70,6 +72,11 @@ export function playButtonWords({ pick = null, demo = false, settings = {}, nowM
     title = 'Play this weekend’s event';
     place = placeOf(pick.info);
     words = playRankWord({ weekend: true, settings, nowMs });
+  } else if (pick && pick.rush) {
+    // the Thanksgiving Rush (3.4, rush.js): its own board, Normal's rules with the Rush's settings; the title is the Rush's, the place its airport
+    title = 'Play today’s Rush';
+    place = placeOf(pick.info);
+    words = playRankWord({ rush: true, settings, nowMs });
   } else if (pick && pick.challenge) {
     // a friend's challenge (challenge.js): its airport, and its one reason on the line below (the Unranked words)
     title = 'Play challenge';
@@ -94,6 +101,7 @@ export function savedPickOf(pick) {
   if (!pick || !pick.info || !pick.info.icao) return null;
   const saved = { icao: pick.info.icao, daily: pick.daily || 0 };
   if (pick.weekend) saved.weekend = pick.weekend; // a weekend pick keeps its Saturday (3.3); other picks save as they did
+  if (pick.rush) saved.rush = pick.rush; // the Thanksgiving Rush keeps its day (3.4)
   // a friend's challenge keeps its own parts, so a restart brings the same planes back (challenge.js)
   // (its screen, layout code and version too, DECISIONS 435: a restart flies the same screen and says the same words)
   if (pick.challenge) saved.challenge = { seed: pick.challenge.seed, level: pick.challenge.level, score: pick.challenge.score, rules: pick.challenge.rules, real: !!pick.challenge.real, name: pick.challenge.name || '', weather: pick.challenge.weather ?? null, screen: pick.challenge.screen ?? null, layout: pick.challenge.layout ?? null, version: pick.challenge.version ?? null };

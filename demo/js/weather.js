@@ -1,13 +1,13 @@
 // Weather as an enemy: crosswind drift, drifting storm cells, wind shifts that flip the active
 // runways, and fog that hides distant aircraft behind radar blips. Seeded from the real METAR when
 // available, otherwise generated; difficulty scales severity. All state is plain data (rewind).
-import { makeRng, dist, TAU, clamp } from './util.js?v=86c2b44d';
-import { reducedMotion, flashGate } from './motion.js?v=86c2b44d';
-import { bearingToCanvas } from './geo.js?v=86c2b44d';
-import { CLASSES, LANE_S } from './config.js?v=86c2b44d';
-import { chooseActiveEnds } from './metar.js?v=86c2b44d';
-import { setActiveEnd } from './airport.js?v=86c2b44d';
-import { FONT } from './fx.js?v=86c2b44d';
+import { makeRng, dist, TAU, clamp } from './util.js?v=2f66fd5f';
+import { reducedMotion, flashGate } from './motion.js?v=2f66fd5f';
+import { bearingToCanvas } from './geo.js?v=2f66fd5f';
+import { CLASSES, LANE_S } from './config.js?v=2f66fd5f';
+import { chooseActiveEnds } from './metar.js?v=2f66fd5f';
+import { setActiveEnd } from './airport.js?v=2f66fd5f';
+import { FONT } from './fx.js?v=2f66fd5f';
 
 // crosswind drift (units/s per knot) by size class: strongest on light aircraft
 const DRIFT = { light: 0.3, regional: 0.2, heli: 0.2, narrowbody: 0.12, heavy: 0.075 };

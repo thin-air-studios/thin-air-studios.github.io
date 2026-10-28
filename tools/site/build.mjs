@@ -47,7 +47,7 @@ export function validateConfig(config) {
   for (const key of ['weekend', 'thanksgiving', 'santa']) {
     if (typeof config.events?.[key]?.live !== 'boolean') problems.push(`events.${key}.live must be true or false`);
   }
-  for (const key of ['challengeLinks', 'challengeBoards', 'airportBoards']) {
+  for (const key of ['challengeLinks', 'challengeBoards', 'airportBoards', 'liveFlights']) {
     if (typeof config.features?.[key] !== 'boolean') problems.push(`features.${key} must be true or false`);
   }
   const langs = config.languages || [];

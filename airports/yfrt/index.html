@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -93,7 +93,51 @@
       <ul class="chips"><li><a class="chip" href="/airports/ynov/">Nova Airport (YNOV)</a> <small>481 km (299 mi)</small></li><li><a class="chip" href="/airports/ygrm/">Gruyere Airport (GYZ)</a> <small>520 km (323 mi)</small></li><li><a class="chip" href="/airports/ywbr/">Warburton Airport (YWBR)</a> <small>545 km (338 mi)</small></li><li><a class="chip" href="/airports/ycdu/">Ceduna Airport (CED)</a> <small>550 km (342 mi)</small></li><li><a class="chip" href="/airports/yltn/">Laverton Airport (LVO)</a> <small>602 km (374 mi)</small></li><li><a class="chip" href="/airports/ypkg/">Kalgoorlie Boulder Airport (KGI)</a> <small>635 km (394 mi)</small></li><li><a class="chip" href="/airports/ymmi/">Murrin Murrin Airport (WUI)</a> <small>645 km (401 mi)</small></li><li><a class="chip" href="/airports/yesp/">Esperance Airport (EPR)</a> <small>671 km (417 mi)</small></li></ul>
     </div>
   </section>
-  
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="YFRT" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">Live now</p>
+          <h2 id="flights-title">Flying near Forrest Airport right now</h2>
+          <p class="flights-lead">Real aircraft, from public broadcasts. The list refreshes every minute while this page is open.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>Aircraft within 40 nm</dt><dd data-flights-within>0</dd></div>
+          <div><dt>In the air</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>Live data is behind for this airport right now, so this list may be a few minutes old.</p>
+        <ol class="flights-list" data-flights-list aria-label="Flying near Forrest Airport right now" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>No aircraft within 40 nm right now.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-yfrt%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-yfrt" data-ev-position="flights" data-ev-airport="YFRT">Play this airport live</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"Landing","unknown":"Unknown","ground":"On the ground","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"Live data:","updated":"Updated {when}","updatedNow":"Updated just now","showing":"Showing {shown} of {n}, flying aircraft first."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section>
+  <div aria-hidden="true" data-boards-sentinel></div>
+  <section class="section board-panel" id="top-controllers" aria-labelledby="top-controllers-title" data-boards data-icao="YFRT" data-lat="-30.83662" data-lon="128.11281" hidden>
+    <div class="wrap">
+      <h2 id="top-controllers-title">Top controllers at FOS this week</h2>
+      <p class="board-intro">Each player&#39;s best ranked score at FOS this week. Weeks start on Monday, on the airport&#39;s clock.</p>
+      <div class="board-levels" role="group" aria-label="Level"><button type="button" class="board-level" data-level="beginner" aria-pressed="false">Beginner</button><button type="button" class="board-level" data-level="easy" aria-pressed="false">Easy</button><button type="button" class="board-level" data-level="normal" aria-pressed="false">Normal</button><button type="button" class="board-level" data-level="hard" aria-pressed="false">Hard</button><button type="button" class="board-level" data-level="chaos" aria-pressed="false">Chaos</button></div>
+      <p class="board-caption" aria-live="polite" hidden data-one="1 player this week on {level}" data-many="{n} players this week on {level}"></p>
+      <ol class="board-list" data-list aria-label="Top controllers at FOS this week" hidden></ol>
+      <p class="board-empty" data-empty="all" hidden>No one has landed planes at FOS this week. Be the first: get the app</p>
+      <p class="board-empty" data-empty="level" data-template="No one has landed planes on {level} at FOS this week yet. Be the first: get the app" hidden></p>
+      <p class="board-empty" data-empty="failed" hidden>We could not load this board. Try another level, or try again later.</p>
+      <div class="board-cta">
+        <a class="btn" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dboard-yfrt%26utm_content%3Dboard" data-event="play_store_click" data-ev-page="board-yfrt" data-ev-position="board" data-ev-airport="YFRT">Get Short Final on Google Play</a>
+      </div>
+      <p class="sources">Names show only where a player has chosen to show them. Everyone else appears as Pilot and four digits. Scores come from ranked games.</p>
+    </div>
+    <script type="module" src="/assets/site/boards.mjs"></script>
+  </section>
   <section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Land at FOS in Short Final</h2>

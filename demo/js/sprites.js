@@ -1,6 +1,6 @@
 // Original top-down aircraft, drawn with canvas paths. Heading 0 points along +x.
-import { ZONE_COLORS } from './config.js?v=86c2b44d';
-import { TAU } from './util.js?v=86c2b44d';
+import { ZONE_COLORS } from './config.js?v=2f66fd5f';
+import { TAU } from './util.js?v=2f66fd5f';
 
 function capsule(ctx, x0, x1, hw) {
   ctx.beginPath();
@@ -300,6 +300,94 @@ shapes.heavy = function heavy(ctx, c, t, shadow) {
   ctx.fillStyle = '#2b4458';
   ctx.beginPath();
   ctx.ellipse(23.5, 0, 2.6, 3.2, 0, -Math.PI / 2, Math.PI / 2);
+  ctx.fill();
+};
+
+// Santa's sleigh (3.4, santa.js): a red sled with gold trim and runners, a sack of presents, a red-coated driver, and four reindeer
+// in harness in front, seen from above. Heading 0 points along +x, the way it flies (the reindeer lead). Every part stays inside the
+// sprite's 34-unit radius. Its shadow is the same silhouette in the shadow colour, with no detail.
+shapes.sleigh = function sleigh(ctx, c, t, shadow) {
+  const col = (v) => shadow || v;
+  if (!shadow) {
+    // the reins, from the sled's nose to each reindeer's rump (under the team)
+    ctx.strokeStyle = '#5a3a22';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    for (const s of [-1, 1]) {
+      ctx.moveTo(9, s * 2.5);
+      ctx.lineTo(11.6, s * 6);
+      ctx.moveTo(9, s * 2.5);
+      ctx.lineTo(20.6, s * 6);
+    }
+    ctx.stroke();
+  }
+  // the reindeer: a back pair at x 16 and a lead pair at x 25, each with its head forward and two antlers
+  for (const x of [16, 25]) {
+    for (const s of [-1, 1]) {
+      ctx.fillStyle = col('#b98a5a');
+      ctx.beginPath();
+      ctx.ellipse(x, s * 6, 4.4, 2.2, 0, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(x + 5.2, s * 6, 2, 1.6, 0, 0, TAU);
+      ctx.fill();
+      if (shadow) continue;
+      ctx.strokeStyle = '#6b4a2c';
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      ctx.moveTo(x + 5.6, s * 6 - 1);
+      ctx.lineTo(x + 7.4, s * 6 - 3.6);
+      ctx.moveTo(x + 5.6, s * 6 + 1);
+      ctx.lineTo(x + 7.4, s * 6 + 3.6);
+      ctx.stroke();
+    }
+  }
+  // the sled: a red body with a pointed nose
+  poly(ctx, [[-22, 5.5], [6, 6.5], [10.5, 0]]);
+  ctx.fillStyle = col('#c8322b');
+  ctx.fill();
+  if (shadow) return;
+  // Rudolph's red nose, on the lead reindeer's head
+  ctx.fillStyle = '#e5533d';
+  ctx.beginPath();
+  ctx.arc(30.6, -6, 1.1, 0, TAU);
+  ctx.fill();
+  // the runners, with a curl at the front
+  ctx.strokeStyle = '#5a3a22';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  for (const s of [-1, 1]) {
+    ctx.moveTo(-24, s * 8.5);
+    ctx.lineTo(10, s * 8.5);
+  }
+  ctx.stroke();
+  // the sled's outline in gold, and a gold band along it
+  poly(ctx, [[-22, 5.5], [6, 6.5], [10.5, 0]]);
+  ctx.strokeStyle = '#f2c14e';
+  ctx.lineWidth = 1.4;
+  ctx.stroke();
+  ctx.fillStyle = '#f2c14e';
+  ctx.fillRect(-21, -0.9, 27, 1.8);
+  // the sack of presents at the back: brown, with a green and a cream parcel
+  ctx.beginPath();
+  ctx.arc(-16, 0, 3.8, 0, TAU);
+  ctx.fillStyle = '#7a4b2a';
+  ctx.fill();
+  ctx.fillStyle = '#3c9b5a';
+  ctx.fillRect(-19.5, -3.2, 3.6, 3.6);
+  ctx.fillStyle = '#f6f1e4';
+  ctx.fillRect(-12, -3, 3.4, 3.4);
+  // the driver, in a red coat with a white-tipped hat, seen from above
+  ctx.beginPath();
+  ctx.ellipse(-3, 0, 3.6, 3.4, 0, 0, TAU);
+  ctx.fillStyle = '#c8322b';
+  ctx.fill();
+  ctx.strokeStyle = '#f6f1e4';
+  ctx.lineWidth = 0.9;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(-1.2, 0, 1.6, 0, TAU);
+  ctx.fillStyle = '#f6f1e4';
   ctx.fill();
 };
 

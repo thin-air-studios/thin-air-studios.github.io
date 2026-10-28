@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -97,7 +97,33 @@
       <ul class="chips"><li><a class="chip" href="/airports/libv/">Gioia del Colle Antonio Ramirez Air Base (LIBV)</a> <small>44 km (27 mi)</small></li><li><a class="chip" href="/airports/libg/">Taranto-Grottaglie Marcello Arlotta Airport (TAR)</a> <small>88 km (55 mi)</small></li><li><a class="chip" href="/airports/liba/">Amendola Air Base (LIBA)</a> <small>98 km (61 mi)</small></li><li><a class="chip" href="/airports/libf/">Foggia Gino Lisa Airport (FOG)</a> <small>108 km (67 mi)</small></li><li><a class="chip" href="/it/airports/libr/">Brindisi Airport (BDS)</a> <small>113 km (70 mi)</small></li><li><a class="chip" href="/airports/libn/">Lecce Galatina Air Base / Galatina Fortunato Cesari Airport (LCC)</a> <small>153 km (95 mi)</small></li><li><a class="chip" href="/airports/liri/">Salerno Costa d&#39;Amalfi Airport (QSR)</a> <small>166 km (103 mi)</small></li><li><a class="chip" href="/airports/lick/">Scalea Airport (LICK)</a> <small>171 km (107 mi)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="LIBD" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">In diretta</p>
+          <h2 id="flights-title">In volo vicino a Bari in questo momento</h2>
+          <p class="flights-lead">Aerei reali, da trasmissioni pubbliche. L’elenco si aggiorna ogni minuto finché la pagina è aperta.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>Aerei entro 40 nm</dt><dd data-flights-within>0</dd></div>
+          <div><dt>In volo</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>I dati in diretta sono in ritardo per questo aeroporto, quindi l’elenco può avere qualche minuto.</p>
+        <ol class="flights-list" data-flights-list aria-label="In volo vicino a Bari in questo momento" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>Nessun aereo entro 40 nm in questo momento.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-libd-it%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-libd-it" data-ev-position="flights" data-ev-airport="LIBD">Gioca questo aeroporto in diretta</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"In atterraggio","unknown":"Sconosciuto","ground":"A terra","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"Dati in diretta:","updated":"Aggiornato {when}","updatedNow":"Aggiornato adesso","showing":"Mostro {shown} di {n}, prima gli aerei in volo."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Atterra su BRI in Short Final</h2>
       <p class="lead">Short Final è gratis su Google Play. Scegli l&#39;aeroporto, traccia una rotta per ogni aereo e falli atterrare sulla pista giusta.</p>

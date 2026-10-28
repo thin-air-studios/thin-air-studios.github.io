@@ -1,7 +1,7 @@
 // The game's keys for the airport search (2.8; DECISIONS 330): drawn into #search-kb from searchkeys.js (KEY_ROWS, SPECIAL_KEYS).
 // Every key is a button with an accessible name (keyName). A press keeps the field's focus (the pointer and mouse downs are not
 // focus changes), so the field never blurs under the keys, and the key acts on the click.
-import { KEY_ROWS, SPECIAL_KEYS, keyName } from './searchkeys.js?v=86c2b44d';
+import { KEY_ROWS, SPECIAL_KEYS, keyName } from './searchkeys.js?v=2f66fd5f';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

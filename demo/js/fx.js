@@ -1,6 +1,6 @@
 // Particles, floating text, camera shake and slow-motion: the "juice".
-import { TAU, damp, clamp } from './util.js?v=86c2b44d';
-import { reducedMotion } from './motion.js?v=86c2b44d';
+import { TAU, damp, clamp } from './util.js?v=2f66fd5f';
+import { reducedMotion } from './motion.js?v=2f66fd5f';
 
 // contrails: at most 300 particles in all, and six puffs a second from any one aircraft (the spacing is 0.2 s)
 export const CONTRAIL_MAX = 300;
@@ -89,6 +89,17 @@ export class FX {
    */
   text(x, y, str, color, size = 18, life = 1.1, { centre = null, arc = false, capY = null } = {}) {
     this.texts.push({ x, y, str, color, size, life: 0, max: life, centre, arc, capY });
+  }
+
+  /**
+   * Santa's landing (santa.js, 3.4): two gold rings and a shower of sparks where the sleigh touches down, and "Ho ho ho!" above it,
+   * with the bells the audio plays at the same moment (audio.js 'bells').
+   */
+  santaLanding(x, y) {
+    this.ring(x, y, '255,215,120', 90, 0.8, 4);
+    this.ring(x, y, '255,240,200', 60, 0.6, 2);
+    this.puff(x, y, 22, { kind: 'spark', speed: 120, r: 1.6, grow: 0, life: 1.1, color: '255,215,120', alpha: 1, drag: 1.8 });
+    this.text(x, y - 30, 'Ho ho ho!', '#ffe39a', 20, 1.8, { arc: true });
   }
 
   explosion(x, y, colors = ['#e5533d', '#f6f1e4']) {

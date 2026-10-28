@@ -1,7 +1,7 @@
 // Drawing primitives for the hand-made, slightly retro airfield look.
 // Everything is drawn in world units; callers set up the transform.
-import { TAU, makeRng } from './util.js?v=86c2b44d';
-import { ZONE_COLORS } from './config.js?v=86c2b44d';
+import { TAU, makeRng } from './util.js?v=2f66fd5f';
+import { ZONE_COLORS } from './config.js?v=2f66fd5f';
 
 export function fillAll(ctx, color, x0, y0, w, h) {
   ctx.fillStyle = color;

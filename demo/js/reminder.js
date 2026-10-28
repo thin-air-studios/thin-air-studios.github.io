@@ -4,9 +4,11 @@
 //
 // The time: the daily challenge is ready from local midnight, so its reminder comes at 9 am, the phone's own time. Days are local
 // day numbers (airportdb.js localDay); the daily number is that less DAILY_EPOCH, as the shell computes them.
-import { DAILY_EPOCH } from './airportdb.js?v=86c2b44d';
-import { weekendOf } from './weekend.js?v=86c2b44d';
-import { streakState, RUN_GAP } from './streak.js?v=86c2b44d';
+import { DAILY_EPOCH } from './airportdb.js?v=2f66fd5f';
+import { weekendOf } from './weekend.js?v=2f66fd5f';
+import { rushOf } from './rush.js?v=2f66fd5f';
+import { SANTA_DAY } from './santa.js?v=2f66fd5f';
+import { streakState, RUN_GAP } from './streak.js?v=2f66fd5f';
 
 export const REMINDER_HOUR = 9;
 export const EVENING_HOUR = 19; // the streak saver and the Sunday recap
@@ -194,7 +196,29 @@ export function namesWeekend({ today, w = 0, title = '', flown = 0 } = {}) {
   return !!title && w > 0 && weekendOf(today) === w && flown !== w;
 }
 
-/** The 9 am notice's words: the same sentence, and on a weekend morning the weekend's sentence in its place. One notice, one sentence more. */
-export function dailyNoticeText(args = {}) {
-  return namesWeekend(args) ? `Today’s daily challenge is ready. ${args.title} is on this weekend too.` : DAILY_NOTICE;
+/**
+ * Whether the 9 am notice names the Thanksgiving Rush (3.4): today is the Rush day the page gave (rush.js), and that day is not flown yet
+ * (flown: the last Rush day flown). A stale day, or no title, names nothing. ReminderRule.kt namesRush is the phone's copy of this rule.
+ */
+export function namesRush({ today, day = 0, title = '', flown = 0 } = {}) {
+  return !!title && rushOf(day) !== null && rushOf(today) === day && flown !== day;
 }
+
+/**
+ * The 9 am notice's words: the same sentence; on a Rush morning the Rush's sentence in its place, and on a weekend morning the weekend's.
+ * One notice, one sentence more. The Rush's weekend is the Rush's own (weekend.js weekendOf), so the two never both name a day.
+ * rush: { day, title, flown } the page gave for the Rush (0 and '' on a day that is not the Rush).
+ */
+export function dailyNoticeText(args = {}) {
+  if (namesRush({ today: args.today, ...(args.rush || {}) })) return `Today’s daily challenge is ready. ${args.rush.title} is on today too.`;
+  if (namesWeekend(args)) return `Today’s daily challenge is ready. ${args.title} is on this weekend too.`;
+  return namesSanta({ today: args.today, ...(args.santa || {}) }) ? SANTA_NOTICE : DAILY_NOTICE;
+}
+
+/** The 24 December line of the 9 am notice (3.4, santa.js): Christmas Eve by the phone's clock, the sleigh's day given (0 on another day). */
+export function namesSanta({ today, day = 0 } = {}) {
+  return day === SANTA_DAY && today === SANTA_DAY;
+}
+
+/** The notice's words on Christmas Eve (3.4). ReminderRule.kt namesSanta and strings.xml reminder_text_santa are the phone's copy. */
+export const SANTA_NOTICE = 'Today’s daily challenge is ready. Santa’s make-believe sleigh is in the traffic today too.';

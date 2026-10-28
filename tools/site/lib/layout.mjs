@@ -116,7 +116,8 @@ function consent(ctx, lang) {
  * lang (default en), path (the page's site path, ending in / or .html), title, description, section (for the nav's current
  * item), playKey (the page key for Play links, lowercase), image (site path or URL; default the shared image), imageAlt,
  * ogType ('website' or 'article'), jsonLd (array of objects), alternates ([{hreflang, href}], include x-default when the page
- * has translations), noindex (true for a deliberately thin page), bodyClass, body (html`` or raw() markup for <main>).
+ * has translations), noindex (true for a deliberately thin page), ogUrl (false leaves out og:url, for a page whose shared address is not
+ * its template's path, such as a challenge board), bodyClass, body (html`` or raw() markup for <main>).
  */
 export function layout(ctx, o) {
   const { config, t } = ctx;
@@ -148,7 +149,7 @@ ${alternates}
 <meta property="og:locale" content="${ogLocale}">
 <meta property="og:title" content="${o.title}">
 <meta property="og:description" content="${o.description}">
-<meta property="og:url" content="${canonical}">
+${o.ogUrl === false ? '' : html`<meta property="og:url" content="${canonical}">`}
 <meta property="og:image" content="${image}">
 <meta property="og:image:alt" content="${o.imageAlt || 'Short Final: real flights at any airport'}">
 <meta name="twitter:card" content="summary_large_image">
@@ -157,7 +158,7 @@ ${alternates}
 <meta name="twitter:image" content="${image}">
 ${verification}
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 ${ga ? gaHead(config.analytics.ga4) : ''}

@@ -1,11 +1,11 @@
 // The end card's stats and rank lines (requirements 15, 16 and 19) and the loading card's rank line. The words come from here,
 // so the tests check them without the game; fillEndCard puts them on the card. Demos keep no stats, and a daily challenge
 // has its own board, so their stats line is empty.
-import { endLine } from './stats.js?v=86c2b44d';
-import { easiestOf, isRanked, rankingLabel, shouldPostScores, startRanking } from './ranking.js?v=86c2b44d';
-import { gameConfig } from './modes.js?v=86c2b44d';
-import { LEVEL_NAMES } from './boards.js?v=86c2b44d';
-import { countUp, springOut, reducedMotion } from './motion.js?v=86c2b44d';
+import { endLine } from './stats.js?v=2f66fd5f';
+import { easiestOf, isRanked, rankingLabel, shouldPostScores, startRanking } from './ranking.js?v=2f66fd5f';
+import { gameConfig } from './modes.js?v=2f66fd5f';
+import { LEVEL_NAMES } from './boards.js?v=2f66fd5f';
+import { countUp, springOut, reducedMotion } from './motion.js?v=2f66fd5f';
 
 /** The stats line under the score: "DFW on Normal: best 42 · 7 games". Empty for a demo, a daily, or no game yet. */
 export function statsLine(save, { icao, code, levels, demo = false, daily = false }) {
@@ -45,6 +45,8 @@ export function rankLine(ranking, { code = '', live = false, posted = null } = {
   if (posted.state === 'unsaved') return `${base} · couldn't save it to post`;
   if (posted.state === 'ranked' && posted.rank) {
     if (ranking.board === 'daily') return `Ranked · #${posted.rank} today`;
+    // the Rush's board is one day's (rush.js): its rank reads as the daily's does, not as a week's level board (fixer, 3.4 review)
+    if (ranking.board === 'rush') return `Ranked · #${posted.rank} today`;
     if (ranking.board === 'weekend') {
       const total = Number(posted.total);
       return `Ranked · ${ordinal(posted.rank)}${Number.isFinite(total) && total >= posted.rank ? ` of ${total}` : ''} this weekend`;
@@ -55,6 +57,39 @@ export function rankLine(ranking, { code = '', live = false, posted = null } = {
     return `Ranked · #${posted.rank}${of} at ${code} on ${LEVEL_NAMES[level] || level} this week`;
   }
   return base;
+}
+
+/**
+ * The state of a challenge board's copy for the end card (3.4, C7), from its outbox entry and the server's answer (json, when it has
+ * one): { state: 'ranked', rank, total } when the server took it, { state: 'full' } when the board is full and it is not in the top
+ * rows, { state: 'capped' } when the server holds it for the board's room (its entry is held for a cap), else { state: 'queued' }.
+ */
+export function challengePosted(entry, json = null) {
+  if (json && json.status === 'accepted') {
+    if (json.full) return { state: 'full' };
+    return { state: 'ranked', rank: json.rank, total: json.total };
+  }
+  if (entry && entry.held === 'cap') return { state: 'capped' };
+  return { state: 'queued' };
+}
+
+/**
+ * The challenge board's line on the end card (3.4, C7), from challengePosted: "Challenge board: #2 of 14" once the server has taken the
+ * score, "Posts to the challenge board when you are online" while it waits, the plain words of C5 when the board's room is full for the
+ * day, and the full-board words. '' when there is nothing to say (no board, or no state).
+ */
+export function challengeBoardLine(posted) {
+  if (!posted) return '';
+  if (posted.state === 'queued') return 'Posts to the challenge board when you are online';
+  if (posted.state === 'capped') return 'Your score is saved on this phone and will post when the challenge board has room.';
+  if (posted.state === 'full') return 'The challenge board is full, and this score is not in its top 200.';
+  if (posted.state === 'long') return 'This game is too long to post to the challenge board.';
+  if (posted.state === 'unsaved') return 'Couldn\'t save this game to post to the challenge board.';
+  if (posted.state === 'ranked' && posted.rank) {
+    const total = Number(posted.total);
+    return `Challenge board: #${posted.rank}${Number.isFinite(total) && total >= posted.rank ? ` of ${total}` : ''}`;
+  }
+  return '';
 }
 
 /** A rank as its ordinal word: 1st, 2nd, 3rd, 4th, and 11th to 13th as "th" (the weekend's rank line reads "3rd of 41"). */
@@ -68,12 +103,13 @@ export function ordinal(n) {
  * The loading card's rank line, before the game starts: the same rules newGame applies (startRanking on the same settings).
  * Ranked or Unranked, so the player knows before the first plane (requirement 19; the words only, item 6).
  */
-export function loadingRankLine({ demo = false, daily = 0, weekend = false, challenge = false, settings = {}, noMap = false, nowMs = Date.now() } = {}) {
+export function loadingRankLine({ demo = false, daily = 0, weekend = false, challenge = false, rush = false, settings = {}, noMap = false, nowMs = Date.now() } = {}) {
   const s = settings || {};
   const cfg = gameConfig({ daily: !!daily || !!weekend, settings: s, nowMs });
+  // the Rush (3.4, rush.js) is ranked only on its own settings (Normal, departures on, all simulated): any other setting reads Unranked
   const rk = startRanking({
-    demo: !!demo, daily: !!daily, weekend: !!weekend && !daily, challenge: !!challenge && !demo, diff: cfg.diff, departures: daily || weekend ? true : !!s.departures,
-    realPlanesOnly: !!s.realPlanesOnly, simOverride: cfg.simOverride, noMap: !demo && !!noMap,
+    demo: !!demo, daily: !!daily, weekend: !!weekend && !daily, rush: !!rush && !daily && !weekend, challenge: !!challenge && !demo, diff: cfg.diff,
+    departures: daily || weekend || rush ? true : !!s.departures, realPlanesOnly: !!s.realPlanesOnly, simOverride: cfg.simOverride, noMap: !demo && !!noMap,
   });
   return rankWord(rk);
 }

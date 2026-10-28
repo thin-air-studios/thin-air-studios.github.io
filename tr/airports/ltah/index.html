@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -94,7 +94,33 @@
       <ul class="chips"><li><a class="chip" href="/airports/ltbz/">Zafer Airport (KZR)</a> <small>59 km (37 mil)</small></li><li><a class="chip" href="/airports/ltbn/">Kütahya Airport (LTBN)</a> <small>93 km (58 mil)</small></li><li><a class="chip" href="/airports/ltbo/">Uşak Airport (USQ)</a> <small>98 km (61 mil)</small></li><li><a class="chip" href="/airports/ltfc/">Süleyman Demirel International Airport (ISE)</a> <small>99 km (61 mil)</small></li><li><a class="chip" href="/airports/ltav/">Sivrihisar Airport (LTAV)</a> <small>104 km (65 mil)</small></li><li><a class="chip" href="/airports/ltbi/">Eskişehir Air Base (ESK)</a> <small>118 km (73 mil)</small></li><li><a class="chip" href="/tr/airports/ltby/">Hasan Polatkan Airport (AOE)</a> <small>121 km (75 mil)</small></li><li><a class="chip" href="/airports/ltay/">Çardak Airport (DNZ)</a> <small>131 km (81 mil)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="LTAH" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">Canlı</p>
+          <h2 id="flights-title">Şu an Afyonkarahisar yakınında uçanlar</h2>
+          <p class="flights-lead">Herkese açık yayınlardan gelen gerçek uçaklar. Bu sayfa açık olduğu sürece liste her dakika yenilenir.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>40 nm içindeki uçaklar</dt><dd data-flights-within>0</dd></div>
+          <div><dt>Havada</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>Bu havalimanında canlı veriler şu an gecikmeli, bu yüzden liste birkaç dakika eski olabilir.</p>
+        <ol class="flights-list" data-flights-list aria-label="Şu an Afyonkarahisar yakınında uçanlar" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>Şu an 40 nm içinde uçak yok.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-ltah-tr%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-ltah-tr" data-ev-position="flights" data-ev-airport="LTAH">Bu havalimanını canlı oyna</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"İniyor","unknown":"Bilinmiyor","ground":"Yerde","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"Canlı veri:","updated":"Güncellendi: {when}","updatedNow":"Az önce güncellendi","showing":"{n} uçaktan {shown} tanesi gösteriliyor, önce havada olanlar."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Short Final&#39;de AFY havalimanına in</h2>
       <p class="lead">Short Final, Google Play&#39;de ücretsizdir. Havalimanını seçin, her uçak için bir rota çizin ve doğru pistte indirin.</p>

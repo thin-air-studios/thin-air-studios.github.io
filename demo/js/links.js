@@ -4,11 +4,24 @@
 // through Android App Links (the manifest, MainActivity, HP_openLink); nothing new is made in that form. The one link made on the
 // website's address is a friend's challenge (3.2, below): it carries the challenge's parts, and App Links open it in the game too.
 
+import { SITE_BASE } from './config.js?v=2f66fd5f';
+
 /** The game's Google Play page: where every share goes. */
 export const STORE_URL = 'https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern';
 
 /** The website's play page that the older "Beat my score" links open (read by parseShareLink, never made now). */
 export const LINK_BASE = 'https://thin-air-studios.github.io/play/';
+
+/** The hosts whose /play page opens the game at an airport: the old github.io site, and the site's own address (3.4, /play there too). */
+const PLAY_HOSTS = Object.freeze(['thin-air-studios.github.io', 'playshortfinal.com']);
+/** The website (3.4): a challenge's board page is `<SITE_BASE>/c/<id>/`. SITE_BASE is defined once, in config.js (WP-D). */
+export { SITE_BASE };
+const SITE_HOST = 'playshortfinal.com';
+/** A challenge board's id: twelve characters of lower-case RFC 4648 base32 (challenge.js challengeIdOf). */
+export const CHALLENGE_ID_RE = /^[a-z2-7]{12}$/;
+
+/** The board page of a challenge, for its id: where the end card's "See the board" opens. */
+export const challengeBoardUrl = (id) => `${SITE_BASE}/c/${id}/`;
 
 /** Destinations whose captions drop links (TikTok, Instagram): the caption names the game in words, with no address. */
 const NO_LINK_IN_CAPTION = new Set(['tiktok', 'instagram']);
@@ -37,7 +50,7 @@ export function shareLinkFor(game, destination = 'share') {
 
 /**
  * What the game takes from a link someone opened (MainActivity passes it to HP_openLink): { icao, daily } for an https address
- * under LINK_BASE with an airport code, else null. A daily number that is not a whole number is dropped, the airport kept. Anything
+ * on a PLAY_HOSTS host, at /play, with an airport code, else null. A daily number that is not a whole number is dropped, the airport kept. Anything
  * else is ignored: another site's address, a path that is not /play/, a missing or badly formed code. (Links from 2.4 and before.)
  */
 export function parseShareLink(href) {
@@ -47,13 +60,18 @@ export function parseShareLink(href) {
   } catch (_) {
     return null;
   }
-  if (u.protocol !== 'https:' || u.hostname !== 'thin-air-studios.github.io') return null;
-  if (u.pathname !== '/play' && u.pathname !== '/play/') return null;
+  if (u.protocol !== 'https:') return null;
+  // the website's challenge page (3.4): playshortfinal.com/c/<id>/ carries the same parts, and its path names the board (id)
+  const onSite = u.hostname === SITE_HOST && /^\/c\/[a-z2-7]{12}\/?$/.test(u.pathname);
+  const onPlay = PLAY_HOSTS.includes(u.hostname) && (u.pathname === '/play' || u.pathname === '/play/');
+  if (!onSite && !onPlay) return null;
   const icao = (u.searchParams.get('a') || '').trim().toUpperCase();
   if (!/^[A-Z0-9][A-Z0-9-]{1,9}$/.test(icao)) return null; // the database has a few idents with a dash (BR-2182)
   const d = u.searchParams.get('d');
   const daily = d != null && /^\d{1,6}$/.test(d) ? Number(d) : 0;
-  return { icao, daily: daily > 0 ? daily : 0 };
+  const link = { icao, daily: daily > 0 ? daily : 0 };
+  if (onSite) link.id = u.pathname.split('/')[2];
+  return link;
 }
 
 /**
@@ -186,6 +204,9 @@ function weatherPartOf(w) {
  */
 export function checkChallenge(ch) {
   if (!ch || typeof ch !== 'object') return null;
+  // the board's id (the path of a board link, challenge.js): null for a link with no board
+  const id = ch.id == null || ch.id === '' ? null : ch.id;
+  if (id !== null && (typeof id !== 'string' || !CHALLENGE_ID_RE.test(id))) return null;
   const icao = String(ch.icao || '').toUpperCase();
   if (!/^[A-Z0-9][A-Z0-9-]{1,9}$/.test(icao)) return null;
   const seed = Number(ch.seed);
@@ -200,7 +221,12 @@ export function checkChallenge(ch) {
   const layout = checkLayout(ch.layout);
   const version = checkVersion(ch.version);
   if (screen === undefined || layout === undefined || version === undefined) return null;
-  return { icao, seed, level: ch.level, score, rules: ch.rules || '', real: !!ch.real, name: cleanName(ch.name), weather, screen, layout, version };
+  const out = { icao, seed, level: ch.level, score, rules: ch.rules || '', real: !!ch.real, name: cleanName(ch.name), weather, screen, layout, version };
+  // the 3.4 parts (a board's id, the holding fixes, Santa) are kept only when they are set: a 3.3 challenge keeps its shape
+  if (id !== null) out.id = id;
+  if (ch.fixesHidden) out.fixesHidden = true;
+  if (ch.santa) out.santa = true;
+  return out;
 }
 
 /**
@@ -222,7 +248,12 @@ export function challengeLinkFor(ch) {
   if (c.rules) parts.push(`k=${c.rules}`);
   if (c.real) parts.push('x=1');
   if (c.name) parts.push(`n=${encodeURIComponent(c.name)}`);
-  return `${LINK_BASE}?${parts.join('&')}`;
+  // 3.4: fh=1 when the challenger's game had its holding fixes hidden at the start, sa=1 when it flew Santa (absent: 0 and no Santa)
+  if (c.fixesHidden) parts.push('fh=1');
+  if (c.santa) parts.push('sa=1');
+  // a board link (3.4) is the board page's address; any other challenge keeps the play page of 3.2 and 3.3
+  const base = c.id ? challengeBoardUrl(c.id) : LINK_BASE;
+  return `${base}?${parts.join('&')}`;
 }
 
 /**
@@ -249,9 +280,18 @@ export function parseChallengeLink(href) {
   const screen = sc == null ? null : parseScreenPart(sc);
   if (sc != null && !screen) return null;
   const x = q.get('x');
+  // 3.4: fh and sa are 1 or 0 (absent is 0); any other value makes the challenge null, as a bad 3.3 part does
+  const flag = (k) => {
+    const v = q.get(k);
+    return v == null || v === '0' ? false : v === '1' ? true : undefined;
+  };
+  const fixesHidden = flag('fh');
+  const santa = flag('sa');
+  if (fixesHidden === undefined || santa === undefined) return null;
   return checkChallenge({
     icao: base.icao, seed: parseInt(c.toLowerCase(), 36), level, score: Number(s), rules: q.get('k') || '',
     real: x === '1', name: q.get('n') || '', weather, screen, layout: q.get('lo'), version: q.get('v'),
+    id: base.id ?? null, fixesHidden, santa,
   });
 }
 

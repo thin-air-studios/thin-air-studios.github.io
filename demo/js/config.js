@@ -95,4 +95,10 @@ export const LANE_S = 6;
 // The online boards (server/). Off until the Worker is deployed and a test score is accepted (release step 6), so the
 // World tab makes no request before then (release step 22). The Google web client id for server sign-in is not here: the app reads it from
 // games-ids.xml (game_web_client_id, platform.js playGames.webClientId). Without it no session is made and posts wait.
+// 3.4: the boards' API is its own address (api.playshortfinal.com, a custom domain on the Worker). Builds before 3.4 call the Worker's
+// old address, which the Worker keeps on (wrangler.toml workers_dev), so installed older builds still post.
 export const BOARDS = { base: 'https://api.playshortfinal.com', live: false };
+
+// The website (3.4): challenge links are made on it, as SITE_BASE + '/c/<id>/' (links.js challengeLinkFor). A friend without the game
+// opens that page, which offers Google Play; with the game, App Links open the game (AndroidManifest.xml).
+export const SITE_BASE = 'https://playshortfinal.com';

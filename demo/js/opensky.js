@@ -1,11 +1,11 @@
 // OpenSky Network live traffic: parsing, OAuth2 client-credentials auth, and a polling feed that
 // treats the API's credit limits as a hard budget (anonymous: 400 credits/day, 1 credit per
 // bounding-box query under 25 sq deg; authenticated: 4000/day).
-import { haversine, bearing, angleDiff, bboxAround } from './geo.js?v=86c2b44d';
-import { classifyFlight } from './classify.js?v=86c2b44d';
-import { ARRIVAL, arrivalCheck, estimatePosition } from './arrivals.js?v=86c2b44d';
-import { judge } from './area.js?v=86c2b44d';
-import { pollFactor } from './feedstate.js?v=86c2b44d';
+import { haversine, bearing, angleDiff, bboxAround } from './geo.js?v=2f66fd5f';
+import { classifyFlight } from './classify.js?v=2f66fd5f';
+import { ARRIVAL, arrivalCheck, estimatePosition } from './arrivals.js?v=2f66fd5f';
+import { judge } from './area.js?v=2f66fd5f';
+import { pollFactor } from './feedstate.js?v=2f66fd5f';
 
 // the dead reckoning is arrivals.js's (one copy); the feed's callers and tests read it from here
 export { estimatePosition };
@@ -218,12 +218,16 @@ export class LiveFeed {
       return;
     }
     this.inFlight = true;
-    this.client.fetchStates(this.bbox, nowMs).then((r) => this.onResult(r, Date.now()), () => this.onResult({ ok: false, status: 0 }, Date.now()));
+    // the area is the circle the game asks for (adsb.lol's point request needs it; OpenSky reads the box, and ignores it)
+    const area = { lat: this.lat, lon: this.lon, radiusM: this.radiusM };
+    this.client.fetchStates(this.bbox, nowMs, { area }).then((r) => this.onResult(r, Date.now()), () => this.onResult({ ok: false, status: 0 }, Date.now()));
   }
 
   onResult(r, nowMs) {
     this.inFlight = false;
-    if (r.remaining != null) this.remaining = r.remaining;
+    // the day's credits are OpenSky's count: adsb.lol's headers name a per-second window, so an adsb.lol answer gives none (null)
+    if (r.source === 'adsblol') this.remaining = null;
+    else if (r.remaining != null) this.remaining = r.remaining;
     this.markFirst();
     if (r.ok) {
       this.failures = 0;
@@ -271,7 +275,8 @@ export class LiveFeed {
     this.httpStatus = r.status || null;
     if (r.status === 429) {
       // with the day's credits spent, a 429 is the daily allowance (as a successful poll says), not a rate limit to wait out
-      const daily = this.remaining != null && this.remaining <= 3;
+      // (adsb.lol says the day's allowance is spent when its wait is more than a minute: r.daily, adsblol.js limitWait)
+      const daily = r.daily === true || (this.remaining != null && this.remaining <= 3);
       this.status = 'paused';
       this.reason = daily ? 'daily' : 'rate';
       this.message = daily ? 'daily limit reached' : 'rate limited';

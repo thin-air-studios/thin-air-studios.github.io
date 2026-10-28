@@ -1,89 +1,92 @@
 // Game controller: screens, airport loading, the live-traffic loop, input, and wiring sim events
 // to sound and feel.
-import { SIM_HZ, CLASSES, ZONE_COLORS, STAR_GOALS, TUNING } from './config.js?v=86c2b44d';
-import { Sim } from './sim.js?v=86c2b44d';
-import { Renderer, canvasDpr, hudRectsFor } from './render.js?v=86c2b44d';
-import { worldShape } from './worldshape.js?v=86c2b44d';
-import { DensityGovernor, densityKey, startDensity, nextDensity } from './density.js?v=86c2b44d';
-import { FX } from './fx.js?v=86c2b44d';
-import { AudioEngine } from './audio.js?v=86c2b44d';
-import { loadSave, writeSave, writeSaveDetail, resetSave } from './storage.js?v=86c2b44d';
-import { haptic, setHaptics, appVersion, keepAwake, setRotationLock, shareText, speech, sharing, playGames, videoBridge, deviceHash, requestReview, openStorePage, openDemoPage, dailyReminder, onPlayGamesState, playGamesChanged } from './platform.js?v=86c2b44d';
-import { noteFinishedGame, noteAsked, goodGame, reviewDue, REVIEW_SETTLE_MS } from './review.js?v=86c2b44d';
-import { reminderNote, streakNote, recapNote, offerDue, offerShown, weekAfterLanding } from './reminder.js?v=86c2b44d';
-import { TICKER_BUSIEST_MIN, afterCounted, gameNote, heldWorldAt, heldWorldStats, landedWord, percentLine, projectedLanded, readDailyHistogram, readWorldStats, sanitizeWorldStats, sendGameNote, shouldSendGameNote, tickerFacts, tickerPick, withCommas, worldStatsNote } from './worldstats.js?v=86c2b44d';
-import { initCloud, cloudLine, syncCloud, scheduleCloudSave, flushCloudSave, resetCloud } from './cloud.js?v=86c2b44d';
-import { shareTexts, renderCard, evenColumns, videoCaption } from './share.js?v=86c2b44d';
-import { pickFromLink, parseChallengeLink, checkChallenge, linkInCaption } from './links.js?v=86c2b44d';
-import { challengeFromGame, challengeHadReal, challengeWords, challengeScoreLine, challengeWho, challengeRealLine, challengeTexts, challengeSamePlanes, challengeWxSeed, weatherOfSeed, repeatableGame } from './challenge.js?v=86c2b44d';
-import { damp, lerp, clamp, dist2, setHudScale, hudScale, textLines } from './util.js?v=86c2b44d';
-import { drawAircraftShape } from './sprites.js?v=86c2b44d';
-import * as db from './airportdb.js?v=86c2b44d';
-import { buildWorld, landableClasses, setActiveEnd, takeoffIdent } from './airport.js?v=86c2b44d';
-import { loadLayout, loadMetar, demoFeed, loadSurroundings, cacheGet, cacheSet, cacheDel, cacheKeys, newPolite, queueFullMap, START_WAIT_MS } from './airportdata.js?v=86c2b44d';
-import { surroundingsInWorld, waterMask, Scenery } from './scenery.js?v=86c2b44d';
-import { groundTheme, nearField } from './airportpaint.js?v=86c2b44d';
-import { bearingToCanvas, bboxAround, haversine } from './geo.js?v=86c2b44d';
-import { OpenSkyClient, LiveFeed, dailyFeed, countInArea } from './opensky.js?v=86c2b44d';
-import { askForRoute, arrivalNote } from './routes.js?v=86c2b44d';
-import { http } from './net.js?v=86c2b44d';
-import { TrafficDirector, DIFFICULTIES, backdropOptions, runwayPace } from './director.js?v=86c2b44d';
-import { gameConfig, challengeConfig, playRecorded, recordedPlayCode, gameTitleWord, DEMO_AIRPORTS } from './modes.js?v=86c2b44d';
-import { weatherFromMetar, chooseActiveEnds, plainWeather } from './metar.js?v=86c2b44d';
-import tzlookup from './vendor/tz.js?v=86c2b44d';
-import { Lighting } from './lighting.js?v=86c2b44d';
-import { bothEnds } from './closures.js?v=86c2b44d';
-import { Bullet } from './bullet.js?v=86c2b44d';
-import { endChanged, eitherEnd, stopFastForward } from './hazards.js?v=86c2b44d';
-import { Radio, towerAccent, trafficUnder, callTypeWord, emergencyCall } from './radio.js?v=86c2b44d';
-import { feedState, usable, mixLine, bannerLine, feedStatus, almostUsedUp, homeFeedLine, endLines, feedRecord, feedSaveDue, dotColour, RECORDED_STATUS } from './feedstate.js?v=86c2b44d';
-import { checkDue, checkRecord, tapNote, CHECK_TIMEOUT_MS, RADIUS_M } from './feedcheck.js?v=86c2b44d';
-import { realOnlyNote, departuresNote, levelChoices, levelConfirm, SAVE_FAILED } from './settingsnotes.js?v=86c2b44d';
-import { PGS_FAILED, playGamesRow } from './playgames.js?v=86c2b44d';
-import { TRACKS, trackByKey } from './music.js?v=86c2b44d';
-import { register, openScreen, closeScreen, backOne, openScreens } from './screenstack.js?v=86c2b44d';
-import { setLevelMidGame, setDeparturesMidGame, applyRewind, applyRealOnly, revealFixes } from './midgame.js?v=86c2b44d';
-import { SLOW_SHEET, RPO_FLASH_MS, rpoFlash, KEEP_RUN_START, newSlowSky, resetSlowSky, noteSlowSky, slowSkyDue, afterKeep, breakRun } from './skysky.js?v=86c2b44d';
-import { feedWords, nearHeading, breakdownRows, breakdownTotal, inGameLines, reportText, agoWords, nextWords } from './feedcard.js?v=86c2b44d';
-import { nameForRival } from './area.js?v=86c2b44d';
-import { displayName } from './airlines.js?v=86c2b44d';
-import { Sky } from './sky.js?v=86c2b44d';
-import { ACHIEVEMENTS, AchievementTracker, rankFor } from './achievements.js?v=86c2b44d';
-import { bestInGame } from './achscreen.js?v=86c2b44d';
-import { airportZone, boardsLive, catchUpPayload, makeApi, refreshBoardsLive } from './boards.js?v=86c2b44d';
-import { canonicalLayout, hashText, stashLayout, queueGame, postQueued, cancelOutbox } from './outbox.js?v=86c2b44d';
-import { statsLine, rankLine, rankWord, loadingRankLine, fillEndCard, countEndCard } from './endcard.js?v=86c2b44d';
-import { playButtonWords, pickKey, lastPlayedOf, savedPickOf } from './playbutton.js?v=86c2b44d';
-import { weekendOf, weekendAirport, weekendSetup, weekendWx, weekendSeed, themeOf, weekendLine } from './weekend.js?v=86c2b44d';
+import { SIM_HZ, CLASSES, ZONE_COLORS, STAR_GOALS, TUNING } from './config.js?v=2f66fd5f';
+import { Sim } from './sim.js?v=2f66fd5f';
+import { Renderer, canvasDpr, hudRectsFor } from './render.js?v=2f66fd5f';
+import { worldShape } from './worldshape.js?v=2f66fd5f';
+import { DensityGovernor, densityKey, startDensity, nextDensity } from './density.js?v=2f66fd5f';
+import { FX } from './fx.js?v=2f66fd5f';
+import { AudioEngine } from './audio.js?v=2f66fd5f';
+import { loadSave, writeSave, writeSaveDetail, resetSave } from './storage.js?v=2f66fd5f';
+import { openExternal, haptic, setHaptics, appVersion, keepAwake, setRotationLock, shareText, speech, sharing, playGames, videoBridge, deviceHash, requestReview, openStorePage, openDemoPage, dailyReminder, onPlayGamesState, playGamesChanged } from './platform.js?v=2f66fd5f';
+import { noteFinishedGame, noteAsked, goodGame, reviewDue, REVIEW_SETTLE_MS } from './review.js?v=2f66fd5f';
+import { reminderNote, streakNote, recapNote, offerDue, offerShown, weekAfterLanding } from './reminder.js?v=2f66fd5f';
+import { TICKER_BUSIEST_MIN, afterCounted, gameNote, heldWorldAt, heldWorldStats, landedWord, percentLine, projectedLanded, readDailyHistogram, readWorldStats, sanitizeWorldStats, sendGameNote, shouldSendGameNote, tickerFacts, tickerPick, withCommas, worldStatsNote } from './worldstats.js?v=2f66fd5f';
+import { initCloud, cloudLine, syncCloud, scheduleCloudSave, flushCloudSave, resetCloud } from './cloud.js?v=2f66fd5f';
+import { shareTexts, renderCard, evenColumns, videoCaption } from './share.js?v=2f66fd5f';
+import { pickFromLink, parseChallengeLink, checkChallenge, linkInCaption, challengeBoardUrl } from './links.js?v=2f66fd5f';
+import { challengeFromGame, challengeHadReal, challengeWords, challengeScoreLine, challengeWho, challengeRealLine, challengeTexts, challengeSamePlanes, challengeWxSeed, weatherOfSeed, repeatableGame, challengeIdOf, challengeReplayCopy, challengeSetupFromLink, } from './challenge.js?v=2f66fd5f';
+import { SANTA_DAY, SANTA_LEVEL_RANKED, santaOn, santaWindowOk, sleighFlies, isSleigh, SANTA_WINDOW_REASON } from './santa.js?v=2f66fd5f';
+import { damp, lerp, clamp, dist2, setHudScale, hudScale, textLines } from './util.js?v=2f66fd5f';
+import { drawAircraftShape } from './sprites.js?v=2f66fd5f';
+import * as db from './airportdb.js?v=2f66fd5f';
+import { buildWorld, landableClasses, setActiveEnd, takeoffIdent } from './airport.js?v=2f66fd5f';
+import { loadLayout, loadMetar, demoFeed, loadSurroundings, cacheGet, cacheSet, cacheDel, cacheKeys, newPolite, queueFullMap, START_WAIT_MS } from './airportdata.js?v=2f66fd5f';
+import { surroundingsInWorld, waterMask, Scenery } from './scenery.js?v=2f66fd5f';
+import { groundTheme, nearField } from './airportpaint.js?v=2f66fd5f';
+import { bearingToCanvas, bboxAround, haversine } from './geo.js?v=2f66fd5f';
+import { LiveFeed, dailyFeed, countInArea } from './opensky.js?v=2f66fd5f';
+import { feedClient, refreshFeedFlags } from './feedsource.js?v=2f66fd5f';
+import { askForRoute, arrivalNote } from './routes.js?v=2f66fd5f';
+import { http } from './net.js?v=2f66fd5f';
+import { TrafficDirector, DIFFICULTIES, backdropOptions, runwayPace } from './director.js?v=2f66fd5f';
+import { gameConfig, challengeConfig, playRecorded, recordedPlayCode, gameTitleWord, DEMO_AIRPORTS } from './modes.js?v=2f66fd5f';
+import { weatherFromMetar, chooseActiveEnds, plainWeather } from './metar.js?v=2f66fd5f';
+import tzlookup from './vendor/tz.js?v=2f66fd5f';
+import { Lighting } from './lighting.js?v=2f66fd5f';
+import { bothEnds } from './closures.js?v=2f66fd5f';
+import { Bullet } from './bullet.js?v=2f66fd5f';
+import { endChanged, eitherEnd, stopFastForward } from './hazards.js?v=2f66fd5f';
+import { Radio, towerAccent, trafficUnder, callTypeWord, emergencyCall } from './radio.js?v=2f66fd5f';
+import { feedState, usable, mixLine, bannerLine, feedStatus, almostUsedUp, homeFeedLine, endLines, feedRecord, feedSaveDue, dotColour, RECORDED_STATUS } from './feedstate.js?v=2f66fd5f';
+import { checkDue, checkRecord, tapNote, CHECK_TIMEOUT_MS, RADIUS_M } from './feedcheck.js?v=2f66fd5f';
+import { realOnlyNote, departuresNote, levelChoices, levelConfirm, SAVE_FAILED } from './settingsnotes.js?v=2f66fd5f';
+import { PGS_FAILED, playGamesRow } from './playgames.js?v=2f66fd5f';
+import { TRACKS, trackByKey } from './music.js?v=2f66fd5f';
+import { register, openScreen, closeScreen, backOne, openScreens } from './screenstack.js?v=2f66fd5f';
+import { setLevelMidGame, setDeparturesMidGame, applyRewind, applyRealOnly, revealFixes } from './midgame.js?v=2f66fd5f';
+import { SLOW_SHEET, RPO_FLASH_MS, rpoFlash, KEEP_RUN_START, newSlowSky, resetSlowSky, noteSlowSky, slowSkyDue, afterKeep, breakRun } from './skysky.js?v=2f66fd5f';
+import { feedWords, nearHeading, breakdownRows, breakdownTotal, inGameLines, reportText, agoWords, nextWords } from './feedcard.js?v=2f66fd5f';
+import { nameForRival } from './area.js?v=2f66fd5f';
+import { displayName } from './airlines.js?v=2f66fd5f';
+import { Sky } from './sky.js?v=2f66fd5f';
+import { ACHIEVEMENTS, AchievementTracker, rankFor } from './achievements.js?v=2f66fd5f';
+import { bestInGame } from './achscreen.js?v=2f66fd5f';
+import { airportZone, boardsLive, catchUpPayload, makeApi, refreshBoardsLive } from './boards.js?v=2f66fd5f';
+import { canonicalLayout, hashText, stashLayout, queueGame, postQueued, cancelOutbox } from './outbox.js?v=2f66fd5f';
+import { statsLine, rankLine, rankWord, loadingRankLine, fillEndCard, countEndCard, challengePosted, challengeBoardLine } from './endcard.js?v=2f66fd5f';
+import { playButtonWords, pickKey, lastPlayedOf, savedPickOf } from './playbutton.js?v=2f66fd5f';
+import { weekendOf, weekendAirport, weekendSetup, weekendWx, weekendSeed, themeOf, weekendLine } from './weekend.js?v=2f66fd5f';
+import { rushOf, rushAirport, rushSeed, rushSetup, rushLine, sanitizeRushDays, RUSH_TITLE } from './rush.js?v=2f66fd5f';
 // Short Final Pro (DECISIONS 280): the free games' rules (pro.js) and the shell's purchase state, the sheet and Settings (propay.js)
-import { advancePro, gameRule, countGame, playLeftWords, endOfferDue, ABOUT_PRO_LINE } from './pro.js?v=86c2b44d';
-import { initPro, isPro, proSettled, openProSheet, closeProSheet, buyPro, restorePro, renderSettings } from './propay.js?v=86c2b44d';
-import { initScreens, openBoards, openAchievements, refreshBoardsCache, renderStreakCorner } from './screens.js?v=86c2b44d';
-import { initTour, markTourSeen } from './tour.js?v=86c2b44d';
-import { makeGame, stepWorld, outcomeOf, liveFeedTick } from './simdriver.js?v=86c2b44d';
-import { GhostRunner } from './ghost.js?v=86c2b44d';
-import { Recorder, packReplay, REPLAY_MAX_PACKED } from './replay.js?v=86c2b44d';
-import { makeVideo, canMakeVideo, VideoCancelled } from './video.js?v=86c2b44d';
-import { deliver, stageBytes } from './videoenc.js?v=86c2b44d';
-import { CLIPS, DEFAULT_CLIP } from './videoclip.js?v=86c2b44d';
-import { startRanking, shouldPostScores, isRanked, easiestOf, LEVEL_ORDER, noteRanking } from './ranking.js?v=86c2b44d';
-import { recordGame } from './stats.js?v=86c2b44d';
-import { streakState, streakLine, recordPlayed, celebrateSound, MILESTONE_LINES } from './streak.js?v=86c2b44d';
-import { VERSION } from './version.js?v=86c2b44d';
-import { reducedMotion, bindRipples } from './motion.js?v=86c2b44d';
-import { skyGesture, gestureAfterLanding, gestureAfterPlaneLift, groundTapWins, fingerMoveAction, tailUnder, tailReach, tailHandleReach, tailScale, tailMoveAction, liftEndsPath, tapTogglesHold, tapSlopPx, tailBeatsPlane, ringUnder, TAP_PX, RING_REACH_PX } from './fingers.js?v=86c2b44d';
-import { canPlayGames, clearAgreement, clockNow, gateState } from './profile.js?v=86c2b44d';
-import { initGate, checkGate, takeSignInOffer } from './gate.js?v=86c2b44d';
-import { initLegal } from './legal.js?v=86c2b44d';
+import { advancePro, gameRule, countGame, playLeftWords, endOfferDue, ABOUT_PRO_LINE } from './pro.js?v=2f66fd5f';
+import { initPro, isPro, proSettled, openProSheet, closeProSheet, buyPro, restorePro, renderSettings } from './propay.js?v=2f66fd5f';
+import { initScreens, openBoards, openAchievements, refreshBoardsCache, renderStreakCorner } from './screens.js?v=2f66fd5f';
+import { initTour, markTourSeen } from './tour.js?v=2f66fd5f';
+import { makeGame, stepWorld, outcomeOf, liveFeedTick } from './simdriver.js?v=2f66fd5f';
+import { GhostRunner } from './ghost.js?v=2f66fd5f';
+import { Recorder, packReplay, REPLAY_MAX_PACKED, CHALLENGE_REPLAY_MAX_PACKED } from './replay.js?v=2f66fd5f';
+import { makeVideo, canMakeVideo, VideoCancelled } from './video.js?v=2f66fd5f';
+import { deliver, stageBytes } from './videoenc.js?v=2f66fd5f';
+import { CLIPS, DEFAULT_CLIP } from './videoclip.js?v=2f66fd5f';
+import { startRanking, shouldPostScores, isRanked, easiestOf, LEVEL_ORDER, noteRanking } from './ranking.js?v=2f66fd5f';
+import { recordGame } from './stats.js?v=2f66fd5f';
+import { streakState, streakLine, recordPlayed, celebrateSound, MILESTONE_LINES } from './streak.js?v=2f66fd5f';
+import { VERSION } from './version.js?v=2f66fd5f';
+import { reducedMotion, bindRipples } from './motion.js?v=2f66fd5f';
+import { skyGesture, gestureAfterLanding, gestureAfterPlaneLift, groundTapWins, fingerMoveAction, tailUnder, tailReach, tailHandleReach, tailScale, tailMoveAction, liftEndsPath, tapTogglesHold, tapSlopPx, tailBeatsPlane, ringUnder, TAP_PX, RING_REACH_PX } from './fingers.js?v=2f66fd5f';
+import { canPlayGames, clearAgreement, clockNow, gateState } from './profile.js?v=2f66fd5f';
+import { initGate, checkGate, takeSignInOffer } from './gate.js?v=2f66fd5f';
+import { initLegal } from './legal.js?v=2f66fd5f';
 // 2.8 (DECISIONS 330 to 332): the Pro day on the trusted clock, the trial's first day across a reinstall, the search's own keys
-import { proDate } from './clock.js?v=86c2b44d';
-import { askFirstDay, applyFirstDay, FIRST_DAY_RETRY_MS } from './firstday.js?v=86c2b44d';
-import { nearYou, phoneZone, placeless, keysAfter, typeKey } from './searchkeys.js?v=86c2b44d';
-import { buildKeys } from './searchkb.js?v=86c2b44d';
+import { proDate } from './clock.js?v=2f66fd5f';
+import { askFirstDay, applyFirstDay, FIRST_DAY_RETRY_MS } from './firstday.js?v=2f66fd5f';
+import { nearYou, phoneZone, placeless, keysAfter, typeKey } from './searchkeys.js?v=2f66fd5f';
+import { buildKeys } from './searchkb.js?v=2f66fd5f';
 // the browser demo (DECISIONS 445 to 449): its flavour and rules. The app never takes a WEB_DEMO branch
-import { WEB_DEMO } from './flavor.js?v=86c2b44d';
-import { windowMoved } from './windowchange.js?v=86c2b44d';
-import { DEMO_WORDS, demoTimeUp, demoPlayWords, demoEndTitle, demoBrowserSupport, demoGamesLeft, demoCountGame, demoStoreUrl, demoStorageWorks, demoHomeNote } from './demo.js?v=86c2b44d';
+import { WEB_DEMO } from './flavor.js?v=2f66fd5f';
+import { windowMoved } from './windowchange.js?v=2f66fd5f';
+import { DEMO_WORDS, demoTimeUp, demoPlayWords, demoEndTitle, demoBrowserSupport, demoGamesLeft, demoCountGame, demoStoreUrl, demoStorageWorks, demoHomeNote } from './demo.js?v=2f66fd5f';
 
 /** Today for the Pro rules: the local day on the phone's clock, never past trusted time (clock.js; DECISIONS 331). */
 const proToday = () => db.localDay(proDate());
@@ -641,6 +644,29 @@ function weekendRow(info, W) {
   return b;
 }
 
+/**
+ * The Thanksgiving Rush's row (3.4, rush.js): one airport a day, the same for everyone on that day. It plays offline (the airport is
+ * bundled). Its row says the airport and the waves, the player's best for the Rush, and the Rush's one board. day is the Rush's day number.
+ */
+function rushRow(info, day) {
+  const b = document.createElement('button');
+  b.className = 'ap-row weekend-row rush-row';
+  b.dataset.key = pickKey({ info, rush: day });
+  b.setAttribute('aria-pressed', 'false');
+  b.innerHTML = `<span class="ap-rank"></span><span class="ap-code">🦃</span><span class="ap-name"><div></div><small></small></span><span class="ap-meta"></span><svg class="ap-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+  b.querySelector('.ap-name div').textContent = RUSH_TITLE;
+  const what = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
+  const code = info.iata || info.icao;
+  b.querySelector('.ap-name small').append(what('long', rushLine(code)), what('short', rushLine(code, { short: true })));
+  const rk = save.rush && save.rush.day === day ? save.rush : null;
+  const top = document.createElement('b');
+  top.textContent = rk ? `Your best ${rk.best.toLocaleString('en-US')}` : 'Not flown yet';
+  b.querySelector('.ap-meta').append(top, document.createTextNode('Thanksgiving Rush'));
+  b.addEventListener('pointerdown', () => press());
+  b.addEventListener('click', () => tapRow(info, 0, { rush: day }));
+  return b;
+}
+
 const starsFor = (score) => STAR_GOALS.filter((g) => score >= g).length;
 const starText = (n) => '★'.repeat(n) + '☆'.repeat(STAR_GOALS.length - n);
 
@@ -654,9 +680,10 @@ function listHead(title, sub = '') {
 }
 
 // ------------------------------------------------------------ the live feed check (feedcheck.js, 2.1)
-// One anonymous OpenSky request around the last airport played (else today's), when the home screen shows, when the app
-// comes back after 10 minutes away, and on a tap of the feed line. It is the request a live game makes at its airport, so
-// feedcheck.js holds the rules; this makes the request and saves the answer. It runs only on the home screen (feedGateClear).
+// One anonymous request for the live flights around the last airport played (else today's; adsb.lol, or OpenSky when the
+// server allows it: feedsource.js), when the home screen shows, when the app comes back after 10 minutes away, and on a tap
+// of the feed line. It is the request a live game makes at its airport, so feedcheck.js holds the rules; this makes the
+// request and saves the answer. It runs only on the home screen (feedGateClear).
 let checkInFlight = false; // a request is on its way (the line says "checking")
 let awaySince = 0; // when the app went to the background (0 while it is not away)
 let lastSentMs = 0; // when the last request was sent (the minute between two requests counts from it)
@@ -719,8 +746,9 @@ async function runFeedCheck(trigger, awayMs = 0) {
     ap = await checkAirport();
     if (ap) {
       lastSentMs = Date.now();
-      const send = new OpenSkyClient({ http })
-        .fetchStates(bboxAround(ap.lat, ap.lon, RADIUS_M), lastSentMs, { timeoutMs: CHECK_TIMEOUT_MS })
+      const area = { lat: ap.lat, lon: ap.lon, radiusM: RADIUS_M };
+      const send = feedClient({ http })
+        .fetchStates(bboxAround(ap.lat, ap.lon, RADIUS_M), lastSentMs, { timeoutMs: CHECK_TIMEOUT_MS, area })
         .catch(() => ({ ok: false, status: 0 }));
       res = await settleWithin(send, CHECK_TIMEOUT_MS, { ok: false, status: 0 });
     }
@@ -840,10 +868,18 @@ async function showFeatured() {
   // the weekend event's row shows on Saturday and Sunday only (weekend.js); its airport is bundled, so it needs no network
   const wkDay = weekendOf(db.localDay(new Date()));
   const wkInfo = wkDay !== null ? await db.getAirport(weekendAirport(wkDay)) : null;
+  // the Thanksgiving Rush's row shows on its five days, with its one airport (rush.js); the airport is bundled too
+  const rushDay = rushOf(db.localDay(new Date()));
+  const rushInfo = rushDay !== null ? await db.getAirport(rushAirport(rushDay)) : null;
   await pickRestored; // a fresh launch's pick is read before the list is built, so its row is teal from the first paint
   if (token !== homeToken || $('search').value.trim()) return;
   // a weekend's pick ends with its weekend: the row is gone, so the pick goes too (it would name an event that is not on)
   if (picked && picked.weekend && wkDay !== picked.weekend) {
+    picked = null;
+    savePick();
+  }
+  // the Rush's pick ends with its day, the same way
+  if (picked && picked.rush && rushDay !== picked.rush) {
     picked = null;
     savePick();
   }
@@ -853,6 +889,10 @@ async function showFeatured() {
     list.appendChild(listHead('Today’s airport', 'a new one every day'));
     list.appendChild(airportRow(today, { rank: todayRank, paxM: todayPax }));
     list.appendChild(dailyRow(today, daily.n));
+  }
+  if (rushInfo && !WEB_DEMO) {
+    list.appendChild(listHead('Thanksgiving Rush', 'one airport a day, holiday waves'));
+    list.appendChild(rushRow(rushInfo, rushDay));
   }
   if (wkInfo && !WEB_DEMO) {
     list.appendChild(listHead('This weekend’s event', 'one airport, one twist'));
@@ -1365,7 +1405,7 @@ let loadToken = 0;
  * and nothing else happens: the game was never asked to load, so nothing is counted. The daily challenge never needs a free game.
  */
 function proAllowsNow(daily = false) {
-  if (WEB_DEMO) return demoGate(); // the demo's free games are its own rule (demo.js, DECISIONS 454); a restart or Fly again passes it too
+  if (WEB_DEMO) return demoGate(); // the demo's free games are its own rule (demo.js, DECISIONS 462); a restart or Fly again passes it too
   const rule = gameRule({ pro: save.pro, today: proToday(), daily, isPro: isPro() });
   save.pro = rule.state;
   if (rule.allowed) return true;
@@ -1373,16 +1413,16 @@ function proAllowsNow(daily = false) {
   return false;
 }
 
-async function startAirport(info, { demo = false, daily = 0, challenge = null, weekend = 0 } = {}) {
-  // the browser demo: 3 free games a day in this browser (demo.js, DECISIONS 454). With none left the Play page opens and the toast says
+async function startAirport(info, { demo = false, daily = 0, challenge = null, weekend = 0, rush = 0 } = {}) {
+  // the browser demo: 3 free games a day in this browser (demo.js, DECISIONS 462). With none left the Play page opens and the toast says
   // why, and nothing loads; with no DecompressionStream no game starts
   if (WEB_DEMO) {
     if (demoUnsupported) return;
     if (!demoGate()) return;
   }
   // a phone that has not shown Pro yet waits (at most 1.5 s) for Google Play's first answer before the rule is read (propay.js)
-  // the weekend event is free, as the daily is (weekend.js)
-  if (!daily && !weekend) {
+  // the weekend event and the Thanksgiving Rush are free, as the daily is (weekend.js, rush.js)
+  if (!daily && !weekend && !rush) {
     if (!isPro()) await proSettled();
     if (!proAllowsNow()) return;
   }
@@ -1398,12 +1438,12 @@ async function startAirport(info, { demo = false, daily = 0, challenge = null, w
   clearTimeout(areaMap.timer);
   syncAreaNote();
   // real planes only: the home screen's backdrop aircraft are simulated, and must not show behind the loading card
-  if (!daily && !weekend && save.settings.realPlanesOnly && game.sim) {
+  if (!daily && !weekend && !rush && save.settings.realPlanesOnly && game.sim) {
     game.sim.aircraft = [];
     game.sim.warnings = [];
   }
-  $('loading-title').textContent = `${gameTitleWord({ daily, demo, challenge: !!challenge, weekend: weekend ? themeOf(weekend).title : null })}: ${info.iata || info.icao}`;
-  $('loading-rank').textContent = loadingRankLine({ demo, daily, weekend: !!weekend, challenge: !!challenge, settings: save.settings });
+  $('loading-title').textContent = `${gameTitleWord({ daily, demo, challenge: !!challenge, weekend: weekend ? themeOf(weekend).title : rush ? RUSH_TITLE : null })}: ${info.iata || info.icao}`;
+  $('loading-rank').textContent = loadingRankLine({ demo, daily, weekend: !!weekend, challenge: !!challenge, rush: !!rush, settings: save.settings });
   $('loading-status').textContent = 'Loading airport…';
   if (WEB_DEMO) { // the demo's loading card (demo.js)
     $('loading-title').textContent = `${DEMO_WORDS.loadingTitle}: ${info.iata || info.icao}`;
@@ -1429,19 +1469,19 @@ async function startAirport(info, { demo = false, daily = 0, challenge = null, w
     let feed;
     // the daily challenge's traffic is all simulated, from the day's seed; so is a friend's challenge (challenge.js), a weekend
     // and the demo's (DECISIONS 446): one chain, so only the live game asks OpenSky
-    if (WEB_DEMO || daily || challenge || weekend) feed = dailyFeed();
+    if (WEB_DEMO || daily || challenge || weekend || rush) feed = dailyFeed();
     else if (demo) feed = await demoFeed(info, LiveFeed, nearby);
     else {
-      // OpenSky API client settings are hidden for now (index.html): always anonymous. To bring them back:
-      // const client = new OpenSkyClient({ http, clientId: save.settings.osClientId, clientSecret: save.settings.osClientSecret });
-      const client = new OpenSkyClient({ http });
+      // adsb.lol first; OpenSky only when the server's switch allows it and adsb.lol failed (feedsource.js). Anonymous: the OpenSky
+      // client settings are hidden for now (index.html).
+      const client = feedClient({ http });
       feed = new LiveFeed({ client, lat: info.lat, lon: info.lon, elevM, nearby });
       feed.update(Date.now()); // the first poll: its planes join the game when it answers, early or late
     }
     // the daily challenge flies the same generated weather for everyone, not today's METAR; a recording's is its fixture
-    const askWeather = save.settings.realWeather && !daily && !challenge && !weekend;
+    const askWeather = save.settings.realWeather && !daily && !challenge && !weekend && !rush;
     const weather = askWeather ? loadMetar(info, { demo }).catch(() => null) : Promise.resolve(null);
-    const firstFlights = demo || daily || challenge || weekend ? Promise.resolve() : feed.firstResult(6000);
+    const firstFlights = demo || daily || challenge || weekend || rush ? Promise.resolve() : feed.firstResult(6000);
     // the card says what the start waits for: the daily and a challenge ask no weather
     status(demo ? RECORDED_STATUS : askWeather ? 'Checking the weather…' : 'Getting the planes ready…');
     if (WEB_DEMO) status(DEMO_WORDS.loadingStatus);
@@ -1457,18 +1497,18 @@ async function startAirport(info, { demo = false, daily = 0, challenge = null, w
     // a loading card that is up stays long enough to be read; a start that showed none goes on at once (revealLoading)
     if (!(await loadingRead(token))) return;
     // the rank line follows the map: a game with the runways alone is unranked until its full map is saved (ranking.js)
-    $('loading-rank').textContent = loadingRankLine({ demo, daily, weekend: !!weekend, challenge: !!challenge, settings: save.settings, noMap: osmSource === 'none' });
+    $('loading-rank').textContent = loadingRankLine({ demo, daily, weekend: !!weekend, challenge: !!challenge, rush: !!rush, settings: save.settings, noMap: osmSource === 'none' });
     if (WEB_DEMO) $('loading-rank').textContent = DEMO_WORDS.loadingRank;
     // the layout's code (lo=) is worked out here, so the game's words are right from its first frame (about 15 ms for a big map)
     const layoutCode = await layoutCodeOf(L).catch(() => null);
     if (token !== loadToken) return;
-    game.airport = { info, layout: L, metar, feed, demo, osmSource, daily, challenge, weekend, layoutCode };
+    game.airport = { info, layout: L, metar, feed, demo, osmSource, daily, challenge, weekend, rush, layoutCode };
     save.recent = [info.icao, ...(save.recent || []).filter((c) => c !== info.icao)].slice(0, 6);
     // the airport just played stays picked when the player comes home, and on a fresh launch (2.4 item 3); a daily keeps its row
-    save.lastPlayed = savedPickOf({ info, daily: daily || 0, challenge, weekend: weekend || 0 });
+    save.lastPlayed = savedPickOf({ info, daily: daily || 0, challenge, weekend: weekend || 0, rush: rush || 0 });
     if (!demo && !(save.visited || []).includes(info.icao)) save.visited = [...(save.visited || []), info.icao];
     writeSave(save);
-    picked = { info, daily: daily || 0, top: false, challenge, weekend: weekend || 0 };
+    picked = { info, daily: daily || 0, top: false, challenge, weekend: weekend || 0, rush: rush || 0 };
     newGame();
     if (WEB_DEMO && osmSource === 'none') {
       toast(skip.skipped ? DEMO_WORDS.skipMap : DEMO_WORDS.mapFailed, 3200); // the runways alone: nothing else is fetched (DECISIONS 446)
@@ -1628,7 +1668,7 @@ function liveFeedFor() {
   // where each real flight is in this tick's report: a plane that comes in is looked up at this spot (routes.js leg rule)
   game.spots = game.spots || new Map();
   for (const f of snap) game.spots.set(f.icao24, { lat: f.lat, lon: f.lon, track: f.track });
-  const view = feedState(ap.feed, { nowMs, demo: !!ap.demo, daily: !!(ap.daily || ap.weekend) });
+  const view = feedState(ap.feed, { nowMs, demo: !!ap.demo, daily: !!(ap.daily || ap.weekend || ap.rush) });
   return liveFeedTick(view.state, snap, { wantCallsigns: view.state === 'working' && !game.g.notedLive });
 }
 
@@ -1644,6 +1684,11 @@ let overCard = null;
 /** A score the server took: the end card's rank line, if that game's card is still up. */
 function notePosted(entry, json) {
   refreshBoardsCache();
+  if (entry.board === 'challenge') {
+    // a challenge board's copy (3.4, C7): the end card's board line says the rank once the server has taken it
+    if (overCard && overCard.entry === entry && game.state === 'over') showBoardLine(challengeBoardLine(challengePosted(entry, json)));
+    return;
+  }
   if (overCard && overCard.entry === entry && game.state === 'over') {
     $('over-rank').textContent = rankLine(overCard.ranking, { code: overCard.code, live: boardsLive(), posted: { state: 'ranked', rank: json.rank, total: json.total } });
     $('over-rank').hidden = false;
@@ -1690,25 +1735,69 @@ function noteNotQueued(card, state) {
   }
 }
 
+/** The end card's challenge line (3.4, C7). text '' hides it. */
+function showBoardLine(text) {
+  const el = $('over-board');
+  el.textContent = text;
+  el.hidden = !text;
+}
+
+/**
+ * A finished game's challenge board, once its end card is up (3.4, C1 and C3): the replay's identity names the board (challengeIdOf over
+ * the board's copy, with the layout's hash), and the copy is kept for the share panel's challenge format, which queues it. The game's
+ * challenge gets its id only when the game can go on a board (challengeFromGame with that id); its link and the end card's button then
+ * name the board's page. A game that has moved on by the time the id is ready is left alone.
+ */
+async function settleChallenge(ch, args, rep, layout) {
+  try {
+    const text = canonicalLayout(layout);
+    rep.layout = await hashText(text);
+    const copy = challengeReplayCopy(rep);
+    const id = await challengeIdOf(copy);
+    if (!game.result || game.result.challenge !== ch) return;
+    const withId = challengeFromGame({ ...args, boardId: id });
+    if (withId && withId.id) {
+      ch.id = withId.id;
+      $('btn-over-challenge').hidden = false;
+    }
+    game.challengeCopy = copy;
+  } catch (_) { /* no crypto here: the game still counts, and it has no board */ }
+}
+
+/** The challenge format is chosen: this game's board copy is queued once (C3: a link made from a finished game queues it). */
+function queueChallengeCopy() {
+  const ch = game.result && game.result.challenge;
+  if (!ch || !ch.id || !game.challengeCopy || game.challengeQueued || game.state !== 'over' || !overCard) return;
+  if (!canPlayGames(save, clockNow())) return;
+  game.challengeQueued = true;
+  queueReplay(game.challengeCopy, game.airport.layout, overCard, { challenge: true });
+}
+
 /**
  * A ranked game's replay goes to the outbox for the server: the layout named by its hash (its text kept on this phone for the
  * post), the replay gzipped and base64'd and kept in the kv store (outbox.js queueGame). A replay over the server's cap is not
  * queued, and the end card says so: the player is told, and the game still counts on the phone. The end card says it is saved,
  * and is updated when the server takes it (notePosted).
  */
-async function queueReplay(replay, layout, card) {
+async function queueReplay(replay, layout, card, { challenge = false } = {}) {
   const owner = save;
   try {
     const text = canonicalLayout(layout);
     replay.layout = await hashText(text);
     await stashLayout(kvStore, replay.layout, text);
     const bytes = await packReplay(replay);
-    if (bytes.length > REPLAY_MAX_PACKED) return noteNotQueued(card, 'long');
+    // a challenge copy has the server's smaller cap (the server answers a larger one with 413, which the outbox drops silently)
+    if (bytes.length > (challenge ? CHALLENGE_REPLAY_MAX_PACKED : REPLAY_MAX_PACKED)) return challenge ? showBoardLine(challengeBoardLine({ state: 'long' })) : noteNotQueued(card, 'long');
     const entry = await queueGame(owner, kvStore, { board: replay.board, icao: replay.icao, level: replay.level, daily: replay.daily, version: replay.app, layout: replay.layout }, bytesToBase64(bytes), Date.now());
     if (owner !== save) return; // a Reset ran meanwhile: this game went with the progress it cleared
-    if (!entry) return noteNotQueued(card, 'unsaved');
+    if (!entry) return challenge ? showBoardLine(challengeBoardLine({ state: 'unsaved' })) : noteNotQueued(card, 'unsaved');
     writeSave(save);
     card.entry = entry;
+    if (challenge) {
+      if (game.state === 'over') showBoardLine(challengeBoardLine(challengePosted(entry)));
+      flushOutbox();
+      return;
+    }
     if (overCard === card && game.state === 'over') {
       $('over-rank').textContent = rankLine(card.ranking, { code: card.code, live: boardsLive(), posted: { state: 'queued' } });
       $('over-rank').hidden = false;
@@ -1725,8 +1814,14 @@ function newGame() {
     savePick();
     return showMenu();
   }
+  // the Thanksgiving Rush starts only on its own day, the same way (rush.js): a Restart on another day starts nothing
+  if (game.airport && game.airport.rush && rushOf(db.localDay(new Date())) !== game.airport.rush) {
+    picked = null;
+    savePick();
+    return showMenu();
+  }
   // a game that starts counts toward the day's free games (pro.js countGame); the daily challenge never counts
-  if (game.airport && !game.airport.daily && !game.airport.weekend) {
+  if (game.airport && !game.airport.daily && !game.airport.weekend && !game.airport.rush) {
     save.pro = countGame(advancePro(save.pro, proToday()));
     writeSave(save);
   }
@@ -1756,13 +1851,14 @@ function newGame() {
   // a friend's challenge plays its own rules (challenge.js): its level, its traffic's rules and its departures; nothing else of the settings
   const cfg = ch ? challengeConfig(ch) : gameConfig({ daily: !!ap.daily || !!ap.weekend, settings: save.settings, nowMs: Date.now() });
   const diff = cfg.diff;
-  game.realOnly = cfg.realOnly;
+  // the Rush's planes are all simulated (rush.js setup), so its real-planes switch makes the game unranked, and does not change its planes
+  game.realOnly = cfg.realOnly && !ap.rush;
   // the run of Keep answers (skysky.js): a real-only level game that ended without a Keep breaks it
   if (game.slowRun && game.slowRun.realOnly && !game.slowRun.kept) save.slowSky = breakRun(save.slowSky);
-  game.slowRun = { realOnly: cfg.realOnly && !ap.daily && !ap.demo, kept: false };
-  const seed = ch ? ch.seed : ap.daily ? (Math.imul(ap.daily + 7919, 2654435761) >>> 1) : ap.weekend ? weekendSeed(ap.weekend) : (Math.random() * 1e9) | 0;
+  game.slowRun = { realOnly: game.realOnly && !ap.daily && !ap.demo, kept: false };
+  const seed = ch ? ch.seed : ap.daily ? (Math.imul(ap.daily + 7919, 2654435761) >>> 1) : ap.weekend ? weekendSeed(ap.weekend) : ap.rush ? rushSeed(ap.rush) : (Math.random() * 1e9) | 0;
   // a friend's challenge flies the weather its link carries (challenge.js challengeWxSeed): never the METAR, nor the friend's own switch
-  let wxSeed = ch ? challengeWxSeed(ch) : ap.weekend ? weekendWx(ap.weekend) : save.settings.realWeather ? weatherFromMetar(ap.metar) : null;
+  let wxSeed = ch ? challengeWxSeed(ch) : ap.weekend ? weekendWx(ap.weekend) : ap.rush ? null : save.settings.realWeather ? weatherFromMetar(ap.metar) : null;
   // Beginner keeps the real wind (it picks the runways) but not the real storms or fog
   if (diff === 'beginner' && wxSeed) wxSeed = { ...wxSeed, storms: 0, fog: false };
   // the start weather this game flew, as its challenge link carries it (DECISIONS 413 f); a game sent as a challenge says so
@@ -1772,26 +1868,32 @@ function newGame() {
   // it does on this screen (laid out above): the gates, holds and arrival warnings keep out from under it.
   const hud = hudRectsFor(shape.W, shape.H, screen.cssW, screen.cssH);
   // the weekend event's setup is pinned (weekend.js weekendSetup): the server re-runs it as it is, so nothing here is the player's
-  const setup = ap.weekend ? { ...weekendSetup(ap.weekend), country: ap.info.country } : {
-    firstGame: !save.played && !ch, fixesHidden: !save.tipStacks && !save.played, wxSeed, country: ap.info.country, diff,
+  // Santa (3.4, santa.js): a level game started on 24 December sets setup.santaDay; a friend's challenge takes its holding fixes and Santa
+  // from its link only (challengeSetupFromLink), never from the save or the clock. The daily, weekend and Rush setups carry no Santa.
+  const chSetup = ch ? challengeSetupFromLink(ch) : null;
+  const santaToday = !ch && !ap.daily && !ap.weekend && !ap.rush && santaOn(db.localDay(new Date()));
+  const setup = ap.weekend ? { ...weekendSetup(ap.weekend), country: ap.info.country } : ap.rush ? { ...rushSetup(diff), country: ap.info.country } : {
+    firstGame: !save.played && !ch, fixesHidden: ch ? chSetup.fixesHidden : !save.tipStacks && !save.played, wxSeed, country: ap.info.country, diff,
     realOnly: cfg.realOnly, departures: ch ? cfg.departures : !!save.settings.departures,
+    ...(ch ? { rules: ch.rules === 'd' ? 'd' : '', santaDay: chSetup.santaDay } : santaToday ? { santaDay: SANTA_DAY } : {}),
   };
+  game.startSetup = setup; // what the game started with: the challenge's fixes and Santa (gameOver reads them)
   // the replay of a ranked game is recorded as it is played (replay.js); the offline demo is never ranked, so it is not
   const rec = ap.demo || WEB_DEMO ? null : new Recorder({
-    seed, icao: ap.info.icao, tz: airportZone(ap.info), board: ap.daily ? 'daily' : ap.weekend ? 'weekend' : 'level', daily: ap.daily || null, weekend: ap.weekend || null, levels: [diff], reasons: [],
+    seed, icao: ap.info.icao, tz: airportZone(ap.info), board: ap.daily ? 'daily' : ap.weekend ? 'weekend' : ap.rush ? 'rush' : 'level', daily: ap.daily || null, weekend: ap.weekend || null, rushDay: ap.rush || null, levels: [diff], reasons: [],
     app: VERSION, W: world.W, H: world.H, hud, setup, airport: { icao: ap.info.icao, info: ap.info },
   });
   // the weekend's sim is built with departures on and no real-planes switch, as the daily's rules say (ranking.js ignores both there)
   const g = makeGame(world, {
     seed, daily: ch ? ch.rules === 'd' : !!ap.daily, setup, hud,
-    settings: ch ? { ...save.settings, departures: cfg.departures, realPlanesOnly: false } : ap.weekend ? { ...save.settings, departures: true, realPlanesOnly: false } : save.settings,
+    settings: ch ? { ...save.settings, departures: cfg.departures, realPlanesOnly: false } : ap.weekend || ap.rush ? { ...save.settings, departures: true, realPlanesOnly: false } : save.settings,
     rec, rewindOn: !!save.settings.bullet,
   });
   game.g = g;
   g.feed = (step) => (game.state === 'play' ? liveFeedFor() : null);
   // how the game is ranked (ranking.js): the level board or the daily board, or unranked and why. The daily is always departures.
   game.ranking = g.ranking = startRanking({
-    demo: !!ap.demo, daily: !!ap.daily, weekend: !!ap.weekend, challenge: !!ch, diff, departures: ap.daily || ap.weekend ? true : ch ? cfg.departures : !!save.settings.departures,
+    demo: !!ap.demo, daily: !!ap.daily, weekend: !!ap.weekend, rush: !!ap.rush, challenge: !!ch, diff, departures: ap.daily || ap.weekend || ap.rush ? true : ch ? cfg.departures : !!save.settings.departures,
     realPlanesOnly: ch ? false : !!save.settings.realPlanesOnly, simOverride: cfg.simOverride, noMap: !ap.demo && ap.osmSource === 'none',
   });
   if (WEB_DEMO) game.ranking = g.ranking = startRanking({ demo: true }); // the demo's game is unranked, with its own reason (demo.js)
@@ -1894,14 +1996,14 @@ function newGame() {
   audio.intensity = 1;
   audio.startTrack(save.settings.musicTrack);
   keepAwake(true);
-  if (WEB_DEMO) demoCount(); // the day's free games (DECISIONS 454): this game counts once its map has loaded
+  if (WEB_DEMO) demoCount(); // the day's free games (DECISIONS 462): this game counts once its map has loaded
   updateTitle();
 }
 
 function updateTitle() {
   const ap = game.airport;
   if (!ap) return;
-  const live = gameTitleWord({ daily: ap.daily, demo: ap.demo, challenge: !!ap.challenge, weekend: ap.weekend ? themeOf(ap.weekend).title : null });
+  const live = gameTitleWord({ daily: ap.daily, demo: ap.demo, challenge: !!ap.challenge, weekend: ap.weekend ? themeOf(ap.weekend).title : ap.rush ? RUSH_TITLE : null });
   game.title = `${live}: ${ap.info.iata || ap.info.icao} · ${localTime(ap.info)}`;
   if (WEB_DEMO) game.title = `${DEMO_WORDS.loadingTitle}: ${ap.info.iata || ap.info.icao} · ${localTime(ap.info)}`; // the demo's title (demo.js)
 }
@@ -1934,7 +2036,7 @@ function pauseGame({ silent = false, note = '' } = {}) {
   if (ap) {
     const sky = fixedPlanes(ap) ? null : plainWeather(ap.metar);
     const lines = WEB_DEMO ? [DEMO_WORDS.weather] : ap.challenge ? [`${challengeSamePlanes(ap.challenge, ap.layoutCode) ? 'The same planes as' : 'Similar planes to'} ${challengeWho(ap.challenge.name)}.`]
-      : ap.daily ? ['The same planes for everyone today.'] : ap.weekend ? [themeOf(ap.weekend).pause] : [sky || 'No weather report: generated weather'];
+      : ap.daily ? ['The same planes for everyone today.'] : ap.weekend ? [themeOf(ap.weekend).pause] : ap.rush ? ['Holiday arrivals come in big waves.'] : [sky || 'No weather report: generated weather'];
     for (const l of lines) {
       const d = document.createElement('div');
       d.textContent = l;
@@ -2385,7 +2487,7 @@ function gameOver() {
     // airports really played: the visit log, plus bests from before it existed (not the demo recordings)
     const demos = new Set(DEMO_AIRPORTS);
     const visitedBusiest = new Set([...(save.visited || []), ...Object.keys(save.best).filter((c) => !demos.has(c))].filter((c) => busiest.has(c))).size;
-    for (const got of game.ach.lifetime({ pax: save.pax, visitedBusiest, score, days: save.streak.best, weekendLanded: !!ap.weekend && sim.landed > 0 })) earnAchievement(got);
+    for (const got of game.ach.lifetime({ pax: save.pax, visitedBusiest, score, days: save.streak.best, weekendLanded: !!ap.weekend && sim.landed > 0, rushLanded: !!ap.rush && sim.landed > 0, rushDays: ap.rush ? new Set([...(save.rushDays || []), ap.rush]).size : (save.rushDays || []).length })) earnAchievement(got);
   }
   // the daily challenge keeps today's best (its streak is the play streak now, streak.js)
   let dailyLine = '';
@@ -2409,13 +2511,30 @@ function gameOver() {
     weekendBest = `Your best this weekend: ${wk.best.toLocaleString('en-US')}`;
     pushReminder(); // the shell's 9 am notice stops naming the weekend once it is flown (reminder.js namesWeekend)
   }
+  // the Thanksgiving Rush keeps its day's record, as the weekend keeps its own (rush.js): the later day wins, the same day keeps the larger best
+  let rushBest = '';
+  if (ap.rush) {
+    const prevRush = save.rush;
+    const rk = prevRush && prevRush.day === ap.rush ? prevRush : { day: ap.rush, best: 0, tries: 0 };
+    rk.tries++;
+    rk.best = Math.max(rk.best, score);
+    save.rush = rk;
+    save.rushDays = sanitizeRushDays([...(save.rushDays || []), ap.rush]);
+    rushBest = `Your best this holiday rush: ${rk.best.toLocaleString('en-US')}`;
+    pushReminder(); // the 9 am notice stops naming the Rush once it is flown (reminder.js namesRush)
+  }
   // the feed as it was at the end, for the difficulty sheet and the home screen
   if (!ap.demo && !WEB_DEMO && !fixedPlanes(ap) && ap.feed) save.feed = feedRecord(feedState(ap.feed, { nowMs: Date.now() }), { remaining: ap.feed.remaining ?? null, real: trafficCounts(sim).real, at: Date.now() });
   // the stats for every game, ranked or not (stats.js); the ranked passengers and the replay are the ranked game's only. A weekend game
   // is ranked on the weekend board (the replay below): its airport counts the game, and gets no best and no passengers from it
+  // a Santa level game is ranked on its level board only when it ended in the window (23 to 26 Dec, UTC) and SANTA_LEVEL_RANKED holds
+  // (santa.js; the server checks the same window). Otherwise it is unranked for the reason santaWindow (ranking.js)
+  if (game.ranking && game.ranking.board === 'level' && sleighFlies(game.startSetup) && (!SANTA_LEVEL_RANKED || !santaWindowOk(Date.now()))) {
+    noteRanking(game.ranking, SANTA_WINDOW_REASON, null);
+  }
   const ranked = shouldPostScores(game.ranking);
-  if (game.ranking) recordGame(save, { icao: ap.info.icao, levels: game.ranking.levels, ranked: isRanked(game.ranking), score, landed: sim.landed, real: sim.landedLive, departed: sim.departed || 0, pax: sim.pax || 0, streak: sim.bestStreak || 0, timeS: sim.time, at: Date.now(), demo: !!ap.demo, daily: !!ap.daily, weekend: !!ap.weekend });
-  if (ranked && !ap.weekend) save.paxRanked = (save.paxRanked || 0) + (sim.pax || 0);
+  if (game.ranking) recordGame(save, { icao: ap.info.icao, levels: game.ranking.levels, ranked: isRanked(game.ranking), score, landed: sim.landed, real: sim.landedLive, departed: sim.departed || 0, pax: sim.pax || 0, streak: sim.bestStreak || 0, timeS: sim.time, at: Date.now(), demo: !!ap.demo, daily: !!ap.daily, weekend: !!ap.weekend, rush: !!ap.rush });
+  if (ranked && !ap.weekend && !ap.rush) save.paxRanked = (save.paxRanked || 0) + (sim.pax || 0);
   // the most in one game, for the Achievements screen's progress (save.gameBest)
   if (game.ach) bestInGame(save, { heavy: game.ach.n.heavy.length, night: game.ach.n.night.length, wet: game.ach.n.wet.length, storm: game.ach.n.storm.length, live: sim.landedLive, departed: sim.departed });
   // the stats are kept on the phone (requirement 15): a full storage says so, and the game still ends. A refused phone copy
@@ -2443,7 +2562,7 @@ function gameOver() {
   }
   // Google Play Games leaderboards (they keep each player's best on their own): ranked games only (ranking.js), and the weekend
   // event has no Play Games board, so its score goes to none of them
-  if (ranked && !WEB_DEMO && !ap.weekend) {
+  if (ranked && !WEB_DEMO && !ap.weekend && !ap.rush) {
     if (ap.daily) playGames.submit('leaderboard_daily_challenge', score);
     else playGames.submit(`leaderboard_best_score_${game.director.diff}`, score);
     playGames.submit('leaderboard_passengers_landed', save.paxRanked || 0);
@@ -2464,12 +2583,13 @@ function gameOver() {
   if (sim.landed < 1 && !countedBefore && streakNow.status !== 'none') lines.push({ text: 'No landings this game, so today isn’t counted yet. Land one plane to count it.', cls: 'over-streak' });
   if (dailyLine) lines.push({ text: dailyLine, cls: '' });
   if (weekendBest) lines.push({ text: weekendBest, cls: '' });
+  if (rushBest) lines.push({ text: rushBest, cls: '' });
   // a friend's challenge whose challenger had real planes: they cannot repeat, so this game's planes are the simulated ones
   if (ap.challenge && challengeRealLine(ap.challenge)) lines.push({ text: challengeRealLine(ap.challenge), cls: '' });
   if (promoted) {
     lines.push({ text: `🎖️ Promoted: ${rankNow.name}!`, cls: '' });
     setTimeout(() => audio.play('fanfare'), 600);
-  } else if (rankNow.next != null) lines.push({ text: `${rankNow.name} · ${rankNow.next} more landings to ${rankNow.nextName}`, cls: '' });
+  } else if (rankNow.next != null) lines.push({ text: `${rankNow.name} · ${rankNow.next} more ${rankNow.next === 1 ? 'landing' : 'landings'} to ${rankNow.nextName}`, cls: '' });
   if (got.length) lines.push({ text: `${got.length === 1 ? 'Achievement' : `${got.length} achievements`}: ${got.map((a) => `${a.icon} ${a.name}`).join(' · ')}`, cls: '' });
   if (WEB_DEMO) for (const l of lines.filter((x) => x.cls === 'over-streak' || x.cls === 'over-milestone')) lines.splice(lines.indexOf(l), 1); // the demo keeps no streak
   $('over-ach').innerHTML = '';
@@ -2528,17 +2648,21 @@ function gameOver() {
   if (WEB_DEMO) endFlights.flights = endShort.flights = DEMO_WORDS.planes(sim.landed);
   // a friend's challenge this game can send (challenge.js): the same airport, seed, level and start weather, and this game's score; null when
   // it cannot be repeated (a recording, a level or departures change in play, a runways-only layout). A challenge game's own rules carry on.
-  const challengeOut = challengeFromGame({
+  // the board's id is the replay's identity, computed once the end card is up (settleChallenge); the link's own id is then set
+  const challengeArgs = {
     icao: ap.info.icao, seed: game.g ? game.g.seed : null, level: game.ranking ? game.ranking.levels[0] : game.director.diff, score,
     rules: ap.challenge ? ap.challenge.rules : ap.daily ? 'd' : game.ranking && game.ranking.reasons.includes('departuresOff') ? 'o' : '',
-    real: challengeHadReal(sim), weather: game.weatherStart, reasons: game.ranking ? game.ranking.reasons : ['demo'], weekend: !!ap.weekend,
+    real: challengeHadReal(sim), weather: game.weatherStart, reasons: game.ranking ? game.ranking.reasons : ['demo'], weekend: !!ap.weekend, rush: !!ap.rush,
+    fixesHidden: !!(game.startSetup && game.startSetup.fixesHidden), santa: sleighFlies(game.startSetup), challenge: ap.challenge,
     screen: game.screen, layout: ap.layoutCode, repeatable: repeatableGame({ firstGame: game.firstGame, hudMoved: game.hudMoved, challenge: ap.challenge, layout: ap.layoutCode }),
-  });
+  };
+  const challengeOut = challengeFromGame({ ...challengeArgs, boardId: null });
+  if (challengeOut && game.g && game.g.rec) settleChallenge(challengeOut, challengeArgs, game.g.rec.build(outcomeOf(game.g)), ap.layout);
   // what the share panel draws and says (no callsigns or anything personal)
   const mins = Math.ceil((sim.time || 0) / 60);
   game.result = {
     score, stars: starsFor(score), starText: starText(starsFor(score)), iata: ap.info.iata, icao: ap.info.icao,
-    name: ap.info.name, city: (ap.info.city || '').split(/[(,]/)[0].trim(), daily: ap.daily || 0, weekend: ap.weekend ? themeOf(ap.weekend).title : null,
+    name: ap.info.name, city: (ap.info.city || '').split(/[(,]/)[0].trim(), daily: ap.daily || 0, weekend: ap.weekend ? themeOf(ap.weekend).title : null, rush: ap.rush || 0,
     tries: ap.daily && save.daily ? save.daily.tries : 1, landed: sim.landed, departed: sim.departed || 0, pax: sim.pax || 0,
     live: sim.landedLive || 0, confirmed: sim.landedConfirmed || 0, demo: !!ap.demo || WEB_DEMO, streak: sim.bestStreak || 0, rank: rankFor(save.landed).name,
     // the reasons, not the switch now: a game that was real-only and then turned it off still says so (its reason is permanent)
@@ -2556,7 +2680,7 @@ function gameOver() {
   buildStats(sim);
   if (!WEB_DEMO) suggestNextAirport(ap.info.icao); // the demo offers no next airport (one game)
   // from the third free game's end card, Pro is offered on the card (pro.js endOfferDue): the card is never held for it
-  $('btn-over-pro').hidden = WEB_DEMO || !endOfferDue({ pro: save.pro, today: proToday(), daily: !!(ap.daily || ap.weekend), isPro: isPro() });
+  $('btn-over-pro').hidden = WEB_DEMO || !endOfferDue({ pro: save.pro, today: proToday(), daily: !!(ap.daily || ap.weekend || ap.rush), isPro: isPro() });
   // the demo's invite: the Play page, with the airport as the campaign (DECISIONS 446)
   if (WEB_DEMO) $('btn-over-store').href = demoStoreUrl({ medium: 'share', campaign: ap.info.icao });
   const card = $('over');
@@ -2594,9 +2718,10 @@ function askForReview(card) {
 /** The end card's sticky buttons cast a shadow only while more of the card is scrolled away underneath them. */
 function syncOverShadow() {
   const card = $('over').querySelector('.over-card');
-  card.classList.toggle('more-below', card.scrollTop + card.clientHeight < card.scrollHeight - 1);
+  const body = card.querySelector('.over-body');
+  card.classList.toggle('more-below', body.scrollTop + body.clientHeight < body.scrollHeight - 1);
 }
-$('over').querySelector('.over-card').addEventListener('scroll', syncOverShadow, { passive: true });
+$('over').querySelector('.over-body').addEventListener('scroll', syncOverShadow, { passive: true });
 
 /** Long and short wordings of a line, shown by the screen's size (style.css: .long and .short). */
 function variants(long, short) {
@@ -2929,6 +3054,17 @@ function bind(id, fn) {
 async function playNow() {
   const recorded = playRecorded({ online: navigator.onLine });
   if (picked && picked.challenge) return startAirport(picked.info, { challenge: picked.challenge });
+  if (picked && picked.rush) {
+    // the Rush is read again at the tap: a pick kept past its day starts nothing (rush.js rushOf)
+    const R = rushOf(db.localDay(new Date()));
+    if (R === null) {
+      picked = null;
+      savePick();
+      return showFeatured();
+    }
+    const info = R === picked.rush ? picked.info : await db.getAirport(rushAirport(R));
+    return startAirport(info, { rush: R });
+  }
   if (picked && picked.weekend) {
     // the weekend is read again at the tap: a pick kept past Monday starts nothing, and the list is drawn again without it
     const W = weekendOf(db.localDay(new Date()));
@@ -2967,7 +3103,8 @@ async function restoreLastPick() {
     // a weekend pick is kept only while its weekend lasts (a pick from a past weekend is not restored as the airport's row)
     const weekendNow = weekendOf(db.localDay(new Date()));
     const pastWeekend = lp.weekend && lp.weekend !== weekendNow;
-    if (info && !picked && !pastWeekend) picked = { info, daily: lp.daily === today.n ? lp.daily : 0, top: false, challenge: lp.challenge ? checkChallenge({ ...lp.challenge, icao: info.icao }) : null, weekend: lp.weekend || 0 };
+    const pastRush = lp.rush && lp.rush !== rushOf(db.localDay(new Date()));
+    if (info && !picked && !pastWeekend && !pastRush) picked = { info, daily: lp.daily === today.n ? lp.daily : 0, top: false, challenge: lp.challenge ? checkChallenge({ ...lp.challenge, icao: info.icao }) : null, weekend: lp.weekend || 0, rush: lp.rush || 0 };
   } catch (e) {
     console.warn('pick', e); // no pick: the Random airport
   } finally {
@@ -2984,10 +3121,10 @@ function savePick() {
   writeSave(save);
 }
 /** A home row was tapped (airportRow, dailyRow): it is picked, or unpicked when it already was. search: a search result. */
-function tapRow(info, daily = 0, { search = false, weekend = 0 } = {}) {
+function tapRow(info, daily = 0, { search = false, weekend = 0, rush = 0 } = {}) {
   // a challenge's own row (the teal top row, keyed by its airport) unpicks the challenge, as any picked row does
-  const same = pickKey(picked) === pickKey({ info, daily, weekend }) || (!!picked && !!picked.challenge && !daily && picked.info.icao === info.icao);
-  picked = same ? null : { info, daily, top: search, weekend };
+  const same = pickKey(picked) === pickKey({ info, daily, weekend, rush }) || (!!picked && !!picked.challenge && !daily && picked.info.icao === info.icao);
+  picked = same ? null : { info, daily, top: search, weekend, rush };
   savePick();
   glideBackdrop(picked ? info : null);
   if (search) return clearSearch(); // the search closes: the airport is the picked row at the top of the home list
@@ -3066,7 +3203,7 @@ function syncPlayButton() {
   unranked.textContent = w.unranked;
   unranked.hidden = !w.unranked;
   // the free-games line (from day 4; pro.js playLeftWords): its own line in the pill, and part of the button's name
-  const left = playLeftWords({ pro: save.pro, today: proToday(), daily: !!(picked && picked.daily), weekend: !!(picked && picked.weekend), isPro: isPro() });
+  const left = playLeftWords({ pro: save.pro, today: proToday(), daily: !!(picked && picked.daily), weekend: !!(picked && picked.weekend), rush: !!(picked && picked.rush), isPro: isPro() });
   const leftEl = btn.querySelector('.pb-left');
   leftEl.textContent = left;
   leftEl.hidden = !left;
@@ -3106,11 +3243,11 @@ document.querySelectorAll('[data-feed-close]').forEach((el) => {
 });
 // a restart and Fly again are new games: the free-games rule applies to them as to any start (the daily challenge is free)
 bind('btn-restart', () => {
-  if (proAllowsNow(!!(game.airport && (game.airport.daily || game.airport.weekend)))) newGame();
+  if (proAllowsNow(!!(game.airport && (game.airport.daily || game.airport.weekend || game.airport.rush)))) newGame();
 });
 bind('btn-quit', quitGame);
 bind('btn-again', () => {
-  if (proAllowsNow(!!(game.airport && (game.airport.daily || game.airport.weekend)))) newGame();
+  if (proAllowsNow(!!(game.airport && (game.airport.daily || game.airport.weekend || game.airport.rush)))) newGame();
 });
 // Short Final Pro (propay.js): the Settings row's Buy and Restore, the end card's offer, and the sheet's Buy and Not now
 bind('btn-pro-buy', () => buyPro());
@@ -3458,6 +3595,7 @@ function drawShareApps() {
 }
 /** Changes the share panel's format: a picture, Text, a challenge, or the Video (made now, unless it is made). */
 function setFormat(fmt) {
+  if (fmt === 'challenge') queueChallengeCopy();
   if (fmt !== 'video') cancelVideo();
   shareState.format = fmt;
   document.querySelectorAll('#share-format button').forEach((o) => o.classList.toggle('on', o.dataset.fmt === fmt));
@@ -3579,6 +3717,8 @@ function pushReminder() {
   // the weekend event's words for the 9 am notice (reminder.js dailyNoticeText): this weekend's Saturday (0 on a weekday), its theme's
   // title, and the last weekend flown; the shell uses them only while the weekend is today's and not flown
   const wk = weekendOf(db.localDay(new Date()));
+  // the Thanksgiving Rush's day (0 on another day), its title, and the last Rush day flown (reminder.js namesRush)
+  const rushToday = rushOf(db.localDay(new Date()));
   dailyReminder.write({
     on: { daily: ok && !!s.dailyReminder, streak: ok && !!s.streakSaver, recap: ok && !!s.weeklyRecap },
     played: save.daily && save.daily.n ? save.daily.n : 0,
@@ -3589,6 +3729,9 @@ function pushReminder() {
     weekBest: week.best,
     weekAt: week.at,
     weekend: { w: wk || 0, title: wk !== null ? themeOf(wk).title : '', flown: save.weekend ? save.weekend.w : 0 },
+    rush: { day: rushToday || 0, title: rushToday !== null ? RUSH_TITLE : '', flown: save.rush ? save.rush.day : 0 },
+    // Santa's day (3.4, santa.js): 24 December by the phone's clock, 0 on another day (reminder.js namesSanta)
+    santa: { day: santaOn(db.localDay(new Date())) ? SANTA_DAY : 0 },
   });
 }
 const anyReminderOn = () => Object.values(REMINDER_SAVE).some((key) => !!save.settings[key]);
@@ -3712,6 +3855,7 @@ function homeOpened() {
   runFeedCheck('home');
   const wasLive = boardsLive();
   refreshBoardsLive().then((live) => { if (live && !wasLive) flushOutbox(); if (live) refreshHomeWorld(); }).catch(() => {});
+  refreshFeedFlags().catch(() => {}); // the live feed's switches, read once a day (feedsource.js)
   flushOutbox();
   askFirstDayNow();
   maybeOfferReminders();
@@ -3910,6 +4054,10 @@ window.HP_pgs = (state) => {
   syncCloud({ apply: true }).then(catchUp, catchUp);
 };
 // the end card's Leaderboard button: the airport and level of that game (the daily's own tab)
+bind('btn-over-challenge', () => {
+  const ch = game.result && game.result.challenge;
+  if (ch && ch.id) openExternal(challengeBoardUrl(ch.id));
+});
 bind('btn-over-board', () => {
   const ap = game.airport;
   if (!ap || !game.ranking) return;
@@ -4086,6 +4234,7 @@ function handleEvents(events) {
       case 'touchdown': {
         audio.play('touchdown');
         if (ev.aircraft.cls === 'narrowbody' || ev.aircraft.cls === 'heavy') audio.play('reverse');
+        if (isSleigh(ev.aircraft)) fx.santaLanding(ev.aircraft.x, ev.aircraft.y); // Santa's landing: the bells and the gold rings (fx.js)
         const a = ev.aircraft;
         const px = -Math.sin(a.heading), py = Math.cos(a.heading);
         // tyre smoke off each main gear; bigger aircraft, bigger puffs
@@ -4162,6 +4311,10 @@ function handleEvents(events) {
       }
       case 'rushSoon': // the heads-up, five seconds before a push (gameplay R10): the banner says it until the push
         game.rushSoon = { sim, at: ev.at };
+        break;
+      case 'santaSoon': // Santa's heads-up, SANTA_SOON_S before the sleigh (santa.js): the radio says it, and the banner says it is make-believe
+        radio.santaSoon();
+        game.santaSoon = { sim, at: ev.at };
         break;
       case 'bank':
         radio.bank(ev.phase);
@@ -4403,12 +4556,13 @@ function trafficCounts(sim) {
 /** The mode the HUD's line reads by (feedstate.js mixLine): the daily, practice, real planes only, or a normal game. */
 /** The daily challenge and a friend's challenge: one set of simulated planes from a seed; the live feed is not used (challenge.js). */
 function fixedPlanes(ap) {
-  return !!(ap && (ap.daily || ap.challenge || ap.weekend));
+  return !!(ap && (ap.daily || ap.challenge || ap.weekend || ap.rush));
 }
 function feedMode(ap) {
   if (WEB_DEMO) return 'web';
   if (ap.challenge) return 'challenge';
   if (ap.weekend) return 'weekend';
+  if (ap.rush) return 'rush';
   if (ap.daily) return 'daily';
   if (ap.demo) return 'practice';
   return game.realOnly ? 'realOnly' : 'normal';
@@ -4429,7 +4583,9 @@ function setFeedLines(view, c) {
   game.warnBanner = bothEnds((game.weather && game.weather.banner) || (game.ops && game.ops.banner()) || '', game.sim);
   // a one-way runway says so all the time: the lowest word of the banner, under everything else
   const oneWay = game.sim && game.sim.zones ? oneWayBanner(game.sim.zones) : '';
-  game.banner = game.warnBanner || soon || rush || feedNote || oneWay;
+  // the sleigh's heads-up and its approach: the make-believe is said on the screen as well as on the radio (DECISIONS 459)
+  const santaNote = game.santaSoon && game.sim && game.santaSoon.sim === game.sim && game.sim.time < game.santaSoon.at + 8 ? 'Make-believe: Santa One is on the approach' : '';
+  game.banner = game.warnBanner || soon || santaNote || rush || feedNote || oneWay;
   syncAreaNote();
 }
 
@@ -4447,7 +4603,7 @@ function noteFeed(view, real, remaining, nowMs) {
 /** The live feed as it is now, saved: when the player leaves a game in the middle (Quit, the pause card). */
 function saveFeedNow(nowMs = Date.now()) {
   const ap = game.airport;
-  if (!ap || ap.demo || ap.daily || ap.weekend || !ap.feed || !game.sim) return;
+  if (!ap || ap.demo || ap.daily || ap.weekend || ap.rush || !ap.feed || !game.sim) return;
   saveFeed(feedState(ap.feed, { nowMs }), trafficCounts(game.sim).real, ap.feed.remaining ?? null, nowMs);
 }
 
@@ -4460,11 +4616,11 @@ function liveTick(simDt) {
   if (game.liveTimer > 0) return;
   game.liveTimer = 0.25;
   const nowMs = Date.now();
-  const view = feedState(ap.feed, { nowMs, demo: webFeed(ap), daily: !!(ap.daily || ap.weekend) });
+  const view = feedState(ap.feed, { nowMs, demo: webFeed(ap), daily: !!(ap.daily || ap.weekend || ap.rush) });
   const c = trafficCounts(game.sim);
   setFeedLines(view, c);
   checkSlowSky(view); // Things too slow? (skysky.js): a real-only game's short sky, once per game
-  if (!ap.demo && !ap.daily && !ap.weekend) noteFeed(view, c.real, ap.feed.remaining ?? null, nowMs);
+  if (!ap.demo && !ap.daily && !ap.weekend && !ap.rush) noteFeed(view, c.real, ap.feed.remaining ?? null, nowMs);
   if (Math.floor(game.clock) % 20 === 0) updateTitle();
 }
 
@@ -4533,7 +4689,7 @@ function demoTurnPause() {
   }
 }
 
-// the demo's free games (DECISIONS 454): one record in the browser's storage, { day, n }; the storage may be blocked (private mode), and
+// the demo's free games (DECISIONS 462): one record in the browser's storage, { day, n }; the storage may be blocked (private mode), and
 // then the count is the page load's own, with one game (demo.js demoGamesLeft). demoMemory is that count; it stays 0 while storage works.
 let demoMemory = 0;
 // the browser's localStorage, probed once: null when the browser does not give it (a blocked site) or takes no write (a full or read-only
@@ -4557,7 +4713,7 @@ function demoCount() {
   if (!r.stored) demoMemory = r.played;
 }
 
-/** The demo's start gate (DECISIONS 454): a game may start while the day has a free game. With none left, the Play page opens and the toast says why. */
+/** The demo's start gate (DECISIONS 462): a game may start while the day has a free game. With none left, the Play page opens and the toast says why. */
 function demoGate() {
   if (demoToday().left > 0) return true;
   openDemoPage(demoStoreUrl({ medium: 'web', campaign: 'home' }));
@@ -4603,7 +4759,7 @@ async function demoPickFromQuery() {
   await pickRestored;
   const info = await db.getAirport(code);
   if (!info || game.state !== 'menu') return;
-  picked = { info, daily: 0, top: !db.BUSIEST.some(([c]) => c === code), challenge: null, weekend: 0 };
+  picked = { info, daily: 0, top: !db.BUSIEST.some(([c]) => c === code), challenge: null, weekend: 0, rush: 0 };
   savePick();
   markPicked();
   glideBackdrop(info);

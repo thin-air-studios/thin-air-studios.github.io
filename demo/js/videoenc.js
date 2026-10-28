@@ -2,7 +2,7 @@
 // through the bridge (Kotlin: VideoEncoder.kt). Frames go in as they are drawn, the MP4 comes out as one file (mp4-muxer, vendored
 // under js/vendor, MIT), and the file goes to a share sheet or to Movies. planEncoder is the choice, pure, so the tests read it
 // with stub encoders; the sinks are the two ways out. No picture here: the frames are videorender.js's.
-import { Muxer, ArrayBufferTarget } from './vendor/mp4-muxer.mjs?v=86c2b44d';
+import { Muxer, ArrayBufferTarget } from './vendor/mp4-muxer.mjs?v=2f66fd5f';
 
 export const VIDEO_BITRATE = 6_000_000; // about 6 Mbps: a 20 s clip lands at 10 to 15 MB
 export const AUDIO_RATE = 48000, AUDIO_CHANNELS = 2, AUDIO_BITRATE = 128_000;

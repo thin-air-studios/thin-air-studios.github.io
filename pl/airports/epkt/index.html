@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -97,7 +97,33 @@
       <ul class="chips"><li><a class="chip" href="/airports/epru/">Częstochowa-Rudniki Airport (EPRU)</a> <small>46 km (29 mi)</small></li><li><a class="chip" href="/pl/airports/epkk/">Kraków John Paul II International Airport (KRK)</a> <small>67 km (42 mi)</small></li><li><a class="chip" href="/airports/lkmt/">Leoš Janáček Airport Ostrava (OSR)</a> <small>111 km (69 mi)</small></li><li><a class="chip" href="/pl/airports/eplk/">Łask Air Base (EPLK)</a> <small>120 km (74 mi)</small></li><li><a class="chip" href="/pl/airports/epll/">Łódź Władysław Reymont Airport (LCJ)</a> <small>140 km (87 mi)</small></li><li><a class="chip" href="/airports/eptm/">Tomaszów Mazowiecki Military Air Base (EPTM)</a> <small>142 km (88 mi)</small></li><li><a class="chip" href="/airports/lkpo/">Přerov Air Base (PRV)</a> <small>167 km (104 mi)</small></li><li><a class="chip" href="/airports/epml/">Mielec Airfield (EPML)</a> <small>170 km (105 mi)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="EPKT" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">Na żywo</p>
+          <h2 id="flights-title">Lot w pobliżu Katowice teraz</h2>
+          <p class="flights-lead">Prawdziwe samoloty, z publicznych nadajników. Lista odświeża się co minutę, dopóki ta strona jest otwarta.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>Samoloty w promieniu 40 nm</dt><dd data-flights-within>0</dd></div>
+          <div><dt>W powietrzu</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>Dane na żywo są w tej chwili opóźnione dla tego lotniska, więc lista może mieć kilka minut.</p>
+        <ol class="flights-list" data-flights-list aria-label="Lot w pobliżu Katowice teraz" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>Teraz nie ma samolotów w promieniu 40 nm.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-epkt-pl%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-epkt-pl" data-ev-position="flights" data-ev-airport="EPKT">Zagraj na tym lotnisku na żywo</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"Ląduje","unknown":"Nieznany","ground":"Na ziemi","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"Dane na żywo:","updated":"Zaktualizowano {when}","updatedNow":"Zaktualizowano przed chwilą","showing":"Pokazuję {shown} z {n}, najpierw lecące."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Wyląduj na KTW w Short Final</h2>
       <p class="lead">Short Final jest bezpłatny w Google Play. Wybierz lotnisko, narysuj trasę dla każdego samolotu i sprowadź go na właściwy pas.</p>

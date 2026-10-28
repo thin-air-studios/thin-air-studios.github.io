@@ -1,4 +1,4 @@
-import { WEB_DEMO } from './flavor.js?v=86c2b44d';
+import { WEB_DEMO } from './flavor.js?v=2f66fd5f';
 // What a new game is made of, from the settings: the difficulty, the Real planes only switch, the simulated-planes override
 // until 6:00 am, and whether the departures are built and allowed. Pure, so the rules (the daily challenge ignores the switch
 // and the override, and the departures setting) are tested without the game. main.js newGame reads it.

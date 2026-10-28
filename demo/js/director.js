@@ -3,12 +3,13 @@
 // callsign). The target is met first, always. Real planes only (realOnly) is a switch on any level: no simulated flight
 // is ever made, so the sky holds what the real sky can give and says so when it is short (starved). It also scales
 // weather and emergencies (none on real planes only).
-import { makeRng } from './util.js?v=86c2b44d';
-import { CLASSES } from './config.js?v=86c2b44d';
-import { AIRLINES } from './airlines.js?v=86c2b44d';
-import { classifyFlight } from './classify.js?v=86c2b44d';
-import { usable } from './feedstate.js?v=86c2b44d';
-import { compareKeys } from './area.js?v=86c2b44d';
+import { makeRng } from './util.js?v=2f66fd5f';
+import { CLASSES } from './config.js?v=2f66fd5f';
+import { AIRLINES } from './airlines.js?v=2f66fd5f';
+import { classifyFlight } from './classify.js?v=2f66fd5f';
+import { usable } from './feedstate.js?v=2f66fd5f';
+import { compareKeys } from './area.js?v=2f66fd5f';
+import { SANTA_AT_S, SANTA_SOON_S, SANTA_CALLSIGN } from './santa.js?v=2f66fd5f';
 
 export const DIFFICULTIES = {
   // a gentle start: a handful of aircraft, no rushes, storms, emergencies or departures (main.js)
@@ -128,11 +129,15 @@ export class TrafficDirector {
    * @param daily  the daily challenge: v1.32's pacing, byte for byte (no catch-up spawns). main.js sets it; the daily
    *               golden (tests/golden-trace.mjs) runs the defaults, which agree with it wherever the catch-up does not apply.
    */
-  constructor({ difficulty = 'normal', country = 'US', seed = 1, landable = ['light', 'regional', 'narrowbody', 'heavy', 'heli'], airlinePool = null, realOnly = false, daily = false, pace = 1, rush = null }) {
+  constructor({ difficulty = 'normal', country = 'US', seed = 1, landable = ['light', 'regional', 'narrowbody', 'heavy', 'heli'], airlinePool = null, realOnly = false, daily = false, pace = 1, rush = null, santa = false }) {
     this.diff = DIFFICULTIES[difficulty] ? difficulty : 'normal';
     this.cfg = DIFFICULTIES[this.diff];
     // a rush of the game's own (the weekend event's, weekend.js WEEKEND_RUSH); null keeps the level's RUSH (the other games)
     this.rush = rush || null;
+    // Santa (santa.js, 3.4): the sleigh is brought in once, at SANTA_AT_S, when the setup flies it (simdriver.js makeGame)
+    this.santa = !!santa;
+    this.santaSoonGiven = false; // the heads-up has been given (once)
+    this.santaIn = false; // the sleigh has been brought in (once)
     this.country = country;
     this.rng = makeRng(seed ^ 0x51ed);
     // the callsigns of the games that are not the daily draw from their own stream (callsignFor, DECISIONS 436): a callsign is never
@@ -214,6 +219,11 @@ export class TrafficDirector {
       this.shortSince = null; // the short sky is judged again from the feed's return (judgeStarved)
       if (this.realOnly) return null; // no feed: no new planes at all
     }
+    // the sleigh is a simulated plane, so it is not brought in on real planes only (no simulated flight is ever made there)
+    if (this.santa && !this.realOnly) {
+      const sleigh = this.santaTick(sim, t);
+      if (sleigh) return sleigh;
+    }
     // a real arrival: confirmed landing here (soonest first), or a real plane in the area (most likely first); not yet spawned
     const pick = (f, want) => want(f) && f.cls && !this.spawnedLive.has(f.icao24) && this.landable.has(f.cls);
     const confirmed = ok ? live.filter((f) => pick(f, (g) => g.arriving)).sort((a, b) => a.eta - b.eta) : [];
@@ -283,6 +293,25 @@ export class TrafficDirector {
       }
     }
     return null;
+  }
+
+  /**
+   * Santa (3.4, santa.js): the heads-up SANTA_SOON_S before SANTA_AT_S (the 'santaSoon' event, once), then the sleigh itself as one
+   * light arrival at SANTA_AT_S. A lane that is blocked for the moment keeps it to the next step, as any arrival waits. It is a
+   * simulated plane with its own callsign, so the sim scores it as any light landing.
+   */
+  santaTick(sim, t) {
+    if (this.santaIn) return null;
+    if (!this.santaSoonGiven && t >= SANTA_AT_S - SANTA_SOON_S) {
+      this.santaSoonGiven = true;
+      if (sim.events) sim.events.push({ kind: 'santaSoon', at: SANTA_AT_S, secs: SANTA_SOON_S });
+    }
+    if (t < SANTA_AT_S) return null;
+    const spec = { cls: 'light', callsign: SANTA_CALLSIGN, live: false };
+    if (!sim.queueArrival(spec)) return null;
+    this.santaIn = true;
+    this.lastSpawnAt = t;
+    return spec;
   }
 
   /**
@@ -376,7 +405,7 @@ export class TrafficDirector {
   }
 
   snapshot() {
-    return { spawnedLive: [...this.spawnedLive], lastSpawnAt: this.lastSpawnAt, realNextAt: this.realNextAt, rng: this.rng.getState(), crng: this.crng.getState(), phase: this.phase, rushWarnedFor: this.rushWarnedFor ?? null };
+    return { spawnedLive: [...this.spawnedLive], lastSpawnAt: this.lastSpawnAt, realNextAt: this.realNextAt, rng: this.rng.getState(), crng: this.crng.getState(), phase: this.phase, rushWarnedFor: this.rushWarnedFor ?? null, santaSoonGiven: this.santaSoonGiven, santaIn: this.santaIn };
   }
 
   // the level is not in the snapshot: a rewind does not undo a level change (the player's choice, not the sim's state)
@@ -388,6 +417,8 @@ export class TrafficDirector {
     this.crng.setState(s.crng);
     this.phase = s.phase;
     this.rushWarnedFor = s.rushWarnedFor ?? null;
+    this.santaSoonGiven = !!s.santaSoonGiven;
+    this.santaIn = !!s.santaIn;
   }
 
   /** Emergencies per second at this difficulty (Poisson rate). None on real planes only: nothing the game makes up. */

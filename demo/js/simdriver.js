@@ -1,17 +1,18 @@
 // The one step order of the game (T2): the live game (main.js) and the replay runner (the server, and the tests) both build the
 // game with makeGame, apply the recorded inputs with applyInput, and advance one fixed step with stepWorld. Pure: no DOM, no
 // clock, no RNG outside the sim's own. Sky (cloud and precipitation drawing) is visual only and is not stepped here.
-import { Sim } from './sim.js?v=86c2b44d';
-import { TrafficDirector, runwayPace } from './director.js?v=86c2b44d';
-import { Weather } from './weather.js?v=86c2b44d';
-import { Hazards } from './hazards.js?v=86c2b44d';
-import { Ops } from './ops.js?v=86c2b44d';
-import { RewindBuffer } from './rewind.js?v=86c2b44d';
-import { buildWorld, landableClasses, setActiveEnd } from './airport.js?v=86c2b44d';
-import { chooseActiveEnds } from './metar.js?v=86c2b44d';
-import { SIM_HZ, WORLD_H } from './config.js?v=86c2b44d';
-import { OPS_RATE, syncDepartures, applyLevel, applyDepartures, applyRealOnly, applyRewind, revealFixes } from './midgame.js?v=86c2b44d';
-import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple, projectFeed } from './replay.js?v=86c2b44d';
+import { Sim } from './sim.js?v=2f66fd5f';
+import { TrafficDirector, runwayPace } from './director.js?v=2f66fd5f';
+import { Weather } from './weather.js?v=2f66fd5f';
+import { Hazards } from './hazards.js?v=2f66fd5f';
+import { Ops } from './ops.js?v=2f66fd5f';
+import { RewindBuffer } from './rewind.js?v=2f66fd5f';
+import { buildWorld, landableClasses, setActiveEnd } from './airport.js?v=2f66fd5f';
+import { chooseActiveEnds } from './metar.js?v=2f66fd5f';
+import { SIM_HZ, WORLD_H } from './config.js?v=2f66fd5f';
+import { OPS_RATE, syncDepartures, applyLevel, applyDepartures, applyRealOnly, applyRewind, revealFixes } from './midgame.js?v=2f66fd5f';
+import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple, projectFeed } from './replay.js?v=2f66fd5f';
+import { sleighFlies } from './santa.js?v=2f66fd5f';
 
 export const STEP = 1 / SIM_HZ;
 export const DIRECTOR_EVERY = 0.25; // s of sim time between two director ticks (the golden's liveTimer, T1)
@@ -32,7 +33,8 @@ export const DIRECTOR_EVERY = 0.25; // s of sim time between two director ticks 
 export function makeGame(world, { seed, daily = false, setup, hud = null, settings = null, rec = null, rewindOn = true }) {
   const diff = setup.diff;
   // setup.rush: the weekend event's rush (weekend.js); no game without it has one, so its traffic is what it was
-  const director = new TrafficDirector({ difficulty: diff, country: setup.country, seed, landable: landableClasses(world), realOnly: !!setup.realOnly, daily: !!daily, pace: runwayPace(world.runways.length), rush: setup.rush || null });
+  // setup.santaDay: Santa's sleigh flies on 24 Dec (santa.js); a setup without it is what it was before 3.4
+  const director = new TrafficDirector({ difficulty: diff, country: setup.country, seed, landable: landableClasses(world), realOnly: !!setup.realOnly, daily: !!daily, pace: runwayPace(world.runways.length), rush: setup.rush || null, santa: sleighFlies(setup) });
   // a busy runway is a crash on Hard and Chaos only; the daily is Normal, so it is not (gameplay 3.3)
   const busyRunwayLoses = !daily && (diff === 'hard' || diff === 'chaos');
   const sim = new Sim({ world, seed, hudRects: hud, daily: !!daily, rules: { busyRunwayLoses } });
@@ -209,7 +211,9 @@ export function runReplay(replay, layout, probe = null) {
   }
   const g = makeGame(world, {
     seed: replay.seed,
-    daily: replay.board === 'daily',
+    // a daily game is daily-mode: the daily board's, and a challenge made from one (setup.rules 'd'), as the phone's makeGame call says
+    // (main.js newGame: ch.rules === 'd'). Without the challenge case a friend's daily challenge re-runs to a different outcome (3.4 fixer).
+    daily: replay.board === 'daily' || (replay.board === 'challenge' && replay.setup.rules === 'd'),
     setup: replay.setup,
     hud: replay.hud,
     settings: { departures: !!replay.setup.departures },

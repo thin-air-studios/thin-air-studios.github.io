@@ -2,13 +2,13 @@
 // in tracks/ (its key, name, blurb, flavour, latch, loopBars, trim and events(step, layer, flavour, cycle)). Pure (no Web
 // Audio): audio.js plays the events. To add a track: import its module below and add it to TRACKS. Its Settings row, its
 // blurb and its golden follow from that.
-import jazz from './tracks/jazz.js?v=86c2b44d';
-import lofi from './tracks/lofi.js?v=86c2b44d';
-import synthwave from './tracks/synthwave.js?v=86c2b44d';
-import ambient from './tracks/ambient.js?v=86c2b44d';
-import bossa from './tracks/bossa.js?v=86c2b44d';
-import chiptune from './tracks/chiptune.js?v=86c2b44d';
-import funk from './tracks/funk.js?v=86c2b44d';
+import jazz from './tracks/jazz.js?v=2f66fd5f';
+import lofi from './tracks/lofi.js?v=2f66fd5f';
+import synthwave from './tracks/synthwave.js?v=2f66fd5f';
+import ambient from './tracks/ambient.js?v=2f66fd5f';
+import bossa from './tracks/bossa.js?v=2f66fd5f';
+import chiptune from './tracks/chiptune.js?v=2f66fd5f';
+import funk from './tracks/funk.js?v=2f66fd5f';
 
 /** The tracks in Settings order (the owner's order): Tower Jazz is first and is the default. */
 export const TRACKS = Object.freeze([jazz, lofi, synthwave, ambient, bossa, chiptune, funk]);

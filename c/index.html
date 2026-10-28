@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Challenge board | Short Final</title>
+<meta name="description" content="The top scores on one Short Final challenge board: each player&#39;s best score, with the airport and the level.">
+<meta name="robots" content="noindex, follow">
+
+<meta name="theme-color" content="#16323a">
+<meta property="og:site_name" content="Short Final">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en">
+<meta property="og:title" content="Challenge board | Short Final">
+<meta property="og:description" content="The top scores on one Short Final challenge board: each player&#39;s best score, with the airport and the level.">
+
+<meta property="og:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
+<meta property="og:image:alt" content="Short Final: real flights at any airport">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Challenge board | Short Final">
+<meta name="twitter:description" content="The top scores on one Short Final challenge board: each player&#39;s best score, with the airport and the level.">
+<meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
+<meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
+<link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site/site.css">
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
+
+
+<link rel="stylesheet" href="/assets/site/challenge/board.css">
+</head>
+<body class="page-challenge" data-ga="G-SG0XGN2THX">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/"><img src="/assets/site/img/icon.svg" width="40" height="40" alt=""><span class="brand-word">Short Final</span></a>
+    <details class="menu">
+      <summary>Menu</summary>
+      <nav class="nav-links" aria-label="Main">
+        <a class="nav-cta" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dchallenge%26utm_content%3Dheader" data-event="play_store_click" data-ev-page="challenge" data-ev-position="menu">Get the game</a>
+        <a href="/airports/">Airports</a><a href="/guides/">Guides</a><a href="/events/">Events</a><a href="/press/">Press</a>
+      </nav>
+    </details>
+    <a class="btn btn--sm header-cta" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dchallenge%26utm_content%3Dheader" data-event="play_store_click" data-ev-page="challenge" data-ev-position="header">Get the game</a>
+  </div>
+</header>
+<main id="main">
+<div data-challenge data-play="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dchallenge%26utm_content%3Dchallenge-cta">
+  <section class="section section--hero cb-hero" aria-labelledby="board-title">
+    <div class="wrap">
+      <p class="eyebrow">Challenge board</p>
+      <h1 id="board-title">Challenge board</h1>
+      <p class="lead" data-lead="plain">Each player&#39;s best score on one challenge. Short Final is a free air traffic game for Android.</p>
+      <p class="lead" data-lead="link" hidden>A friend set a score on this challenge. Play the same planes and see if you can beat the top of the board.</p>
+      <div class="cb-chips"><span class="cb-chip" data-level hidden></span></div>
+      <div class="btn-row cb-cta"><a class="btn" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dchallenge%26utm_content%3Dchallenge-cta" data-cta>Get the game</a></div>
+      <p class="cb-note">Short Final is free on Google Play. A challenge link opens straight in the game on a phone that has it installed.</p>
+    </div>
+  </section>
+  <section class="section cb-section" aria-labelledby="scores-title">
+    <div class="wrap">
+      <div class="cb-card">
+        <div class="cb-head">
+          <h2 id="scores-title">Top ten</h2>
+          <p class="cb-count" data-total></p>
+        </div>
+        <div aria-live="polite">
+          <div data-state="loading" hidden>
+            <p class="sr-only">Loading the board</p>
+            <ol class="cb-skeleton" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li></ol>
+          </div>
+          <div data-state="filled" hidden>
+            <ol class="cb-list" data-list aria-labelledby="scores-title"></ol>
+          </div>
+          <div data-state="empty" class="cb-empty" hidden>
+            <p>No one has posted a score on this challenge yet. Be the first to play it in Short Final.</p>
+            <div class="btn-row"><a class="btn btn--ghost" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dchallenge%26utm_content%3Dchallenge-cta">Get the game</a></div>
+          </div>
+          <div data-state="error" hidden>
+            <p class="note cb-error">We could not load this board right now. Check your connection, then try again.</p>
+            <button class="btn btn--sm cb-retry" type="button" data-retry>Try again</button>
+          </div>
+          <div data-state="invalid" hidden>
+            <p class="note">This address is not a challenge board. Check the link you were sent, or play a new challenge in Short Final.</p>
+          </div>
+        </div>
+        <noscript><p class="note">Turn on JavaScript to see this challenge board. The Play button above works without it.</p></noscript>
+        <p class="cb-sources">Names show only where a player has chosen to show them. Everyone else appears as Pilot and four digits. Scores come from ranked games.</p>
+      </div>
+      <nav class="cb-links" aria-label="Short Final">
+        <a href="/">What is Short Final?</a>
+        <a href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dchallenge%26utm_content%3Dchallenge-cta">Get the game</a>
+      </nav>
+    </div>
+  </section>
+  <script type="application/json" id="board-copy">{"title":"Challenge board | Short Final","description":"The top scores on one Short Final challenge board: each player's best score, with the airport and the level.","eyebrow":"Challenge board","titleDefault":"Challenge board","titleAirport":"{airport} challenge | Short Final","leadLink":"A friend set a score on this challenge. Play the same planes and see if you can beat the top of the board.","leadNoLink":"Each player's best score on one challenge. Short Final is a free air traffic game for Android.","levelLabel":"Level","levels":{"beginner":"Beginner","easy":"Easy","normal":"Normal","hard":"Hard","chaos":"Chaos"},"totalOne":"1 player on this board","totalMany":"{n} players on this board","scoresTitle":"Top ten","scoresRank":"Rank","loading":"Loading the board","empty":"No one has posted a score on this challenge yet. Be the first to play it in Short Final.","error":"We could not load this board right now. Check your connection, then try again.","retry":"Try again","invalid":"This address is not a challenge board. Check the link you were sent, or play a new challenge in Short Final.","noscript":"Turn on JavaScript to see this challenge board. The Play button above works without it.","playChallenge":"Play this challenge","getGame":"Get the game","playNote":"Short Final is free on Google Play. A challenge link opens straight in the game on a phone that has it installed.","names":"Names show only where a player has chosen to show them. Everyone else appears as Pilot and four digits. Scores come from ranked games.","back":"What is Short Final?"}</script>
+  <script type="module" src="/assets/site/challenge/board.mjs"></script>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>Play</h2>
+        <ul>
+          <li><a href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dchallenge%26utm_content%3Dfooter" data-event="play_store_click" data-ev-page="challenge" data-ev-position="footer">Get the game</a></li>
+          <li><a href="/demo/" data-event="demo_start">Play free in your browser</a></li>
+          <li><a href="https://www.youtube.com/watch?v=MQPF7geuSas">Watch the trailer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Explore</h2>
+        <ul>
+          <li><a href="/airports/">Airports</a></li><li><a href="/guides/">Guides</a></li><li><a href="/events/">Events</a></li><li><a href="/press/">Press</a></li><li><a href="/classroom/">Teachers and clubs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>About</h2>
+        <ul>
+          
+          <li><a href="mailto:thinaircapital@gmail.com">Contact</a></li>
+          <li><a href="/privacy/">Privacy policy</a></li>
+          <li><a href="/terms/">Terms of Use</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Languages</h2>
+        <nav class="lang-list" aria-label="Languages">
+          <a href="/" lang="en" data-event="language_change" data-ev-from="en" data-ev-to="en" aria-current="true">English</a><a href="/es/" lang="es-ES" data-event="language_change" data-ev-from="en" data-ev-to="es">Español (España)</a><a href="/es-419/" lang="es-419" data-event="language_change" data-ev-from="en" data-ev-to="es-419">Español (Latinoamérica)</a><a href="/pt-br/" lang="pt-BR" data-event="language_change" data-ev-from="en" data-ev-to="pt-br">Português (Brasil)</a><a href="/de/" lang="de-DE" data-event="language_change" data-ev-from="en" data-ev-to="de">Deutsch</a><a href="/fr/" lang="fr-FR" data-event="language_change" data-ev-from="en" data-ev-to="fr">Français</a><a href="/it/" lang="it-IT" data-event="language_change" data-ev-from="en" data-ev-to="it">Italiano</a><a href="/ja/" lang="ja-JP" data-event="language_change" data-ev-from="en" data-ev-to="ja">日本語</a><a href="/ko/" lang="ko-KR" data-event="language_change" data-ev-from="en" data-ev-to="ko">한국어</a><a href="/zh-tw/" lang="zh-TW" data-event="language_change" data-ev-from="en" data-ev-to="zh-tw">繁體中文（台灣）</a><a href="/tr/" lang="tr-TR" data-event="language_change" data-ev-from="en" data-ev-to="tr">Türkçe</a><a href="/id/" lang="id-ID" data-event="language_change" data-ev-from="en" data-ev-to="id">Bahasa Indonesia</a><a href="/pl/" lang="pl-PL" data-event="language_change" data-ev-from="en" data-ev-to="pl">Polski</a>
+        </nav>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p>© 2026 Thin Air Studios LLC. All rights reserved. Short Final™ and the Short Final logo are trademarks of Thin Air Studios LLC. Thin Air Capital is a trade name of Thin Air Studios LLC.</p>
+      <p>Short Final is a game, not a flight-tracking or navigation tool. Live positions are approximate and simplified for play.</p>
+      <p>Game designed with love in Colorado, USA</p>
+    </div>
+  </div>
+</footer>
+<section class="consent" id="consent" aria-labelledby="consent-title" hidden>
+  <p id="consent-title"><strong>Analytics</strong></p>
+  <p>We measure visits with Google Analytics only if you say yes. Nothing is set on your phone until you accept. Your choice is remembered in this browser.</p>
+  <div class="btn-row">
+    <button class="btn btn--sm" type="button" data-consent="granted">Accept</button>
+    <button class="btn btn--sm btn--ghost" type="button" data-consent="denied">Decline</button>
+  </div>
+</section>
+<script src="/assets/site/site.js" defer></script>
+</body>
+</html>

@@ -4,24 +4,25 @@
 // or the planes that crashed, followed by the camera (videocam.js, the Last 20 s). Browser only: canvas, Image and the fonts. What the
 // words say is videoclip.js. Nothing is recorded here: the replay is the one the game kept (replay.js), so the video shows the game as
 // it was.
-import { SIM_HZ, WORLD_H, ZONE_COLORS, CLASSES } from './config.js?v=86c2b44d';
-import { buildWorld } from './airport.js?v=86c2b44d';
-import { makeGame, stepWorld, applyInput, STEP } from './simdriver.js?v=86c2b44d';
-import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple } from './replay.js?v=86c2b44d';
-import { Renderer } from './render.js?v=86c2b44d';
-import { FX, FONT } from './fx.js?v=86c2b44d';
-import { Scenery, waterMask, surroundingsInWorld } from './scenery.js?v=86c2b44d';
-import { Lighting } from './lighting.js?v=86c2b44d';
-import { Sky } from './sky.js?v=86c2b44d';
-import { groundTheme, nearField } from './airportpaint.js?v=86c2b44d';
-import { bearingToCanvas } from './geo.js?v=86c2b44d';
-import { assetUrl } from './flavor.js?v=86c2b44d';
-import { hudScale, setHudScale } from './util.js?v=86c2b44d';
+import { SIM_HZ, WORLD_H, ZONE_COLORS, CLASSES } from './config.js?v=2f66fd5f';
+import { buildWorld } from './airport.js?v=2f66fd5f';
+import { makeGame, stepWorld, applyInput, STEP } from './simdriver.js?v=2f66fd5f';
+import { REPLAY_FORMAT, REPLAY_VERSION, rowFromTuple } from './replay.js?v=2f66fd5f';
+import { Renderer } from './render.js?v=2f66fd5f';
+import { FX, FONT } from './fx.js?v=2f66fd5f';
+import { isSleigh } from './santa.js?v=2f66fd5f';
+import { Scenery, waterMask, surroundingsInWorld } from './scenery.js?v=2f66fd5f';
+import { Lighting } from './lighting.js?v=2f66fd5f';
+import { Sky } from './sky.js?v=2f66fd5f';
+import { groundTheme, nearField } from './airportpaint.js?v=2f66fd5f';
+import { bearingToCanvas } from './geo.js?v=2f66fd5f';
+import { assetUrl } from './flavor.js?v=2f66fd5f';
+import { hudScale, setHudScale } from './util.js?v=2f66fd5f';
 import {
   VIDEO_FPS, VIDEO_W, VIDEO_H, bandHeightFor, CLIP_S, clipView, frameLayout, captionHeight, CAPTION_LINE, CAPTION_MAX_LINES, frameCount, simTimeAt,
   arrivalNoteOf, callsFor, checkInCalls, captionRadio, Captions, windWords, momentOf, topBand, bottomBlock, inChunks, slotWords,
-} from './videoclip.js?v=86c2b44d';
-import { FollowCamera, Track, TRACK_STEP, LOOK_S } from './videocam.js?v=86c2b44d';
+} from './videoclip.js?v=2f66fd5f';
+import { FollowCamera, Track, TRACK_STEP, LOOK_S } from './videocam.js?v=2f66fd5f';
 
 // The in-map labels of a clip (the callsigns, the arrival notes, the closure pills) are drawn at this HUD scale. The game's own is 1
 // (about 1.04 on the reference phone). The band is 1080 px wide and a phone shows it at about 410 CSS px, so the game's labels on a
@@ -269,6 +270,8 @@ export class ClipScene {
   event(plan, i, ev) {
     const a = ev.aircraft;
     this.captions.add(this.videoSecond(plan, i), callsFor(ev, this.env()));
+    // Santa's landing gets its own caption under the tower's call (santa.js): the airport is the replay's
+    if (ev.kind === 'touchdown' && isSleigh(a)) this.captions.add(this.videoSecond(plan, i), [{ who: 'Santa', msg: `Santa landed at ${this.replay.icao}`, prio: 3 }]);
     if (ev.kind === 'crash') {
       // the crash's explosion where the planes met, in their own colours (main.js handleEvents); the frame holds the shake at zero
       this.fx.explosion(ev.x, ev.y, [...ev.who.map((p) => ZONE_COLORS[CLASSES[p.cls].color].main), '#f6f1e4', '#3a3a3a']);
@@ -278,6 +281,8 @@ export class ClipScene {
       const mx = (ev.a.x + ev.b.x) / 2, my = (ev.a.y + ev.b.y) / 2;
       this.fx.ring(mx, my, '255,255,255', 70, 0.5, 3);
       this.fx.ring(mx, my, '255,120,100', 52, 0.5, 2);
+    } else if (ev.kind === 'touchdown' && isSleigh(a)) {
+      this.fx.santaLanding(a.x, a.y);
     } else if (ev.kind === 'touchdown' && a) {
       this.fx.ring(a.x, a.y, '255,246,200', 40, 0.5, 3);
       this.fx.glow(a.x, a.y, 40, '255,236,170', 0.5);

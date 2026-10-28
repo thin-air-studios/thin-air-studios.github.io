@@ -7,10 +7,11 @@
 //   {
 //     f: 'sf-replay', v: 1,
 //     app: '2.3',                        // app version; maps to a bundled sim version on the server
-//     board: 'level' | 'daily' | 'weekend',
+//     board: 'level' | 'daily' | 'weekend' | 'rush',
 //     level, levels: [...], reasons: [], // reasons must be empty for a ranked submission
 //     icao, daily: null | dayNumber, tz: 'America/Chicago',
 //     weekend: <W>,                      // a weekend event game only (3.3): the weekend's Saturday day number; no other game has the key
+//     rushDay: <localDay>,               // a Thanksgiving Rush game only (3.4): the day number, one of the five; no other game has the key
 //     seed: <uint32>,                    // the daily seed is derived from dayNumber and checked
 //     layout: '<sha256 hex>',
 //     W: <world width>, H: <world height>, hud: { hard: [...], soft: [...] },   // device-dependent sim inputs (T18)
@@ -45,13 +46,15 @@
 // The step order is simdriver.js; this file holds the format, the Recorder that writes it, and the feed projection both the live
 // game and a replay feed the director with (so a recorded tick and a live tick are the same numbers).
 
-import { WORLD_H } from './config.js?v=86c2b44d';
+import { WORLD_H } from './config.js?v=2f66fd5f';
 
 export const REPLAY_FORMAT = 'sf-replay';
 export const REPLAY_VERSION = 1;
 // The server's cap on a packed replay. Replays are stored as D1 blobs (no R2), and a D1 row holds 2,000,000 bytes.
 export const REPLAY_MAX_PACKED = 1.5 * 1024 * 1024;
-export const REPLAY_BOARDS = Object.freeze(['level', 'daily', 'weekend']);
+// The server's cap on a challenge board copy (3.4; server/src/config.js CHALLENGE_REPLAY_MAX_PACKED): a challenge has no live feed, so it is smaller.
+export const CHALLENGE_REPLAY_MAX_PACKED = 512 * 1024;
+export const REPLAY_BOARDS = Object.freeze(['level', 'daily', 'weekend', 'rush', 'challenge']);
 export const INPUT_KINDS = Object.freeze(['path', 'circle', 'loop', 'hold', 'dep-tap', 'rewind', 'lvl', 'dep', 'rpo', 'ovr', 'hud', 'wxsev', 'fixes']);
 
 // The director's input per tick. Only arriving and in-area flights reach the director (director.js: confirmed, area, and
@@ -97,7 +100,7 @@ export function rowFromTuple(t) {
  * count they happen at; the director's ticks call feedTick. build(end) gives the replay object; packReplay gzips it.
  */
 export class Recorder {
-  constructor({ seed, icao, tz, layout, board, daily = null, weekend = null, levels = [], reasons = [], app, W, H = WORLD_H, hud, setup, airport = null }) {
+  constructor({ seed, icao, tz, layout, board, daily = null, weekend = null, rushDay = null, levels = [], reasons = [], app, W, H = WORLD_H, hud, setup, airport = null }) {
     this.head = {
       f: REPLAY_FORMAT, v: REPLAY_VERSION, app, board, level: levels[levels.length - 1] || null, levels: [...levels], reasons: [...reasons],
       icao, daily, tz, seed: seed >>> 0, layout, W, H, hud: hud ? { hard: hud.hard.map((r) => ({ ...r })), soft: hud.soft.map((r) => ({ ...r })) } : null,
@@ -105,6 +108,8 @@ export class Recorder {
     };
     // the weekend's day is written for a weekend game only, so a daily or a level replay is what it was before 3.3
     if (weekend != null) this.head.weekend = weekend;
+    // the Rush's day is the same: written for a Rush game only (its name is not setup.rush, the bank)
+    if (rushDay != null) this.head.rushDay = rushDay;
     this.inputs = [];
     this.feeds = [];
     this.wxs = [];

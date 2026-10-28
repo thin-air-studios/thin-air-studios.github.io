@@ -1,6 +1,6 @@
-@font-face { font-family: 'Fredoka'; font-weight: 500; font-display: block; src: url('fonts/fredoka-latin-500-normal.woff2?v=86c2b44d') format('woff2'); }
-@font-face { font-family: 'Fredoka'; font-weight: 600; font-display: block; src: url('fonts/fredoka-latin-600-normal.woff2?v=86c2b44d') format('woff2'); }
-@font-face { font-family: 'Fredoka'; font-weight: 700; font-display: block; src: url('fonts/fredoka-latin-700-normal.woff2?v=86c2b44d') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-weight: 500; font-display: block; src: url('fonts/fredoka-latin-500-normal.woff2?v=2f66fd5f') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-weight: 600; font-display: block; src: url('fonts/fredoka-latin-600-normal.woff2?v=2f66fd5f') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-weight: 700; font-display: block; src: url('fonts/fredoka-latin-700-normal.woff2?v=2f66fd5f') format('woff2'); }
 
 :root {
   --cream: #fff6e3;
@@ -551,6 +551,10 @@ canvas#game.glide-in { transition: opacity .34s ease, transform .34s ease; }
    card underneath them (main.js syncOverShadow) */
 .over-card > .row:last-child { position: sticky; bottom: 0; background: var(--cream); padding: 4px 0 2px; width: 100%; }
 .over-card.more-below > .row:last-child { box-shadow: 0 -10px 12px -8px rgba(0,0,0,.12); }
+/* when the card is taller than the screen (the Thanksgiving Rush's lines wrap at 412 high), its body scrolls above the buttons row and
+   the row is never over the body: the Next airport pill is reached by scrolling the body, and is never hidden under the buttons */
+.over-card { overflow: hidden; }
+.over-card > .over-body { flex: 0 1 auto; min-height: 0; width: 100%; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; align-items: center; gap: inherit; padding-bottom: calc(var(--u) * 1.2); box-sizing: border-box; }
 @media (max-height: 430px) {
   /* as wide as its lines need (the 150u cap is for tablets), so the named real flights take fewer of them. Tight enough
      that a ranked card with its rank line and Next airport fits the Pixel 9's 412 px without scrolling */

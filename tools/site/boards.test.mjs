@@ -200,10 +200,10 @@ test('a non-JSON answer is an error and is not kept', async () => {
 
 // ---------- the markup ----------
 
-test('the panel is off by default in the config, and its markup is absent while it is off', () => {
+test('the panel follows its flag, and its markup is absent while it is off', () => {
   const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'site-src', 'config.json'), 'utf8'));
-  assert.equal(config.features.airportBoards, false);
-  assert.equal(boardsEnabled(config), false);
+  assert.equal(boardsEnabled(config), config.features.airportBoards === true);
+  assert.equal(boardsEnabled({ ...config, features: { ...config.features, airportBoards: false } }), false);
   assert.equal(boardPanelHtml(ctxWith({ airportBoards: false }), DEN), '');
   assert.equal(boardPanelHtml(ctxWith(undefined), DEN), '');
 });

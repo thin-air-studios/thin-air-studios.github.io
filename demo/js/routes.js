@@ -1,4 +1,4 @@
-import { WEB_DEMO } from './flavor.js?v=86c2b44d';
+import { WEB_DEMO } from './flavor.js?v=2f66fd5f';
 // Where a real plane came from, for the arrival note (2.4 item 1: "Arrived from Omaha", its most recent origin). The routes are the
 // Virtual Radar Server standing data (CC0 1.0), kept by tools/routes-build.mjs as one small file per airline on the game's own
 // website. A real plane whose callsign starts with an airline's code gets that airline's file on first need, through net.js like
@@ -8,10 +8,10 @@ import { WEB_DEMO } from './flavor.js?v=86c2b44d';
 // list's. No note when no leg fits, when the leg starts at this airport or at one with no city, for a callsign that is not an
 // airline's (an N-number), for a simulated plane, or in the recorded game (it asks for nothing). Nothing here touches the simulation:
 // it reads a plane's callsign and report, and keeps its own answers.
-import { http } from './net.js?v=86c2b44d';
-import { cityName, airportNow } from './airportdb.js?v=86c2b44d';
-import { cacheGet, cacheSet, cacheDel, cacheKeys } from './airportdata.js?v=86c2b44d';
-import { haversine, bearing, angleDiff, destination } from './geo.js?v=86c2b44d';
+import { http } from './net.js?v=2f66fd5f';
+import { cityName, airportNow } from './airportdb.js?v=2f66fd5f';
+import { cacheGet, cacheSet, cacheDel, cacheKeys } from './airportdata.js?v=2f66fd5f';
+import { haversine, bearing, angleDiff, destination } from './geo.js?v=2f66fd5f';
 
 export const ROUTE_BASE = 'https://thin-air-studios.github.io/routes/'; // the files tools/routes-build.mjs writes
 export const ROUTE_TTL_MS = 7 * 24 * 3600 * 1000; // a file on the phone is used for a week, then fetched again

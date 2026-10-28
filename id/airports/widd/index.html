@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -97,7 +97,33 @@
       <ul class="chips"><li><a class="chip" href="/airports/wsss/">Singapore Changi Airport (SIN)</a> <small>29 km (18 mi)</small></li><li><a class="chip" href="/airports/wsap/">Paya Lebar Air Base (QPG)</a> <small>35 km (22 mi)</small></li><li><a class="chip" href="/airports/wssl/">Seletar Airport (XSP)</a> <small>43 km (27 mi)</small></li><li><a class="chip" href="/airports/wsag/">Sembawang Air Base (WSAG)</a> <small>48 km (30 mi)</small></li><li><a class="chip" href="/airports/widn/">Raja Haji Fisabilillah International Airport (TNJ)</a> <small>51 km (32 mi)</small></li><li><a class="chip" href="/airports/wsat/">Tengah Air Base (TGA)</a> <small>54 km (34 mi)</small></li><li><a class="chip" href="/airports/wmkj/">Senai International Airport (JHB)</a> <small>76 km (47 mi)</small></li><li><a class="chip" href="/airports/widt/">Raja Haji Abdullah Airport (TJB)</a> <small>81 km (50 mi)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="WIDD" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">Langsung</p>
+          <h2 id="flights-title">Sedang terbang di dekat Batam sekarang</h2>
+          <p class="flights-lead">Pesawat sungguhan, dari siaran publik. Daftar diperbarui setiap menit selama halaman ini terbuka.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>Pesawat dalam 40 nm</dt><dd data-flights-within>0</dd></div>
+          <div><dt>Di udara</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>Data langsung sedang tertunda untuk bandara ini, jadi daftar mungkin beberapa menit lalu.</p>
+        <ol class="flights-list" data-flights-list aria-label="Sedang terbang di dekat Batam sekarang" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>Saat ini tidak ada pesawat dalam 40 nm.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-widd-id%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-widd-id" data-ev-position="flights" data-ev-airport="WIDD">Main di bandara ini secara langsung</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"Mendarat","unknown":"Tidak diketahui","ground":"Di darat","feet":"{n} ft","knots":"{n} kn","nm":"{n} nm","liveData":"Data langsung:","updated":"Diperbarui {when}","updatedNow":"Diperbarui baru saja","showing":"Menampilkan {shown} dari {n}, yang sedang terbang lebih dulu."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Mendaratlah di BTH di Short Final</h2>
       <p class="lead">Short Final gratis di Google Play. Pilih bandara, gambar jalur untuk setiap pesawat, dan daratkan di landasan yang tepat.</p>

@@ -4,7 +4,8 @@
 // test/contract.test.mjs checks the two agree, so a change here fails the server tests until that file follows.
 //
 // Days are local day numbers (airportdb.js localDay: whole days since 1970 on the phone's clock). Weekdays are Monday 0 .. Sunday 6.
-import { BUSIEST } from './airportdb.js?v=86c2b44d';
+import { BUSIEST } from './airportdb.js?v=2f66fd5f';
+import { RUSH_WEEKEND } from './rush.js?v=2f66fd5f';
 
 // The first weekend the rotation counts from: Saturday 31 Oct 2026. A fixed date, not the release date, so the rotation does not move.
 export const WEEKEND_EPOCH = 20757;
@@ -12,11 +13,14 @@ export const WEEKEND_EPOCH = 20757;
 /** A local day's weekday, Monday 0 .. Sunday 6 (reminder.js weekday, the same rule). */
 const weekdayOf = (day) => (((day + 3) % 7) + 7) % 7;
 
-/** The weekend a local day belongs to: its Saturday's day number, on a Saturday or Sunday from the epoch on; otherwise null. */
+/**
+ * The weekend a local day belongs to: its Saturday's day number, on a Saturday or Sunday from the epoch on; otherwise null. The Thanksgiving
+ * Rush's weekend (28 Nov 2026) has no weekend event on this version: the Rush is that weekend's event (rush.js RUSH_WEEKEND, 3.4).
+ */
 export function weekendOf(day) {
   const wd = weekdayOf(day);
   const w = wd === 5 ? day : wd === 6 ? day - 1 : null;
-  return w !== null && w >= WEEKEND_EPOCH ? w : null;
+  return w !== null && w >= WEEKEND_EPOCH && w !== RUSH_WEEKEND ? w : null;
 }
 
 /** The Saturday of the most recent weekend up to a local day (the day itself on a Saturday; on a weekday, the one just past). */

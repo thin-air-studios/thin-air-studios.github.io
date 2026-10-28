@@ -1,8 +1,8 @@
 // Sorting the real sky for the traffic director (director.js) and the Live feed card: every flight the feed holds is
 // put in one bucket, and the planes in the area (near the field, not yet confirmed, not known to be going elsewhere)
 // are ranked by how likely they look to come in. The rules are arrivals.js's; this only sorts their answers. Pure.
-import { haversine, bearing, angleDiff } from './geo.js?v=86c2b44d';
-import { ARRIVAL, FLIGHT_ID, arrivalCheck, estimatePosition, rivalOf } from './arrivals.js?v=86c2b44d';
+import { haversine, bearing, angleDiff } from './geo.js?v=2f66fd5f';
+import { ARRIVAL, FLIGHT_ID, arrivalCheck, estimatePosition, rivalOf } from './arrivals.js?v=2f66fd5f';
 
 /** The buckets an in-area plane can be in (before the away and climb rules, which judge() applies). */
 const AREA_BUCKETS = new Set(['seen-once', 'close', 'far', 'passing']);

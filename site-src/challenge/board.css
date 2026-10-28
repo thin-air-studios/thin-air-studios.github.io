@@ -1,0 +1,54 @@
+/* The challenge board page (served at /assets/site/challenge/board.css, only when features.challengeBoards is on). Its own styles
+   only; every colour is a site token (site.css), so light and dark follow the site. The sunburst behind the hero is one flat shape:
+   nothing on this page moves, and reduced motion changes nothing because there is no motion to stop. */
+
+.cb-hero { position: relative; overflow: hidden; isolation: isolate; padding: clamp(40px, 6vw, 84px) 0 clamp(36px, 5vw, 64px); }
+.cb-hero::before {
+  content: ""; position: absolute; z-index: -1; right: -28%; top: -38%;
+  width: min(120vw, 760px); aspect-ratio: 1; border-radius: 50%;
+  background: repeating-conic-gradient(from -4deg, color-mix(in srgb, var(--cta) 13%, transparent) 0deg 7deg, transparent 7deg 20deg);
+  pointer-events: none;
+}
+.cb-hero h1 { color: var(--hero-text); margin-bottom: .35em; overflow-wrap: anywhere; }
+.cb-hero .eyebrow { color: var(--hero-text); background: color-mix(in srgb, var(--hero-text) 14%, transparent); }
+.cb-hero .lead { color: var(--hero-soft); max-width: 46ch; font-size: clamp(1.05rem, 1rem + .4vw, 1.25rem); margin-bottom: 0; }
+.cb-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.cb-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 14px; border-radius: var(--pill); border: 1px solid rgba(255, 246, 227, .28); color: var(--hero-soft); font-weight: 600; font-size: .95rem; }
+.cb-chip b { color: var(--hero-text); font-weight: 700; }
+.cb-cta { margin-top: 26px; }
+.cb-note { margin: 14px 0 0; max-width: 56ch; color: var(--hero-soft); font-size: .95rem; }
+
+.cb-section { padding: clamp(32px, 5vw, 60px) 0 clamp(48px, 6vw, 88px); }
+.cb-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(16px, 2.6vw, 28px); min-width: 0; }
+.cb-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; margin-bottom: 14px; }
+.cb-head h2 { margin: 0; font-size: clamp(1.3rem, 1.1rem + .8vw, 1.7rem); }
+.cb-head .cb-count { color: var(--text-soft); font-weight: 600; font-size: .98rem; }
+
+.cb-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cb-row { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr) auto; align-items: center; gap: 4px 14px; min-height: 60px; padding: 8px 16px 8px 8px; border-radius: var(--radius-s); background: var(--bg); border: 1px solid var(--line); min-width: 0; }
+.cb-rank { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--text); font: 700 1.05rem/1 var(--font); font-variant-numeric: tabular-nums; }
+.cb-name { min-width: 0; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+.cb-score { font: 700 1.35rem/1 var(--font); font-variant-numeric: tabular-nums; color: var(--text); white-space: nowrap; }
+.cb-row--first { border-color: var(--cta-edge); background: color-mix(in srgb, var(--cta) 18%, var(--bg)); }
+.cb-row--first .cb-rank { background: var(--cta); color: var(--cta-ink); border-color: var(--cta-edge); box-shadow: 0 3px 0 var(--cta-edge); }
+
+.cb-skeleton { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cb-skeleton li { height: 60px; border-radius: var(--radius-s); background: color-mix(in srgb, var(--text) 7%, transparent); }
+
+.cb-empty { display: grid; gap: 16px; justify-items: start; padding: 6px 0 2px; }
+.cb-empty p { margin: 0; font-weight: 600; font-size: 1.08rem; max-width: 52ch; color: var(--text); }
+.cb-error { margin: 0; }
+.cb-retry { margin-top: 14px; }
+.cb-links { display: flex; flex-wrap: wrap; gap: 12px 18px; margin-top: 22px; }
+.cb-sources { margin: 18px 0 0; font-size: .92rem; color: var(--text-soft); }
+
+@media (min-width: 720px) {
+  .cb-row { grid-template-columns: 3rem minmax(0, 1fr) auto; padding-inline: 18px 20px; }
+  .cb-rank { width: 2.75rem; height: 2.75rem; }
+  .cb-score { font-size: 1.5rem; }
+}
+@media (max-width: 359px) {
+  .cb-score { font-size: 1.2rem; }
+  .cb-row { grid-template-columns: 2.3rem minmax(0, 1fr) auto; gap: 4px 10px; padding-inline: 6px 12px; }
+  .cb-rank { width: 2.2rem; height: 2.2rem; font-size: .95rem; }
+}

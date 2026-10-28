@@ -2,24 +2,23 @@ Traffico reale. Qualsiasi aeroporto.
 
 Il gioco è in inglese. Questa pagina è tradotta.
 
-Short Final™ è un gioco di controllo del traffico aereo in diretta, con il cielo reale. Scegli un aeroporto: i suoi aerei veri compaiono al bordo dello schermo con il numero di volo. Traccia una rotta da ciascuno a una pista e fai atterrare più aerei che puoi.
+Short Final™ è un gioco di controllo del traffico aereo (ATC) in diretta, con il cielo reale. Scegli un aeroporto: i voli veri in diretta che atterrano lì compaiono al bordo dello schermo con il numero di volo. Porta ogni aereo sulla rotta di avvicinamento fino a una pista, tienili separati e falli atterrare.
 
 IL CIELO REALE
 • Aerei veri, con numero di volo e punto rosso. I simulati completano il traffico in base alla difficoltà, salvo con «Real planes only».
-• Arrived from: un aereo vero che atterra qui dice da quale città arriva.
-• Meteo reale: vento, pista, nebbia e temporali veri dell'aeroporto.
+• Arrived from: un aereo vero che atterra qui può dire da quale città arriva.
+• Il meteo reale fissa vento e pista; nebbia e temporali veri attraversano il radar.
 • Luce del giorno reale: gioca Tokyo di notte, quando a Tokyo è notte.
 
 IL LUOGO REALE
-• Oltre 29.000 aeroporti con piste vere. Rullaggi, gate e terreno vengono da OpenStreetMap; la maggior parte si carica in fretta dal sito.
-• Anche il territorio è reale: le Montagne Rocciose a ovest di Denver, e barche sull'acqua.
-• I 50 aeroporti più trafficati si aprono subito, anche offline. La ricerca trova ogni altro.
+• Oltre 29.000 aeroporti con piste vere. Rullaggi e gate vengono da OpenStreetMap; la maggior parte delle mappe si carica in fretta dal sito.
+• I 50 aeroporti più trafficati si aprono subito, anche offline.
 
 FACILE DA IMPARARE, DIFFICILE DA LASCIARE
-• Trascina per tracciare una rotta e la coda per proseguirla. Aerei di linea rossi sulle piste rosse, a elica gialli su quelle gialle, elicotteri sull'elipista.
-• Tocca per far girare un aereo, disegna un anello per attendere o manda il traffico in un circuito di attesa.
+• Trascina per tracciare una rotta e la coda per proseguirla. Aerei rossi sulle piste rosse, a elica gialli su quelle gialle, elicotteri sull'elipista.
+• Tocca per far girare un aereo, disegna un anello per attendere o manda il traffico in attesa.
 • Le partenze si spingono indietro, rullano, decollano ed escono dai gate.
-• Avarie al motore e poco carburante: l'aereo vira verso una pista raggiungibile, e l'avanzamento rapido si ferma.
+• Avarie al motore e poco carburante: l'aereo vira verso una pista raggiungibile.
 • Scia di turbolenza, ispezioni delle piste, temporali e nebbia.
 • Una pista chiusa mostra segni rossi a X, di giorno o di notte.
 • La modalità Bullet rallenta il tempo prima di una collisione, con un riavvolgimento per partita.
@@ -28,27 +27,26 @@ GIOCA A MODO TUO
 • Beginner: pochi aerei e cieli tranquilli.
 • Real planes only, a ogni livello, mostra solo gli aerei veri del tuo aeroporto, senza inventare.
 • Sfida giornaliera: stessi aerei e meteo per tutti, con serie di giorni.
-• Play ricorda l'ultimo aeroporto scelto.
+• Eventi: Thanksgiving Rush è cinque giorni di traffico festivo a fine novembre, gratuito e offline. Il 24 dicembre la slitta fittizia di Babbo Natale si unisce al traffico.
+• Sfida un amico con un link.
 • Chiacchiere radio con fraseologia ATC reale. Attivale in Settings.
 • Sette brani: Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit e Funky groove.
-• Stelle in ogni aeroporto e gradi di controllore.
-• Condividi una scheda risultato o il punteggio giornaliero senza spoiler.
-• Un Tour mostra cosa sa fare.
+• Il Tour mostra cosa può fare.
 
 CONDIVIDI UN VIDEO
-• Video di 20 secondi per TikTok, YouTube Shorts o Instagram Reels, con la musica del gioco e gli aerei veri per nome.
+• Video di 20 secondi per TikTok, YouTube Shorts o Instagram Reels, con musica del gioco e aerei veri per nome.
 
 CLASSIFICHE
-• Classifiche mondiali per aeroporto e livello, aperte al lancio su Google Play: oggi, questa settimana e sempre, top 10 e la tua posizione.
-• Google Play Games: 24 obiettivi e sette classifiche, con la miglior partita per livello.
-• Contano solo le partite in classifica: un livello intero, Real planes only disattivato, Departures attivato (tranne Beginner). La sfida giornaliera ha una classifica sua.
-• Scegli se il tuo nome compare; i nomi che infrangono le regole si possono segnalare.
+• Classifiche mondiali per aeroporto e livello: oggi, questa settimana e sempre, top 10 e la tua posizione.
+• Google Play Games: 24 obiettivi e sette classifiche.
+• Contano solo le partite in classifica: un livello intero, Real planes only disattivato, Departures attivato (tranne Beginner).
+• Scegli se il tuo nome compare; i nomi che infrangono le regole si segnalano.
 
 EQUO E PRIVATO
-• Niente pubblicità né account. La sfida giornaliera è sempre gratis; dopo i primi 3 giorni, 3 partite gratuite al giorno in ogni aeroporto. Short Final Pro, acquisto unico su Google Play, sblocca partite illimitate.
+• Niente pubblicità né account. La sfida giornaliera è sempre gratis; poi 3 partite gratuite al giorno in ogni aeroporto. Short Final Pro, acquisto unico su Google Play, sblocca partite illimitate.
 • Punteggi e progressi restano sul telefono. Le classifiche online conservano solo ciò che inviano le partite in classifica; la tua puoi rimuoverla.
 • Simboli per il daltonismo e interruttori separati per suoni, musica, radio e vibrazione.
 
-Short Final è un gioco, non uno strumento per tracciare voli o navigare. Le posizioni in diretta sono approssimative e semplificate per il gioco.
+Per i fan del tracciamento dei voli: Short Final è un gioco, non uno strumento di tracciamento o navigazione. Le posizioni in diretta sono approssimative e semplificate.
 
-Mappe, coste e vette © OpenStreetMap contributors (ODbL). Dati in diretta: The OpenSky Network. Meteo: aviationweather.gov (NOAA). Aeroporti: OurAirports. Rotte di volo: Virtual Radar Server (CC0). Classifiche dei passeggeri: ACI World. Fusi orari: timezone-boundary-builder (ODbL) e tz-lookup. Crediti completi nell'app, in About.
+Mappe, coste e vette © OpenStreetMap contributors (ODbL). Dati in diretta: adsb.lol, con The OpenSky Network come riserva. Meteo: aviationweather.gov (NOAA). Aeroporti: OurAirports. Rotte di volo: Virtual Radar Server (CC0). Classifiche dei passeggeri: ACI World. Fusi orari: timezone-boundary-builder (ODbL) e tz-lookup. Crediti completi nell'app, in About.

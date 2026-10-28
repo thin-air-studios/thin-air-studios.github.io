@@ -6,6 +6,11 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadDictionaries, makeT } from './lib/i18n.mjs';
+import { pages as challengePages } from './pages/challenge.mjs';
+import { pages as headerPages } from './pages/headers.mjs';
+import { pages as flightPages } from './pages/flights.mjs';
+import worker, { originPath, isChallengePath } from '../edge/worker.js';
 
 const TOOL = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(TOOL, '..', '..');
@@ -16,7 +21,8 @@ const config = JSON.parse(fs.readFileSync(path.join(SRC, 'config.json'), 'utf8')
 const manifest = JSON.parse(fs.readFileSync(path.join(SRC, '.generated.json'), 'utf8')).files;
 const NOINDEX_ALLOWED = new Set(['404.html']);
 // Thin airport and country pages are noindex on purpose (airports.mjs, rules.json): every page under airports/ may be noindex.
-const NOINDEX_PREFIX_ALLOWED = ['airports/'];
+// The challenge board page (c/, 3.4) is noindex by design: one template for every /c/<id>/ address.
+const NOINDEX_PREFIX_ALLOWED = ['airports/', 'c/'];
 const ASSET_PREFIX_OK = /^assets\/site\//;
 
 // The owner name is spelled in pieces so that this file never contains it whole.
@@ -224,7 +230,7 @@ test('the stylesheet braces balance and no token is left undefined', () => {
 
 test('config flags exist for the events and features the copy depends on', () => {
   for (const key of ['weekend', 'thanksgiving', 'santa']) assert.equal(typeof config.events[key].live, 'boolean');
-  for (const key of ['challengeLinks', 'challengeBoards']) assert.equal(typeof config.features[key], 'boolean');
+  for (const key of ['challengeLinks', 'challengeBoards', 'airportBoards', 'liveFlights']) assert.equal(typeof config.features[key], 'boolean');
   assert.equal(config.domain, DOMAIN);
   assert.equal(config.email, 'thinaircapital@gmail.com');
 });
@@ -239,4 +245,160 @@ test('legacy pages we did not build are scanned too (reported, not failed)', (t)
     if (AI_NAMES.test(doc.replace(/\btrain AI\b/g, ' '))) t.diagnostic(`AI or model name found in ${rel} (built by another repository; fix there)`);
   }
   assert.ok(true);
+});
+
+// ---------- the challenge board page, the Worker's rule and the live-flights panel (3.4) ----------
+
+const PLAY_SHAPE = /^https:\/\/play\.google\.com\/store\/apps\/details\?id=com\.thinaircapital\.holdingpattern&referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3D[a-z0-9-]+(%26utm_content%3D[a-z0-9-]+)?$/;
+const dicts = loadDictionaries(SRC, config.languages);
+const withFlags = (flags) => ({ root: ROOT, config: { ...config, features: { ...config.features, ...flags } }, t: makeT(dicts, new Set()), data: {}, previous: [] });
+const challengeFiles = ['/assets/site/challenge/board-core.mjs', '/assets/site/challenge/board.mjs', '/assets/site/challenge/board.css'];
+
+test('the challenge board page is written only when its flag is on, with its three files', async () => {
+  assert.deepEqual(await challengePages(withFlags({ challengeBoards: false })), []);
+  const on = await challengePages(withFlags({ challengeBoards: true }));
+  assert.deepEqual(on.map((o) => o.path), ['/c/', ...challengeFiles]);
+  assert.equal(on[0].noindex, true);
+});
+
+test('the board page is noindex with no canonical, and its own markup sends no events and calls no sfTrack', async () => {
+  const [page] = await challengePages(withFlags({ challengeBoards: true }));
+  const doc = page.html.value;
+  assert.match(doc, /<meta name="robots" content="noindex, follow">/);
+  assert.ok(!/<link rel="canonical"/.test(doc), 'a noindex page has no canonical');
+  const own = doc.slice(doc.indexOf('data-challenge'), doc.indexOf('</main>'));
+  assert.ok(own.length > 500, 'the page content was found');
+  assert.ok(!own.includes('data-event'), 'no data-event on the board content (site-wide header and footer only)');
+  assert.ok(!own.includes('sfTrack'));
+  for (const f of ['board-core.mjs', 'board.mjs']) assert.ok(!fs.readFileSync(path.join(SRC, 'challenge', f), 'utf8').includes('sfTrack'), f);
+  // og:url would name the template's path (/c/), not the board the visitor shared: a link preview would point at the template.
+  assert.ok(!/property="og:url"/.test(doc), 'no og:url on the board page');
+});
+
+test('the board page makes one request, the board address for the id in its own path, and no airport index', () => {
+  const core = fs.readFileSync(path.join(SRC, 'challenge', 'board-core.mjs'), 'utf8');
+  const script = fs.readFileSync(path.join(SRC, 'challenge', 'board.mjs'), 'utf8');
+  assert.ok(core.includes('`${base}/v1/board?board=challenge&id=${id}`'));
+  assert.ok(script.includes('idFromPath(location.pathname)') && script.includes('boardUrl(id)'));
+  assert.equal([...script.matchAll(/fetch\(/g)].length, 1, 'the board is the only request: the airport index (1.7 MB) is not fetched for a name');
+  assert.ok(!script.includes('airports-index'), 'no airport index on the board page');
+});
+
+test('every word in the board copy is read by the page (no dead keys for translators), and the rank word is read out inside the rank', () => {
+  const copy = JSON.parse(fs.readFileSync(path.join(SRC, 'challenge', 'copy.json'), 'utf8'));
+  const used = [path.join(SRC, 'challenge', 'board.mjs'), path.join(TOOL, 'pages', 'challenge.mjs')].map((f) => fs.readFileSync(f, 'utf8')).join('\n');
+  for (const key of Object.keys(copy).filter((k) => k !== '_about')) {
+    assert.match(used, new RegExp(`copy\\.${key}\\b`), `copy key "${key}" is never read`);
+  }
+  const script = fs.readFileSync(path.join(SRC, 'challenge', 'board.mjs'), 'utf8');
+  assert.ok(!script.includes('aria-label'), 'no aria-label on the rank span: ARIA does not allow naming a generic element');
+  assert.ok(script.includes("'sr-only'"), 'the rank word is read out through sr-only text');
+});
+
+test('every Play link on the board page has the referrer shape and the page campaign', async () => {
+  const [page] = await challengePages(withFlags({ challengeBoards: true }));
+  const hrefs = [...page.html.value.matchAll(/href="(https:\/\/play\.google\.com[^"]*)"/g)].map(([, h]) => h.replace(/&amp;/g, '&'));
+  assert.ok(hrefs.length >= 3, `Play links on the board: ${hrefs.length}`);
+  for (const h of hrefs) assert.match(h, PLAY_SHAPE);
+  assert.ok(hrefs.every((h) => h.includes('utm_campaign%3Dchallenge')));
+});
+
+test('the Worker\'s rule: every challenge address reads the one template; any other path is left as it is', () => {
+  assert.equal(originPath('/c/k7m2q4xvbn3s/'), '/c/');
+  assert.equal(originPath('/c/k7m2q4xvbn3s'), '/c/');
+  assert.equal(originPath('/c/k7m2q4xvbn31/'), '/c/', 'the Worker takes any twelve characters; the page checks the id');
+  assert.equal(originPath('/c/k7m2q4xvbn3/'), '/c/k7m2q4xvbn3/', 'eleven characters are not a challenge');
+  assert.equal(originPath('/c/short/'), '/c/short/');
+  assert.equal(originPath('/airports/kdfw/'), '/airports/kdfw/');
+  assert.equal(isChallengePath('/c/k7m2q4xvbn3s/'), true);
+  assert.equal(isChallengePath('/c/k7m2q4xvbn3s/x'), false);
+});
+
+test('the Worker answers a challenge address with the template, keeps the address, and never hands over the origin\'s 404 for the id', async () => {
+  const realFetch = globalThis.fetch;
+  const asked = [];
+  try {
+    globalThis.fetch = async (url) => {
+      asked.push(String(url));
+      if (String(url) === 'https://thin-air-studios.github.io/c/') return new Response('<!doctype html><title>board</title>', { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'x-served-by': 'origin' } });
+      return new Response('origin 404', { status: 404 });
+    };
+    const res = await worker.fetch(new Request('https://playshortfinal.com/c/k7m2q4xvbn3s/?a=KDFW&s=412'));
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get('x-robots-tag'), 'noindex');
+    assert.equal(res.headers.get('x-served-by'), null, 'origin headers that are not ours are dropped');
+    assert.ok(res.headers.get('strict-transport-security'), 'security headers are added');
+    assert.deepEqual(asked, ['https://thin-air-studios.github.io/c/'], 'the origin is asked for the template, without the id or the query');
+    assert.match(await res.text(), /board/);
+
+    asked.length = 0;
+    globalThis.fetch = async (url) => {
+      asked.push(String(url));
+      return String(url).endsWith('/404.html') ? new Response('site 404', { status: 200, headers: { 'content-type': 'text/html' } }) : new Response('origin 404', { status: 404 });
+    };
+    const missing = await worker.fetch(new Request('https://playshortfinal.com/c/k7m2q4xvbn3s/'));
+    assert.equal(missing.status, 404);
+    assert.deepEqual(asked, ['https://thin-air-studios.github.io/c/', 'https://thin-air-studios.github.io/404.html']);
+    assert.equal(await missing.text(), 'site 404', 'the site\'s own 404 page, not the origin\'s');
+
+    asked.length = 0;
+    globalThis.fetch = async (url) => {
+      asked.push(String(url));
+      return new Response('ok', { status: 200 });
+    };
+    await worker.fetch(new Request('https://playshortfinal.com/airports/kdfw/?x=1'));
+    assert.deepEqual(asked, ['https://thin-air-studios.github.io/airports/kdfw/?x=1']);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+test('the Content-Security-Policy lists the API only on the pages that read it, and only when their flag is on', async () => {
+  const board = { meta: { kind: 'html', path: '/c/', noindex: true }, bytes: '<html></html>' };
+  const airport = { meta: { kind: 'html', path: '/airports/kdfw/', noindex: false }, bytes: '<html></html>' };
+  const headersFor = async (flags) => {
+    const [h] = await headerPages({ root: ROOT, config: { ...config, features: { ...config.features, ...flags } }, previous: [board, airport] });
+    return h.content;
+  };
+  const cspOf = (text, pattern) => {
+    const lines = text.split('\n');
+    const i = lines.indexOf(pattern);
+    assert.ok(i >= 0, `no block for ${pattern}`);
+    return lines[i + 1];
+  };
+  const off = await headersFor({ challengeBoards: false, liveFlights: false, airportBoards: false });
+  assert.ok(!cspOf(off, '/airports/*').includes('api.playshortfinal.com'), 'airport pages: no API with the flags off');
+  const flightsOn = await headersFor({ challengeBoards: false, liveFlights: true, airportBoards: false });
+  assert.ok(cspOf(flightsOn, '/airports/*').includes('https://api.playshortfinal.com'), 'airport pages: the API with the live-flights panel');
+  const boardOn = await headersFor({ challengeBoards: true, liveFlights: false, airportBoards: false });
+  assert.ok(cspOf(boardOn, '/c/*').includes('https://api.playshortfinal.com'), 'the board page reads the API');
+  assert.ok(!cspOf(boardOn, '/airports/*').includes('api.playshortfinal.com'), 'the board flag does not widen the airport pages');
+});
+
+test('the live-flights files are written only when its flag is on; the loader asks for nothing, the panel asks for the list once and sends no events', async () => {
+  assert.deepEqual(await flightPages(withFlags({ liveFlights: false })), []);
+  const on = await flightPages(withFlags({ liveFlights: true }));
+  assert.deepEqual(on.map((o) => o.path), ['/assets/site/flights/flights.mjs', '/assets/site/flights/flights-panel.mjs', '/assets/site/flights/flights-core.mjs', '/assets/site/flights/flights.css']);
+  const loader = fs.readFileSync(path.join(SRC, 'flights', 'flights.mjs'), 'utf8');
+  const panel = fs.readFileSync(path.join(SRC, 'flights', 'flights-panel.mjs'), 'utf8');
+  for (const script of [loader, panel]) assert.ok(!script.includes('sfTrack'), 'no analytics calls');
+  assert.equal([...loader.matchAll(/fetch\(/g)].length, 0, 'the loader asks for nothing: it only waits for the panel and loads the rest');
+  assert.ok(loader.includes('IntersectionObserver') && loader.includes("import(new URL('./flights-panel.mjs', import.meta.url)"), 'the loader loads the panel when it nears the screen');
+  assert.equal([...panel.matchAll(/fetch\(/g)].length, 1, 'one request: the airport list');
+  assert.ok(panel.includes('visibilityState'), 'the refresh looks at the tab before it asks');
+});
+
+test('the airport pages carry no panel stylesheet in their head: the loader adds it when the panel nears the screen', () => {
+  for (const rel of ['pages/airports.mjs', 'lib/localairports.mjs']) {
+    assert.ok(!fs.readFileSync(path.join(TOOL, rel), 'utf8').includes('flightsHeadLink'), `${rel} still links the panel stylesheet in the head`);
+  }
+});
+
+test('the built files match the flags: the board page and the flights files exist only when their flag is on', () => {
+  assert.equal(fs.existsSync(path.join(ROOT, 'c', 'index.html')), config.features.challengeBoards === true);
+  assert.equal(fs.existsSync(path.join(ROOT, 'assets', 'site', 'flights', 'flights.mjs')), config.features.liveFlights === true);
+  for (const rel of ['sitemap-airports.xml', 'sitemap-home.xml', 'sitemap-guides.xml', 'sitemap-events.xml', 'sitemap-press.xml', 'sitemap-about.xml', 'sitemaps/pages.xml']) {
+    const file = path.join(ROOT, rel);
+    if (fs.existsSync(file)) assert.ok(!/playshortfinal\.com\/c\//.test(fs.readFileSync(file, 'utf8')), `${rel} lists the board page`);
+  }
 });

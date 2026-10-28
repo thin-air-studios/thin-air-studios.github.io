@@ -2,53 +2,51 @@ Echter Verkehr. Jeder Flughafen.
 
 Das Spiel ist auf Englisch. Diese Seite ist übersetzt.
 
-Short Final™ ist ein Flugverkehrskontroll-Spiel mit dem echten Himmel. Wähle einen Flughafen: Seine echten Flugzeuge erscheinen am Bildschirmrand mit Flugnummer. Lenke sie zur Landebahn, halte alle auf Abstand und lande so viele wie möglich.
+Short Final™ ist ein Flugverkehrskontroll-Spiel (ATC) mit dem echten Himmel. Wähle einen beliebigen Flughafen der Welt: Seine echten Live-Flüge erscheinen am Bildschirmrand mit Flugnummer. Lenke jedes Flugzeug über seinen Anflug zur Landebahn, halte alle auf Abstand und lande so viele wie möglich.
 
 DER ECHTE HIMMEL
 • Echte Flugzeuge mit Flugnummer und rotem Punkt. Simulierte füllen je nach Schwierigkeit auf, außer bei „Real planes only“.
 • Arrived from: Ein echtes Flugzeug, das hier landet, kann seine Herkunftsstadt nennen.
-• Echtes Wetter: Wind und Landebahn folgen dem Flughafen; echter Nebel und Gewitter ziehen durchs Bild.
+• Echtes Wetter bestimmt Wind und Landebahn; echter Nebel und Gewitter ziehen über dein Radar.
 • Echtes Tageslicht: Spiele Tokio nachts, wenn dort Nacht ist.
 
 DER ECHTE ORT
-• Mehr als 29.000 Flughäfen mit echten Landebahnen. Rollwege, Gates und Gelände stammen aus OpenStreetMap; die meisten laden schnell von der Website.
-• Auch das Land ist echt: Die Rockies liegen westlich von Denver, und Boote fahren auf dem Wasser.
-• Die 50 verkehrsreichsten Flughäfen der Welt öffnen sofort, auch offline. Die Suche findet jeden anderen.
+• Mehr als 29.000 Flughäfen mit echten Landebahnen. Rollwege und Gates stammen von OpenStreetMap; die meisten laden schnell von unserer Website.
+• Die 50 verkehrsreichsten Flughäfen der Welt öffnen sofort, auch offline.
 
 LEICHT ZU LERNEN, SCHWER ZU LASSEN
-• Zieh einen Kurs, und an seinem Ende, um ihn weiterzuführen. Rote Passagierjets auf roten Landebahnen, gelbe Propellerflugzeuge auf gelben, Hubschrauber auf dem Landeplatz.
+• Zieh einen Kurs, und zieh an seinem Ende, um ihn weiterzuführen. Rote Jets auf roten Landebahnen, gelbe Propeller auf gelben, Hubschrauber auf dem Landeplatz.
 • Tippen zum Kreisen, eine Schleife zum Warten oder Verkehr in eine Warteschleife schicken.
 • Abflüge werden zurückgeschoben, rollen, starten und verlassen die Gates am Rand.
-• Triebwerksausfälle und wenig Treibstoff: Ein Flugzeug dreht zur erreichbaren Landebahn, der Schnellvorlauf hält an.
+• Triebwerksausfälle und wenig Treibstoff: Ein Flugzeug dreht zur erreichbaren Landebahn.
 • Wirbelschleppe, Pistenkontrollen, Gewitter und Nebel.
-• Gesperrte Pisten zeigen rote X-Markierungen, bei Tag oder Nacht.
+• Gesperrte Pisten zeigen rote X, bei Tag oder Nacht.
 • Der Bullet-Modus verlangsamt die Zeit vor einer Kollision, mit einer Zurückspulung je Spiel.
 
 SPIEL, WIE DU MÖCHTEST
 • Beginner: wenige Flugzeuge und ruhiger Himmel.
 • Real planes only zeigt nur die echten Flugzeuge deines Flughafens und erfindet nichts.
 • Tagesaufgabe: dieselben Flugzeuge und dasselbe Wetter für alle, mit Serie.
-• Play merkt sich deinen zuletzt gewählten Flughafen.
-• Funkgespräche in echter ATC-Phraseologie, unter Settings einschalten.
+• Besondere Tage: Thanksgiving Rush: fünf Tage Feiertagsverkehr Ende November; kostenlos und offline spielbar. Am 24. Dezember fliegt Santas fiktiver Schlitten im Verkehr mit.
+• Fordere einen Freund mit einem Link heraus.
+• Funkgespräche in echter ATC-Phraseologie, vom Tower und Anflug. In Settings einschalten.
 • Sieben Titel: Tower Jazz, Lo-fi chill, Synthwave, Cinematic calm, Bossa nova, Arcade 8-bit und Funky groove.
-• Sterne an jedem Flughafen und Lotsenränge.
-• Teile eine Ergebniskarte oder dein Tagesergebnis ohne Spoiler.
-• Eine Tour zeigt, was das Spiel kann.
+• Eine Tour zeigt, was es kann.
 
-TEILE EIN VIDEO
+VIDEO TEILEN
 • Ein 20-Sekunden-Video für TikTok, YouTube Shorts oder Instagram Reels, mit Spielmusik und echten Flugzeugen beim Namen.
 
 AUF DEN BESTENLISTEN
-• Weltranglisten pro Flughafen und Stufe, zum Start auf Google Play: heute, diese Woche und insgesamt, Top 10 und dein Rang.
-• Google Play Games: 24 Erfolge und sieben Bestenlisten, mit der besten Punktzahl je Stufe.
-• Nur gewertete Spiele zählen: eine Stufe von Anfang bis Ende, Real planes only aus, Departures an (außer Beginner). Die Tagesaufgabe hat eine eigene Liste.
+• Weltranglisten pro Flughafen und Stufe: heute, diese Woche und insgesamt, Top 10 und dein Rang.
+• Google Play Games: 24 Erfolge und sieben Bestenlisten.
+• Nur gewertete Spiele zählen: eine Stufe von Anfang bis Ende, Real planes only aus, Departures an (außer Beginner).
 • Du entscheidest, ob dein Name erscheint. Regelwidrige Namen kann man melden.
 
 FAIR UND PRIVAT
-• Keine Werbung, kein Konto. Die Tagesaufgabe ist immer gratis; nach den ersten 3 Tagen gibt es 3 kostenlose Spiele am Tag an jedem Flughafen. Short Final Pro, ein Einmalkauf bei Google Play, bietet unbegrenzte Spiele.
-• Punkte und Fortschritt bleiben auf dem Handy. Online speichern die Listen nur, was gewertete Spiele senden; deine kannst du jederzeit löschen.
+• Keine Werbung, kein Konto. Die Tagesaufgabe ist immer gratis; danach gibt es 3 kostenlose Spiele am Tag an jedem Flughafen. Short Final Pro, ein Einmalkauf bei Google Play, bietet unbegrenzte Spiele.
+• Punkte und Fortschritt bleiben auf dem Handy. Online speichern die Listen nur, was gewertete Spiele senden; deine löschst du jederzeit.
 • Symbole für Farbenblindheit und getrennte Schalter für Ton, Musik, Funk und Vibration.
 
-Short Final ist ein Spiel, kein Werkzeug zur Flugverfolgung oder Navigation. Live-Positionen sind ungefähr und fürs Spiel vereinfacht.
+Für Flugtracker-Fans: Short Final ist ein Spiel, kein Werkzeug zur Flugverfolgung oder Navigation. Live-Positionen sind ungefähr und fürs Spiel vereinfacht.
 
-Karten, Küsten und Gipfel © OpenStreetMap contributors (ODbL). Live-Daten: The OpenSky Network. Wetter: aviationweather.gov (NOAA). Flughäfen: OurAirports. Flugrouten: Virtual Radar Server (CC0). Passagierranglisten: ACI World. Zeitzonen: timezone-boundary-builder (ODbL) und tz-lookup. Alle Angaben stehen in der App unter About.
+Karten, Küsten und Gipfel © OpenStreetMap contributors (ODbL). Live-Daten: adsb.lol, mit The OpenSky Network als Ersatzquelle. Wetter: aviationweather.gov (NOAA). Flughäfen: OurAirports. Flugrouten: Virtual Radar Server (CC0). Passagierranglisten: ACI World. Zeitzonen: timezone-boundary-builder (ODbL) und tz-lookup. Alle Angaben stehen in der App unter About.

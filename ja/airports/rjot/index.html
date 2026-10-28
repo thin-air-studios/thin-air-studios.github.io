@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -97,7 +97,33 @@
       <ul class="chips"><li><a class="chip" href="/ja/airports/rjos/">Tokushima Awaodori Airport / JMSDF Tokushima Air Base (TKS)</a> <small>55 km（34 mi）</small></li><li><a class="chip" href="/ja/airports/rjob/">Okayama Momotaro Airport (OKJ)</a> <small>62 km（39 mi）</small></li><li><a class="chip" href="/ja/airports/rjok/">Kochi Ryoma Airport (KCZ)</a> <small>81 km（50 mi）</small></li><li><a class="chip" href="/ja/airports/rjoa/">Hiroshima Airport (HIJ)</a> <small>104 km（64 mi）</small></li><li><a class="chip" href="/ja/airports/rjbb/">Kansai International Airport (KIX)</a> <small>115 km（72 mi）</small></li><li><a class="chip" href="/ja/airports/rjbe/">Kobe Airport (UKB)</a> <small>120 km（75 mi）</small></li><li><a class="chip" href="/ja/airports/rjom/">Matsuyama Airport (MYJ)</a> <small>129 km（80 mi）</small></li><li><a class="chip" href="/airports/rjbd/">Nanki Shirahama Airport (SHM)</a> <small>139 km（86 mi）</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="RJOT" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">ライブ</p>
+          <h2 id="flights-title">いま Takamatsu 付近を飛行中</h2>
+          <p class="flights-lead">公開されている電波から得た実際の機体です。このページを開いている間、1分ごとに更新されます。</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>40 nm 以内の機体</dt><dd data-flights-within>0</dd></div>
+          <div><dt>飛行中</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>この空港はいまライブデータが遅れているため、リストは数分前の状態かもしれません。</p>
+        <ol class="flights-list" data-flights-list aria-label="いま Takamatsu 付近を飛行中" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>いま 40 nm 以内に機体はありません。</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-rjot-ja%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-rjot-ja" data-ev-position="flights" data-ev-airport="RJOT">この空港をライブで遊ぶ</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"着陸","unknown":"不明","ground":"地上","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"ライブデータ:","updated":"{when}に更新","updatedNow":"たった今更新","showing":"{n} 機中 {shown} 機を表示（飛行中の機体を優先）。"}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Short Final でTAKに着陸</h2>
       <p class="lead">Short Final は Google Play で無料です。空港を選び、各機の経路を描いて、正しい滑走路に降ろしましょう。</p>

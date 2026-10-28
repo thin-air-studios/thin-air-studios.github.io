@@ -1,12 +1,12 @@
 // The Tour (requirement 14, screens 4): the features in six categories, one card at a time, each with its screenshot, a
 // bold title, one or two lines, and a Try it button where the card has one. Opened from the home screen's Tour pill
 // (#btn-tour). The pill's one-time nudge goes once the Tour is opened or a game is started (markTourSeen).
-import * as db from './airportdb.js?v=86c2b44d';
-import { boardsLive } from './boards.js?v=86c2b44d';
-import { register, closeScreen } from './screenstack.js?v=86c2b44d';
-import { assetUrl } from './flavor.js?v=86c2b44d';
-import { openBoards } from './screens.js?v=86c2b44d';
-import { CATEGORIES, cardsIn, cardLines, actionLabel } from './tour-data.js?v=86c2b44d';
+import * as db from './airportdb.js?v=2f66fd5f';
+import { boardsLive } from './boards.js?v=2f66fd5f';
+import { register, closeScreen } from './screenstack.js?v=2f66fd5f';
+import { assetUrl } from './flavor.js?v=2f66fd5f';
+import { openBoards } from './screens.js?v=2f66fd5f';
+import { CATEGORIES, cardsIn, cardLines, actionLabel } from './tour-data.js?v=2f66fd5f';
 
 const $ = (id) => document.getElementById(id);
 let deps = null; // main.js's save, writeSave, show, press, applySettings and startAirport

@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -97,7 +97,33 @@
       <ul class="chips"><li><a class="chip" href="/es/airports/lers/">Reus Airport (REU)</a> <small>78 km (48 mi)</small></li><li><a class="chip" href="/es/airports/lege/">Girona-Costa Brava Airport (GRO)</a> <small>88 km (55 mi)</small></li><li><a class="chip" href="/airports/lfmp/">Perpignan-Rivesaltes (Llabanère) Airport (PGF)</a> <small>173 km (108 mi)</small></li><li><a class="chip" href="/es/airports/lepa/">Palma de Mallorca Airport (PMI)</a> <small>202 km (125 mi)</small></li><li><a class="chip" href="/airports/lech/">Castellón-Costa Azahar Airport (CDT)</a> <small>207 km (129 mi)</small></li><li><a class="chip" href="/airports/lfmk/">Carcassonne Salvaza Airport (CCF)</a> <small>214 km (133 mi)</small></li><li><a class="chip" href="/airports/lehc/">Huesca-Pirineos Airport (HSK)</a> <small>217 km (135 mi)</small></li><li><a class="chip" href="/es/airports/lemh/">Menorca Airport (MAH)</a> <small>241 km (150 mi)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="LEBL" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">En directo</p>
+          <h2 id="flights-title">Volando cerca de Barcelona ahora mismo</h2>
+          <p class="flights-lead">Aviones reales, a partir de transmisiones públicas. La lista se actualiza cada minuto mientras la página está abierta.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>Aviones a menos de 40 nm</dt><dd data-flights-within>0</dd></div>
+          <div><dt>En vuelo</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>Los datos en directo van con retraso en este aeropuerto ahora, así que la lista puede tener unos minutos.</p>
+        <ol class="flights-list" data-flights-list aria-label="Volando cerca de Barcelona ahora mismo" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>Ahora mismo no hay aviones a menos de 40 nm.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-lebl-es%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-lebl-es" data-ev-position="flights" data-ev-airport="LEBL">Juega este aeropuerto en vivo</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"Aterrizando","unknown":"Desconocido","ground":"En tierra","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"Datos en directo:","updated":"Actualizado {when}","updatedNow":"Actualizado hace un momento","showing":"Mostrando {shown} de {n}, primero los que vuelan."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Aterriza en BCN en Short Final</h2>
       <p class="lead">Short Final es gratis en Google Play. Elige el aeropuerto, traza una ruta para cada avión y hazlo aterrizar en la pista correcta.</p>

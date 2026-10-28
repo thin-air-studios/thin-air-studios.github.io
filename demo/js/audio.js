@@ -1,7 +1,7 @@
 // All sound is synthesised at runtime with Web Audio: no audio files at all. The music's notes live in the tracks
 // (music.js TRACKS, one module each in tracks/); this file plays them.
-import { DEFAULT_TRACK, trackByKey, flavourOf } from './music.js?v=86c2b44d';
-import { mtof } from './tracks/pitch.js?v=86c2b44d';
+import { DEFAULT_TRACK, trackByKey, flavourOf } from './music.js?v=2f66fd5f';
+import { mtof } from './tracks/pitch.js?v=2f66fd5f';
 
 const XFADE = 0.5; // seconds: a Settings track change fades the old track out while the new one fades in
 const LAND_SCALE = [72, 74, 76, 79, 81, 84, 86, 88, 91, 93];
@@ -324,6 +324,10 @@ export class AudioEngine {
         break;
       case 'fanfare':
         [72, 76, 79, 84, 88].forEach((m, i) => this.tone(mtof(m), t + i * 0.09, 0.5, { type: 'triangle', gain: 0.13, echo: true }));
+        break;
+      case 'bells':
+        // Santa's sleigh bells at its landing (fx.js santaLanding): a quick run of high chimes, with the echo
+        [84, 88, 91, 96, 91, 96].forEach((m, i) => this.tone(mtof(m), t + i * 0.11, 0.6, { type: 'triangle', gain: 0.1, echo: true }));
         break;
       case 'ff':
         this.tone(arg ? 600 : 900, t, 0.09, { type: 'triangle', gain: 0.1, glide: arg ? 1100 : 500 });

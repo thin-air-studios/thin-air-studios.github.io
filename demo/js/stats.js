@@ -1,8 +1,8 @@
 // Stats for every airport at every level (save.stats). A finished game adds to the cell of the easiest level it was
 // played at, ranked or not. Demos and daily games make no cell: the daily keeps its own record (save.daily).
-import { easiestOf, LEVEL_ORDER } from './ranking.js?v=86c2b44d';
-import { BUSIEST } from './airportdb.js?v=86c2b44d';
-import { DEMO_AIRPORTS } from './modes.js?v=86c2b44d';
+import { easiestOf, LEVEL_ORDER } from './ranking.js?v=2f66fd5f';
+import { BUSIEST } from './airportdb.js?v=2f66fd5f';
+import { DEMO_AIRPORTS } from './modes.js?v=2f66fd5f';
 
 /** The offline "Play now" airports: the one list (modes.js), read by the demo recording, the migration and Play now. */
 export { DEMO_AIRPORTS };
@@ -27,6 +27,7 @@ function airportOf(save, icao) {
  * Adds a finished game. g = { icao, levels, ranked, score, landed, real, departed, pax, streak, timeS, at, demo, daily, weekend }.
  * Stars and the airport's personal best stay in save.best (gameOver sets them), so this does not touch save.best.
  * A weekend game is counted in the airport's games and its flying totals, and no best: its score is the weekend's own (save.weekend).
+ * The Thanksgiving Rush (3.4, g.rush) is counted the same way: its score is the Rush's own (save.rush).
  * Returns false when nothing was recorded.
  */
 export function recordGame(save, g) {
@@ -36,7 +37,7 @@ export function recordGame(save, g) {
   const ap = airportOf(save, g.icao);
   const cell = isObj(ap.levels[level]) ? ap.levels[level] : (ap.levels[level] = emptyCell());
   cell.games += 1;
-  if (!g.weekend) {
+  if (!g.weekend && !g.rush) {
     cell.best = Math.max(cell.best, num(g.score));
     if (g.ranked) cell.bestRanked = Math.max(cell.bestRanked, num(g.score));
   }

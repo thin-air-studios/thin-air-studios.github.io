@@ -1,1 +1,1 @@
-LIVE-ATC: Lande echte Flugzeuge an jedem Flughafen der Welt, mit Live-Daten.
+ATC-Spiel mit echten Live-Flügen: Lande Flugzeuge an jedem Flughafen.

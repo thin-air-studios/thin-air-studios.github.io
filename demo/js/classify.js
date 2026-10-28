@@ -1,6 +1,6 @@
 // Size class for a real flight: OpenSky emitter category first, then callsign heuristics.
-import { parseAirlineCallsign } from './airlines.js?v=86c2b44d';
-import { hashString } from './util.js?v=86c2b44d';
+import { parseAirlineCallsign } from './airlines.js?v=2f66fd5f';
+import { hashString } from './util.js?v=2f66fd5f';
 
 // ADS-B emitter categories (OpenSky "category" field)
 const BY_CATEGORY = {

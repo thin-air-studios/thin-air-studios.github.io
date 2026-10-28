@@ -1,11 +1,11 @@
-import { WEB_DEMO } from './flavor.js?v=86c2b44d';
+import { WEB_DEMO } from './flavor.js?v=2f66fd5f';
 // The online boards, on the phone (server/README.md has the Worker's side): the board address, the state a board shows,
 // the Play Games board for each tab, the catch-up a Play Games sign-in posts, and the calls to the Worker. Nothing here
 // touches the DOM. The calls take their transport from the caller (tests pass fakes); the game passes net.js for GET and
 // POST, and fetch for the layout's PUT (net.js only sends GET and POST, with text bodies).
-import { BOARDS } from './config.js?v=86c2b44d';
-import { http as netHttp } from './net.js?v=86c2b44d';
-import tzlookup from './vendor/tz.js?v=86c2b44d';
+import { BOARDS } from './config.js?v=2f66fd5f';
+import { http as netHttp } from './net.js?v=2f66fd5f';
+import tzlookup from './vendor/tz.js?v=2f66fd5f';
 
 export const LEVEL_NAMES = Object.freeze({ beginner: 'Beginner', easy: 'Easy', normal: 'Normal', hard: 'Hard', chaos: 'Chaos' });
 export const LEVELS = Object.freeze(Object.keys(LEVEL_NAMES));
@@ -133,6 +133,11 @@ export function boardUrl({ base = BOARDS.base, board = 'level', icao, level, per
   if (board === 'weekend') {
     if (!Number.isInteger(day) || day < 0) throw new RangeError('day');
     return `${base}/v1/board?board=weekend&day=${day}`;
+  }
+  if (board === 'rush') {
+    // the Thanksgiving Rush's board: one a day, named by its local day number (rush.js)
+    if (!Number.isInteger(day) || day < 0) throw new RangeError('day');
+    return `${base}/v1/board?board=rush&day=${day}`;
   }
   if (board !== 'level') throw new RangeError('board');
   if (!ICAO.test(icao || '')) throw new RangeError('icao');

@@ -2,7 +2,7 @@
 // callers pass today's local day (airportdb.js localDay). Nothing here leaves the phone.
 // A day is a whole number on the phone's own calendar, and a game counts for the day of its first landing, at that landing
 // (main.js countStreakDay), so the day shows at once and a game left from the pause card counts too. Times of day are never stored.
-import { localDay, DAILY_EPOCH } from './airportdb.js?v=86c2b44d';
+import { localDay, DAILY_EPOCH } from './airportdb.js?v=2f66fd5f';
 
 export const MILESTONES = [3, 7, 14, 30, 50, 100];
 // Two days in a row may be missed and the run goes on: the next counted game may be up to three days after the last one.

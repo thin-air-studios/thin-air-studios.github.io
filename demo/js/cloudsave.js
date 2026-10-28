@@ -13,10 +13,11 @@
 // that joins the other phone's run (within the streak's gap) counts both; the daily keeps the later day, and the tutorial and the
 // Tour flags stay set once set. The weekend event's record (weekend.js) follows the daily: the later weekend wins, and for the same
 // weekend the larger best and tries.
-import { LEVEL_ORDER } from './ranking.js?v=86c2b44d';
-import { ACHIEVEMENTS } from './achievements.js?v=86c2b44d';
-import { LARGE_BACK, RUN_GAP, emptyStreak, sanitizeStreak } from './streak.js?v=86c2b44d';
-import { WEEKEND_EPOCH } from './weekend.js?v=86c2b44d';
+import { LEVEL_ORDER } from './ranking.js?v=2f66fd5f';
+import { ACHIEVEMENTS } from './achievements.js?v=2f66fd5f';
+import { LARGE_BACK, RUN_GAP, emptyStreak, sanitizeStreak } from './streak.js?v=2f66fd5f';
+import { WEEKEND_EPOCH } from './weekend.js?v=2f66fd5f';
+import { sanitizeRush, sanitizeRushDays } from './rush.js?v=2f66fd5f';
 
 export const CLOUD_VERSION = 1;
 /** The largest copy sent. Play Games keeps a snapshot up to 3 MB; a bigger copy is not sent, and the sync fails silently. */
@@ -90,6 +91,12 @@ function weekendOf(w, today) {
   return { w: w.w, best: count(w.best), tries: count(w.tries) };
 }
 
+/** The Thanksgiving Rush's record, cleaned (3.4): a Rush day, no later than tomorrow's local day, with its best and tries. */
+function rushRecord(r, today) {
+  const x = sanitizeRush(r);
+  return x && x.day <= today + 1 ? x : null;
+}
+
 /** A copy's progress, cleaned against the trusted clock. A copy that is not an object is null. */
 export function cleanCloud(p, ctx) {
   if (!isObj(p)) return null;
@@ -105,6 +112,8 @@ export function cleanCloud(p, ctx) {
   out.streak = streakOf(p.streak, today);
   out.daily = dailyOf(p.daily, daily);
   out.weekend = weekendOf(p.weekend, today);
+  out.rush = rushRecord(p.rush, today);
+  out.rushDays = sanitizeRushDays(p.rushDays);
   const airports = isObj(p.stats) && isObj(p.stats.airports) ? p.stats.airports : {};
   out.stats = { airports: mapOf(airports, (k) => ICAO.test(k), (a) => airportOf(a, now)) };
   return out;
@@ -117,7 +126,7 @@ export function cloudPayload(save, ctx) {
     played: s.played, landed: s.landed, landedLive: s.landedLive, pax: s.pax, departed: s.departed,
     bestStreak: s.bestStreak, paxRanked: s.paxRanked, best: s.best, gameBest: s.gameBest, ach: s.ach,
     visited: s.visited, tourSeen: s.tourSeen, tutorialDone: s.tutorialDone, streak: s.streak, daily: s.daily, weekend: s.weekend,
-    stats: s.stats,
+    rush: s.rush, rushDays: s.rushDays, stats: s.stats,
   }, ctx);
 }
 
@@ -224,6 +233,14 @@ function mergeWeekend(a, b) {
   return { w: a.w, best: maxOf(a.best, b.best), tries: maxOf(a.tries, b.tries) };
 }
 
+/** The Thanksgiving Rush's record: the later day wins; the same day keeps the larger best and tries (as the weekend's does). */
+function mergeRush(a, b) {
+  if (!a) return b || null;
+  if (!b) return a;
+  if (a.day !== b.day) return a.day > b.day ? a : b;
+  return { day: a.day, best: maxOf(a.best, b.best), tries: maxOf(a.tries, b.tries) };
+}
+
 /** Earned achievements: the union, each at its earlier time. */
 const mergeAch = (a, b) => mergeMaps(a, b, (x, y) => Math.min(x, y));
 
@@ -246,6 +263,8 @@ export function mergeCloud(a, b) {
   out.streak = mergeStreak(a.streak, b.streak);
   out.daily = mergeDaily(a.daily, b.daily);
   out.weekend = mergeWeekend(a.weekend, b.weekend);
+  out.rush = mergeRush(a.rush, b.rush);
+  out.rushDays = sanitizeRushDays([...(a.rushDays || []), ...(b.rushDays || [])]);
   out.stats = { airports: mergeMaps(a.stats.airports, b.stats.airports, mergeAirport) };
   return out;
 }
@@ -265,6 +284,8 @@ export function applyCloud(save, p) {
   save.streak = p.streak;
   if (p.daily) save.daily = p.daily;
   if (p.weekend) save.weekend = p.weekend;
+  if (p.rush) save.rush = p.rush;
+  save.rushDays = p.rushDays || [];
   save.stats = { ...(save.stats && typeof save.stats === 'object' ? save.stats : {}), airports: p.stats.airports };
   return save;
 }

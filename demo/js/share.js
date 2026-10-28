@@ -1,10 +1,10 @@
-import { WEB_DEMO, assetUrl } from './flavor.js?v=86c2b44d';
-import { DEMO_SOURCE } from './demo.js?v=86c2b44d';
+import { WEB_DEMO, assetUrl } from './flavor.js?v=2f66fd5f';
+import { DEMO_SOURCE } from './demo.js?v=2f66fd5f';
 // Sharing a result: the caption, the spoiler-free daily line (Wordle style) and the result card image.
 // Nothing personal goes out: no callsigns, no location, no ids. Just the airport, the score and the shape
 // of the game.
-import { FONT } from './fx.js?v=86c2b44d';
-import { shareLinkFor } from './links.js?v=86c2b44d';
+import { FONT } from './fx.js?v=2f66fd5f';
+import { shareLinkFor } from './links.js?v=2f66fd5f';
 
 /**
  * The game minute by minute (game.timeline: {landed, trouble, crash} per minute of sim time) as one
@@ -50,6 +50,11 @@ export function shareTexts(r, destination = 'share') {
     const tries = r.tries > 1 ? ` (best of ${r.tries})` : '';
     const text = `Short Final · Daily #${r.daily} · ${r.iata || r.icao}\n${pts} ${r.starText}${tries}\n${row ? row + '\n' : ''}${landed}.\nSame traffic for everyone today. Can you beat it?${tail}`;
     return { title: `Short Final · Daily #${r.daily}: ${pts}`, text };
+  }
+  if (r.rush) {
+    // the Thanksgiving Rush (3.4, rush.js): one airport a day, its own board, the same planes for everyone that day
+    const text = `Thanksgiving Rush at ${r.iata || r.icao}: score ${r.score.toLocaleString('en-US')}\n${landed}.\nHoliday waves at one busy airport a day, the same for everyone. Can you beat it?${tail}`;
+    return { title: `Short Final · Thanksgiving Rush: ${pts}`, text };
   }
   if (r.weekend) {
     // the weekend event (weekend.js): the title is the theme's ("Storm weekend"); the same airport and weather, not the same planes

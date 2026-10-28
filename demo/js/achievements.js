@@ -28,6 +28,9 @@ export const ACHIEVEMENTS = [
   { id: 'streak100', icon: '🔥', name: 'Ever-present', desc: 'Reach a streak of 100 days' },
   // a badge of the game only (3.3, weekend.js): the Play Games list does not carry it, so it has no points and no Play Games id
   { id: 'weekend', icon: '🛩️', name: 'Weekend flyer', desc: 'Land a plane in a weekend event game', local: true },
+  // the Thanksgiving Rush's badges (3.4, rush.js): local, as Weekend flyer is (DECISIONS 432(d)); no Play Games id
+  { id: 'rushLanded', icon: '🦃', name: 'Holiday traveller', desc: 'Land a plane in the Thanksgiving Rush', local: true },
+  { id: 'rush5', icon: '🛬', name: 'Five airports, five days', desc: 'Fly the Thanksgiving Rush on all five days', local: true },
 ];
 
 const BY_ID = new Map(ACHIEVEMENTS.map((a) => [a.id, a]));
@@ -124,10 +127,13 @@ export class AchievementTracker {
   /**
    * Lifetime goals, checked when a game ends. visitedBusiest: how many of the busiest have been played. days: the best
    * play streak (streak.js), so a streak earned in any game stays earned. weekendLanded: a weekend event game landed a plane.
+   * rushLanded: a Thanksgiving Rush game landed a plane; rushDays: how many of the Rush's five days the player has flown (save.rushDays).
    */
-  lifetime({ pax = 0, visitedBusiest = 0, score = 0, days = 0, weekendLanded = false }) {
+  lifetime({ pax = 0, visitedBusiest = 0, score = 0, days = 0, weekendLanded = false, rushLanded = false, rushDays = 0 }) {
     const out = [];
     if (weekendLanded) this.award('weekend', out); // a plane landed in a weekend event game (weekend.js)
+    if (rushLanded) this.award('rushLanded', out); // a plane landed in the Thanksgiving Rush (rush.js)
+    if (rushDays >= 5) this.award('rush5', out);
     if (score >= 50) this.award('score50', out);
     if (score >= 100) this.award('score100', out);
     if (visitedBusiest >= 5) this.award('busy5', out);

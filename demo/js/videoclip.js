@@ -2,8 +2,9 @@
 // on it, the radio calls as captions and the words on the frame. Pure: no DOM, no canvas, no Web Audio, so the tests read it.
 // A real plane keeps the name the game gives it (its carrier and flight number, with the red dot): the owner's decision of 2026-10-14
 // (the placeholder names the first version used were withdrawn). A simulated plane has no name, as in the game.
-import { Radio } from './radio.js?v=86c2b44d';
-import { CLASSES, TUNING, WORLD_H } from './config.js?v=86c2b44d';
+import { Radio } from './radio.js?v=2f66fd5f';
+import { isSleigh } from './santa.js?v=2f66fd5f';
+import { CLASSES, TUNING, WORLD_H } from './config.js?v=2f66fd5f';
 
 export const VIDEO_W = 1080;
 export const VIDEO_H = 1920;
@@ -170,7 +171,7 @@ export function captionRadio(facility = '') {
   const r = Object.create(Radio.prototype);
   Object.assign(r, { facility, n: 0, accent: 'US', lastCheckIn: -99, out: [] });
   r.say = (who, msg, prio = 2) => {
-    const speaker = typeof who === 'string' ? who : who.live ? who.callsign : TYPE_WORD[who.cls] || 'AIRCRAFT';
+    const speaker = typeof who === 'string' ? who : who.live || isSleigh(who) ? who.callsign : TYPE_WORD[who.cls] || 'AIRCRAFT';
     r.out.push({ who: TAG[speaker] || speaker, msg, prio });
   };
   return r;
@@ -251,6 +252,9 @@ export function callsFor(ev, env) {
     case 'bank':
       r.bank(ev.phase);
       break;
+    case 'santaSoon':
+      r.santaSoon();
+      break;
     default:
       break;
   }
@@ -301,7 +305,7 @@ export function topBand(r, clip) {
   return {
     wordmark: 'SHORT FINAL',
     tagline: 'Real flights. Any airport.',
-    tag: r.daily ? `DAILY #${r.daily}` : clip.lapse ? 'TIME-LAPSE' : '',
+    tag: r.daily ? `DAILY #${r.daily}` : r.rush ? `Rush · ${r.iata || r.icao}` : clip.lapse ? 'TIME-LAPSE' : '',
     where: 'Free on Google Play',
   };
 }

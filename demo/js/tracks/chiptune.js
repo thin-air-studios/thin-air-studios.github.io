@@ -7,7 +7,7 @@
 //   3  adds a triangle counter-line in bars 5-8 and 13-16, and an echo on the lead
 // The repeats vary with `cycle`: on odd passes the arpeggio changes figure, the lead's two turnarounds change, and a
 // pickup kick marks each turnaround.
-import { mtof } from './pitch.js?v=86c2b44d';
+import { mtof } from './pitch.js?v=2f66fd5f';
 
 // --- the harmony: one chord per bar (bar 1 to bar 16) ------------------------------------------------------------
 // A: C G Am F Dm G C G (a half cadence on the G of bar 8). B: Am F Dm G Em Am F G (back to C through the G of bar 16).

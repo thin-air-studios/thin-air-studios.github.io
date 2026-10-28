@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -94,7 +94,33 @@
       <ul class="chips"><li><a class="chip" href="/airports/rkrn/">Icheon (G-510) Airfield (RKRN)</a> <small>42 km (26 mi)</small></li><li><a class="chip" href="/airports/rknw/">Wonju Airport / Hoengseong Air Base (K-38/K-46) (WJU)</a> <small>46 km (28 mi)</small></li><li><a class="chip" href="/ko/airports/rktu/">Cheongju International Airport/Cheongju Air Base (K-59/G-513) (CJJ)</a> <small>49 km (30 mi)</small></li><li><a class="chip" href="/airports/rkty/">Yecheon Airbase (YEC)</a> <small>61 km (38 mi)</small></li><li><a class="chip" href="/airports/rksg/">Camp Humphreys (A-511) Desiderio Army Airfield (RKSG)</a> <small>76 km (47 mi)</small></li><li><a class="chip" href="/airports/rkso/">Osan Air Base (OSN)</a> <small>76 km (47 mi)</small></li><li><a class="chip" href="/airports/rksw/">Suwon Airport (SWU)</a> <small>81 km (51 mi)</small></li><li><a class="chip" href="/ko/airports/rksm/">Seoul Air Base (K-16) (SSN)</a> <small>83 km (51 mi)</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="RKTI" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">실시간</p>
+          <h2 id="flights-title">지금 Gimseang-ro 근처를 비행 중</h2>
+          <p class="flights-lead">공개 송출 신호에서 얻은 실제 항공기입니다. 이 페이지가 열려 있는 동안 1분마다 새로 고쳐집니다.</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>40 nm 이내 항공기</dt><dd data-flights-within>0</dd></div>
+          <div><dt>비행 중</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>이 공항은 지금 실시간 데이터가 지연되어 목록이 몇 분 전 것일 수 있습니다.</p>
+        <ol class="flights-list" data-flights-list aria-label="지금 Gimseang-ro 근처를 비행 중" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>지금 40 nm 이내에 항공기가 없습니다.</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-rkti-ko%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-rkti-ko" data-ev-position="flights" data-ev-airport="RKTI">이 공항을 실시간으로 플레이</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"착륙 중","unknown":"알 수 없음","ground":"지상","feet":"{n} ft","knots":"{n} kt","nm":"{n} nm","liveData":"실시간 데이터:","updated":"{when} 업데이트됨","updatedNow":"방금 업데이트됨","showing":"{n}대 중 {shown}대를 표시합니다(비행 중인 항공기 먼저)."}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">Short Final에서 JWO에 착륙하세요</h2>
       <p class="lead">Short Final은 Google Play에서 무료입니다. 공항을 고르고, 각 항공기의 경로를 그려 올바른 활주로에 착륙시키세요.</p>

@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://playshortfinal.com/assets/site/og/default.jpg">
 <meta name="google-site-verification" content="fa_wDliGAEtVoOlJgiXEZrP0-aSGaAUvkVQMjcCYRTU">
 <link rel="icon" href="/assets/site/img/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/site/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
@@ -94,7 +94,33 @@
       <ul class="chips"><li><a class="chip" href="/zh-tw/airports/rctp/">Taiwan Taoyuan International Airport (TPE)</a> <small>41 km（26 mi）</small></li><li><a class="chip" href="/zh-tw/airports/rcss/">Taipei Songshan International Airport (TSA)</a> <small>68 km（42 mi）</small></li><li><a class="chip" href="/zh-tw/airports/rcmq/">Taichung International Airport / Ching Chuang Kang Air Base (RMQ)</a> <small>69 km（43 mi）</small></li><li><a class="chip" href="/zh-tw/airports/rcyu/">Hualien Chiashan Airport (HUN)</a> <small>112 km（70 mi）</small></li><li><a class="chip" href="/zh-tw/airports/rcku/">Chiayi Airport (CYI)</a> <small>161 km（100 mi）</small></li><li><a class="chip" href="/airports/zsfz/">Fuzhou Changle International Airport (FOC)</a> <small>177 km（110 mi）</small></li><li><a class="chip" href="/airports/rcfg/">Matsu Nangan Airport (LZN)</a> <small>179 km（111 mi）</small></li><li><a class="chip" href="/zh-tw/airports/rcqc/">Penghu Magong Airport (MZG)</a> <small>192 km（119 mi）</small></li></ul>
     </div>
   </section>
-  <section class="section section--hero" aria-labelledby="final-title">
+  <div aria-hidden="true" data-flights-sentinel></div>
+  <section class="section flights" id="flights" aria-labelledby="flights-title" data-flights data-icao="RCPO" data-radius="40" hidden>
+    <div class="wrap">
+      <div class="flights-card">
+        <header class="flights-head">
+          <p class="eyebrow">即時</p>
+          <h2 id="flights-title">Hsinchu City 附近正在飛行</h2>
+          <p class="flights-lead">來自公開廣播的真實航機。本頁開啟期間，清單每分鐘更新一次。</p>
+        </header>
+        <dl class="flights-stats" data-flights-stats>
+          <div><dt>40 浬內的航機</dt><dd data-flights-within>0</dd></div>
+          <div><dt>飛行中</dt><dd data-flights-air>0</dd></div>
+        </dl>
+        <p class="flights-updated" data-flights-updated hidden></p>
+        <p class="flights-busy" data-flights-busy hidden>這座機場目前的即時資料有延遲，清單可能是幾分鐘前的。</p>
+        <ol class="flights-list" data-flights-list aria-label="Hsinchu City 附近正在飛行" hidden></ol>
+        <p class="flights-none" data-flights-none hidden>目前 40 浬內沒有航機。</p>
+        <p class="flights-more" data-flights-more hidden></p>
+        <p class="flights-credit" data-flights-credit></p>
+        <div class="btn-row flights-cta">
+          <a class="btn btn--sm" href="https://play.google.com/store/apps/details?id=com.thinaircapital.holdingpattern&amp;referrer=utm_source%3Dsite%26utm_medium%3Dweb%26utm_campaign%3Dairport-rcpo-zh-tw%26utm_content%3Dflights" data-event="play_store_click" data-ev-page="airport-rcpo-zh-tw" data-ev-position="flights" data-ev-airport="RCPO">即時遊玩這座機場</a>
+        </div>
+      </div>
+    </div>
+    <script type="application/json" id="flights-copy">{"landing":"降落中","unknown":"未知","ground":"在地面","feet":"{n} 英尺","knots":"{n} 節","nm":"{n} 浬","liveData":"即時資料：","updated":"{when}更新","updatedNow":"剛剛更新","showing":"顯示 {n} 架中的 {shown} 架，飛行中的優先。"}</script>
+    <script type="module" src="/assets/site/flights/flights.mjs"></script>
+  </section><section class="section section--hero" aria-labelledby="final-title">
     <div class="wrap center">
       <h2 id="final-title">在 Short Final 降落 HSZ</h2>
       <p class="lead">Short Final 在 Google Play 免費提供。選擇機場，為每架飛機畫出路線，讓它們降落在正確的跑道上。</p>

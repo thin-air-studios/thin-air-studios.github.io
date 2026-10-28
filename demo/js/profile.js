@@ -6,10 +6,10 @@
 // The shell keeps the answer in its no-backup folder (platform.js ageStore), so Android's cloud backup never copies it. In
 // save.profile it is only in memory: forStorage leaves it out of what is written to the save, and hydrateAge puts it back
 // when the save loads.
-import { ageStore } from './platform.js?v=86c2b44d';
+import { ageStore } from './platform.js?v=2f66fd5f';
 
 /** The terms version a player agrees to. A change asks Agree once more (requirement 24). */
-export const LEGAL_VERSION = '2.0';
+export const LEGAL_VERSION = '2.1';
 
 const FIRST_YEAR = 1900;
 

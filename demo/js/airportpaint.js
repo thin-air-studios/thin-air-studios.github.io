@@ -1,9 +1,9 @@
 // Static airport art: clean vector drawing of the real layout, in world units.
-import { ZONE_COLORS, CLASSES } from './config.js?v=86c2b44d';
-import { TAU, makeRng, hashString } from './util.js?v=86c2b44d';
-import * as P from './paint.js?v=86c2b44d';
-import { FONT } from './fx.js?v=86c2b44d';
-import { paintWater, paintMountains, isWater } from './scenery.js?v=86c2b44d';
+import { ZONE_COLORS, CLASSES } from './config.js?v=2f66fd5f';
+import { TAU, makeRng, hashString } from './util.js?v=2f66fd5f';
+import * as P from './paint.js?v=2f66fd5f';
+import { FONT } from './fx.js?v=2f66fd5f';
+import { paintWater, paintMountains, isWater } from './scenery.js?v=2f66fd5f';
 
 /** Ground palette picked from the airport's location: green, arid, tundra or snowy. */
 export function groundTheme(info) {
