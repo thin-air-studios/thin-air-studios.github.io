@@ -25,12 +25,12 @@
 <link rel="apple-touch-icon" href="/assets/app-icon.png">
 <link rel="preload" href="/assets/site/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site/site.css">
-
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','G-SG0XGN2THX');</script>
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Airport","name":"Osaka Itami International Airport","icaoCode":"RJOO","iataCode":"ITM","url":"https://playshortfinal.com/ja/airports/rjoo/","description":"Osaka Itami International Airport（Osaka, 日本）の地図。2本の滑走路、最長は9,840 ft。OpenStreetMapのレイアウトを掲載。","geo":{"@type":"GeoCoordinates","latitude":34.78085,"longitude":135.44083},"address":{"@type":"PostalAddress","addressLocality":"Osaka","addressCountry":"JP"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"ホーム","item":"https://playshortfinal.com/ja/"},{"@type":"ListItem","position":2,"name":"空港","item":"https://playshortfinal.com/airports/"},{"@type":"ListItem","position":3,"name":"日本","item":"https://playshortfinal.com/airports/japan/"},{"@type":"ListItem","position":4,"name":"Osaka Itami International Airport","item":"https://playshortfinal.com/ja/airports/rjoo/"}]}</script>
 <link rel="stylesheet" href="/assets/site/airports.css">
 </head>
-<body class="page-airport">
+<body class="page-airport" data-ga="G-SG0XGN2THX">
 <a class="skip-link" href="#main">本文へ移動</a>
 <header class="site-header">
   <div class="wrap bar">
@@ -149,7 +149,14 @@
     </div>
   </div>
 </footer>
-
+<section class="consent" id="consent" aria-labelledby="consent-title" hidden>
+  <p id="consent-title"><strong>アクセス解析</strong></p>
+  <p>Google Analytics による計測は、同意いただいた場合のみ行います。同意するまで端末には何も保存されません。選択内容はこのブラウザに記憶されます。</p>
+  <div class="btn-row">
+    <button class="btn btn--sm" type="button" data-consent="granted">同意する</button>
+    <button class="btn btn--sm btn--ghost" type="button" data-consent="denied">同意しない</button>
+  </div>
+</section>
 <script src="/assets/site/site.js" defer></script>
 </body>
 </html>
