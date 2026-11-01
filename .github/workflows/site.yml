@@ -7,6 +7,9 @@ name: Website rebuild
 #
 # The branch is SITE_BRANCH below: main, the branch both hosts publish.
 #
+# The site scripts are minified (tools/site/lib/minify.mjs) with esbuild, a development dependency: npm ci installs it, and
+# SITE_MINIFY=require stops the run if it is missing, so the rebuild never commits readable scripts over the minified ones.
+#
 # Loops: this workflow starts on its schedule and by hand only. Its own commit does not start it, so a commit cannot start
 # another run. A push refused because the branch moved is retried up to three times: each retry fetches the newest commit, rebuilds
 # there, runs the checks, and commits again.
@@ -29,6 +32,7 @@ jobs:
     timeout-minutes: 25
     env:
       SITE_BRANCH: main
+      SITE_MINIFY: require
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,6 +40,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install the development dependency (esbuild, which minifies the site scripts)
+        run: npm ci --no-audit --no-fund
       - name: Rebuild the pages, check them, and commit what the generator changed
         run: |
           set -uo pipefail

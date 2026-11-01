@@ -5,7 +5,10 @@
 //   node tools/site/build.mjs --check    write nothing; exit 1 when the root differs from a fresh build (for CI)
 //
 // Inputs: site-src/config.json, site-src/data/, site-src/i18n/, site-src/assets/ (copied to /assets/site/), and the map
-// folder osm/ (read only). Page modules: every tools/site/pages/*.mjs exports
+// folder osm/ (read only). The website's own browser scripts are minified on the way out (tools/site/lib/minify.mjs). With esbuild
+// installed (npm ci, once) they are all written minified; without it a minified script stays as it is while its source is unchanged,
+// and the readable source is written where the source changed. SITE_MINIFY=require makes a missing esbuild an error (the daily
+// rebuild sets it). Page modules: every tools/site/pages/*.mjs exports
 //   export const order = 50;                       optional; lower runs first (default 50)
 //   export async function pages(ctx) { return [...] }
 // where each returned page is { path: '/airports/kden/', html } (an HTML page; path ends in / or .html), or
@@ -26,6 +29,7 @@ import { loadDictionaries, makeT } from './lib/i18n.mjs';
 import { layout, absoluteUrl, sectionLive } from './lib/layout.mjs';
 import { loadData, readMap, toAirport, SIZE_LABEL } from './lib/data.mjs';
 import { walk, readBytes } from './lib/files.mjs';
+import { minifyScripts } from './lib/minify.mjs';
 
 const TOOL_DIR = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(TOOL_DIR, '..', '..');
@@ -140,7 +144,8 @@ export async function generate(root = ROOT) {
     if (seen.has(o.rel)) throw new Error(`two modules make ${o.rel}`);
     seen.add(o.rel);
   }
-  return { root, config, outputs, missing: [...missing].sort(), modules: modules.map((m) => m.name) };
+  const scripts = await minifyScripts(outputs, { onDisk: (rel) => readBytes(path.join(root, rel))?.toString('utf8') ?? null });
+  return { root, config, outputs, scripts, missing: [...missing].sort(), modules: modules.map((m) => m.name) };
 }
 
 function checkProtected(config, rel) {
@@ -199,6 +204,7 @@ export async function main(argv = process.argv.slice(2), root = ROOT) {
     if (diffs.length) {
       console.error(`site is out of date: ${diffs.length} difference(s); run node tools/site/build.mjs`);
       for (const d of diffs.slice(0, 40)) console.error(`  ${d}`);
+      if (built.scripts.skipped) console.error(`  note: ${built.scripts.skipped}`);
       return 1;
     }
     console.log(`site is up to date: ${outputs.length} files`);
@@ -218,6 +224,9 @@ export async function main(argv = process.argv.slice(2), root = ROOT) {
   const htmlCount = outputs.filter((o) => o.meta.kind === 'html').length;
   console.log(`built ${outputs.length} files (${htmlCount} pages, ${outputs.length - htmlCount} other), wrote ${changed.length}, removed ${staleOnDisk.length}`);
   if (built.missing.length) console.log(`translations missing (English shown): ${built.missing.length}`);
+  const sc = built.scripts;
+  if (sc.skipped) console.log(`site scripts: ${sc.skipped}`);
+  if (sc.minified) console.log(`minified ${sc.minified} site scripts: ${sc.bytesBefore} bytes readable, ${sc.bytesAfter} bytes minified`);
   return 0;
 }
 

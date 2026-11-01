@@ -1,0 +1,13 @@
+{
+  "name": "thin-air-studios-website",
+  "private": true,
+  "description": "Short Final website build (tools/site). The build has no runtime dependencies; esbuild is a development dependency that minifies the site scripts when it is installed.",
+  "scripts": {
+    "build": "node tools/site/build.mjs",
+    "check": "node tools/site/build.mjs --check",
+    "test": "node --test tools/site/*.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

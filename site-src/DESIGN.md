@@ -91,7 +91,7 @@ Header with menu (`details`, no script), footer, skip link, `.btn` (primary gold
 
 ## 4. Build system and page contract
 
-Command: `node tools/site/build.mjs` writes everything this tool owns into the repository root. `node tools/site/build.mjs --check` writes nothing and exits 1 if the root differs from a fresh build. Tests: `node --test tools/site/site.test.mjs`. Node 22, no dependencies.
+Command: `node tools/site/build.mjs` writes everything this tool owns into the repository root. `node tools/site/build.mjs --check` writes nothing and exits 1 if the root differs from a fresh build. Tests: `node --test tools/site/site.test.mjs`. Node 22; the build needs no dependencies. The website's own browser scripts (`site-src/assets/*.js`, `*.mjs`, and the panel and board scripts) are minified by esbuild, a development dependency: run `npm ci` once, and the build writes them minified. Without esbuild a minified script stays as it is while its source is unchanged (its banner names the source), a changed source is written readable, and `--check` reports the difference. `SITE_MINIFY=require` makes a missing esbuild an error; the daily rebuild sets it. The vendored libraries under `assets/site/vendor/` are not minified.
 
 Files:
 
