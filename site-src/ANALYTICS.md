@@ -7,6 +7,10 @@ Two measurement tools, both optional and both off until their IDs are set in `si
 | Cloudflare Web Analytics | `analytics.cfBeacon` (32-character token) | Counts page views. Cookieless. The beacon script is added to every page only when the token is set. |
 | Google Analytics 4 | `analytics.ga4` (`G-` measurement ID) | Page views, the events below and Google's own enhanced measurement. Loads only when the ID is set, and only with consent (below). |
 
+## Real visitors (our own count, November 3, 2026)
+
+`site.js` sends one `POST /api/p` (playshortfinal.com only, no cookie, no body) once a page has been in view 3 seconds or the visitor scrolls, taps or presses a key. The edge Worker (`tools/edge/worker.js`) counts it in the D1 database `playshortfinal-visits` (binding `VISITS` on the `playshortfinal-site` Worker): `visit_days` (Colorado day, `people` = pages read, `visitors` = browsers once a day) and `visit_seen` (a one-way daily hash, deleted after two days). Robots, test browsers (HeadlessChrome, Playwright, Lighthouse), other sites and Claude's network (160.79.104.0/21) are skipped. Nothing on the site shows the numbers: they appear only in Owl Test Prep's Admin › Today, which reads the same database. Test: `node --test tools/site/visits.test.mjs`.
+
 ## Consent (Google Analytics only)
 
 - Consent Mode v2 defaults are set first, and Google's script is added only after Accept: `analytics_storage`, `ad_storage`, `ad_user_data` and `ad_personalization` are all `denied`.
