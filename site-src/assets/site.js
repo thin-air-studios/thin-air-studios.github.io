@@ -3,7 +3,9 @@
       script loads only after Accept.
    2. Analytics events (see site-src/ANALYTICS.md): data-event="name" on a link or button, plus data-* parameters.
    3. guide_read_75 on pages with an article[data-guide], and outbound_click for links to other hosts.
-   4. window.sfTrack(name, params): the same helper for scripts on any page (see site-src/ANALYTICS.md). */
+   4. window.sfTrack(name, params): the same helper for scripts on any page (see site-src/ANALYTICS.md).
+   5. Real visitors: once the page has been in view 3 seconds, or the visitor scrolls, taps or presses a key, one POST to /api/p
+      (playshortfinal.com only). No cookie, no storage, nothing about the visitor is sent; the edge counts it privately. */
 (function () {
   'use strict';
 
@@ -108,6 +110,28 @@
     observer.observe(marker);
   }
 
+  function setupPeopleBeacon() {
+    if (location.hostname !== 'playshortfinal.com' || !window.fetch) return;
+    var sent = false;
+    var timer = null;
+    function send() {
+      if (sent) return;
+      sent = true;
+      if (timer) clearTimeout(timer);
+      ['scroll', 'pointerdown', 'keydown'].forEach(function (t) { window.removeEventListener(t, send, true); });
+      try { fetch('/api/p', { method: 'POST', keepalive: true, credentials: 'omit' }).catch(function () {}); } catch (e) { /* never break the page */ }
+    }
+    function arm() {
+      if (sent || timer || document.visibilityState === 'hidden') return;
+      timer = setTimeout(send, 3000);
+    }
+    ['scroll', 'pointerdown', 'keydown'].forEach(function (t) { window.addEventListener(t, send, { capture: true, passive: true }); });
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden' && timer) { clearTimeout(timer); timer = null; } else arm();
+    });
+    arm();
+  }
+
   function ready(fn) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
     else fn();
@@ -115,5 +139,6 @@
   ready(function () {
     setupConsent();
     setupGuideTracking();
+    setupPeopleBeacon();
   });
 })();
